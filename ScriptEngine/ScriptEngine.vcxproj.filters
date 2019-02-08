@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{ec539374-4946-4ce8-8448-6f73b0e6b552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{00743e7d-0d2b-4284-b393-f916ec5535a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\script">
+      <UniqueIdentifier>{181db260-6745-46eb-86ae-25fb9da9f1ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\script">
+      <UniqueIdentifier>{9c427f1d-c16f-4bf5-8c66-2e10d710880d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\script\objects">
+      <UniqueIdentifier>{f2644642-3b5d-4c67-b5cf-9e54f069023f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\script\objects">
+      <UniqueIdentifier>{2b5ae768-781a-4582-95a8-7e87f6597b64}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\ScriptEngine.cpp">
+      <Filter>src\script</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\objects\ScriptObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\objects\ScriptObjectArray.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\objects\StringObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\objects\NullObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\objects\IntObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\script\Script.h">
+      <Filter>include\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\ScriptEngine.h">
+      <Filter>include\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\ScriptObjectArray.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\ScriptObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\ValueObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\StringObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\IntObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\NullObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\Util.h">
+      <Filter>include\script</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
