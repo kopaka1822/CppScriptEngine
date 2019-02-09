@@ -103,26 +103,18 @@ namespace script
 
 	private:
 		template<class T>
-		static T& unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature)
+		static T& unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature, 
+			std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
 		{
 			const auto index = --argCount;
 			const auto& objectPtr = args->get(index);
 
-			// cast to value object
-			// and transform const T& to T
-			auto* valuePtr = dynamic_cast<GetValueObject<
-				typename std::remove_const< // const T => T
-				typename std::remove_reference<T>::type>::type>*> // T& => T
-				(objectPtr.get());
-
-			if (valuePtr == nullptr)
-				throw InvalidArgumentType(functionSignature, index, objectPtr, args);		
-
-			return valuePtr->getValue();
+			return getGetValueObjectValue<T>(objectPtr.get(), args, index, functionSignature);
 		}
 
-		/*template<class T>
-		static T* unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature)
+		template<class T>
+		static T unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature, 
+			std::enable_if_t<std::is_pointer<T>::value, int> = 0)
 		{
 			const auto index = --argCount;
 			const auto& objectPtr = args->get(index);
@@ -130,18 +122,29 @@ namespace script
 			// is nullptr?
 			if (objectPtr->equals(NullObject::get())) return nullptr;
 
+			// remove pointer
+			using value_type = std::remove_pointer_t<T>;
+
+			return &(getGetValueObjectValue<value_type>(objectPtr.get(), args, index, functionSignature));
+		}
+
+		template<class T>
+		static T& getGetValueObjectValue(ScriptObject* object, ScriptObjectArrayPtr& args, size_t index, const std::string& functionSignature)
+		{
+			using bare_type =
+				std::remove_const_t< // const T => T
+				std::remove_reference_t<T>>;
+
 			// cast to value object
 			// and transform const T& to T
-			auto* valuePtr = dynamic_cast<GetValueObject<
-				typename std::remove_const< // const T => T
-				typename std::remove_reference<T>::type>::type>*> // T& => T
-				(objectPtr.get());
+			auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*> // T& => T
+				(object);
 
 			if (valuePtr == nullptr)
-				throw InvalidArgumentType(functionSignature, index, objectPtr, args);
+				throw InvalidArgumentType(functionSignature, index, *object, args);
 
-			return &(valuePtr->getValue());
-		}*/
+			return valuePtr->getValue();
+		}
 
 		template<class TFirst, class... TRest>
 		static void makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)

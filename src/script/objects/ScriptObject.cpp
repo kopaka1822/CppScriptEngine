@@ -20,13 +20,13 @@ script::ScriptObject::ScriptObject()
 
 		return std::make_shared<StringObject>(toString());
 	});
-	addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
+	//addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
 }
 
-std::shared_ptr<script::BoolObject> script::ScriptObject::equals(const ScriptObjectPtr& other) const
+bool script::ScriptObject::equals(const ScriptObjectPtr& other) const
 {
 	// reference equals
-	return std::make_shared<BoolObject>(this == other.get());
+	return this == other.get();
 }
 
 std::string script::ScriptObject::type() const

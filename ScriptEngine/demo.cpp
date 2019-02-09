@@ -6,11 +6,12 @@
 class Renderer
 {
 public:
-	void render(int* iterations)
+	void render(const int* iterations)
 	{
 		if (iterations == nullptr)
 			std::cout << "infinity!";
-		std::cout << iterations;
+		else 
+			std::cout << *iterations;
 	}
 };
 
@@ -33,17 +34,32 @@ public:
 	}
 };
 
+/*template<class T>
+T& test(int& a)
+{
+	return a;
+}
+
+template<class T>
+T* test(int& a)
+{
+	return &a;
+}*/
+
 int main() try
 {
+
+
 	auto str1 = script::Util::toScriptObject(std::string("test"));
 	auto str2 = script::Util::toScriptObject(std::string("test"));
 	auto int1 = script::Util::toScriptObject(5);
 	auto int2 = script::Util::toScriptObject(6);
-	auto arr = script::Util::makeArray(int1);
+	auto null = script::NullObject::get();
+	auto arr = script::Util::makeArray(null);
 
 	auto renderer = std::make_shared<RendererWrapper>();
 
-	//renderer->invoke("render", arr);
+	renderer->invoke("render", arr);
 
 	return 0;
 }
