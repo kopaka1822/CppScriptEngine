@@ -6,6 +6,7 @@
 #include "objects/IntObject.h"
 #include "objects/StringObject.h"
 #include "objects/NullObject.h"
+#include "objects/BoolObject.h"
 
 namespace script
 {

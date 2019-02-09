@@ -3,7 +3,7 @@
 
 script::StringObject::StringObject(std::string value)
 	:
-	ValueObject(std::move(value))
+ValueObject(std::move(value))
 {
 	addFunction("add", [this](ScriptObjectArrayPtr args)
 	{
@@ -36,3 +36,8 @@ size_t script::StringObject::length() const
 	return m_value.length();
 }
 
+template<>
+script::ScriptPtr<script::GetValueObject<std::string>> script::Util::toScriptObject<std::string>(const std::string& value)
+{
+	return std::make_shared<StringObject>(value);
+}

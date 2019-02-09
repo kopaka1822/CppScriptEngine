@@ -1,22 +1,49 @@
 #include <script/ScriptEngine.h>
 #include <iostream>
+#include "script/Util.h"
+#include "script/Exception.h"
+
+class Renderer
+{
+public:
+	void render(int* iterations)
+	{
+		if (iterations == nullptr)
+			std::cout << "infinity!";
+		std::cout << iterations;
+	}
+};
+
+class RendererWrapper : public script::ValueObject<Renderer>
+{
+public:
+	RendererWrapper()
+	{
+		addFunction("render", script::Util::makeFunction(this, &m_value, &Renderer::render, "render(int* iterations)"));
+	}
+
+	std::string toString() const override
+	{
+		return "RendererWrapper";
+	}
+
+	script::ScriptObjectPtr clone() const override
+	{
+		throw script::ObjectNotCloneableException("RendererWrapper");
+	}
+};
 
 int main() try
 {
-	auto str1 = std::make_shared<script::StringObject>("hallo");
-	auto str2 = std::make_shared<script::StringObject>(" welt");
-	auto int1 = std::make_shared<script::IntObject>(6);
+	auto str1 = script::Util::toScriptObject(std::string("test"));
+	auto str2 = script::Util::toScriptObject(std::string("test"));
+	auto int1 = script::Util::toScriptObject(5);
+	auto int2 = script::Util::toScriptObject(6);
+	auto arr = script::Util::makeArray(int1);
 
-	auto emtpy = std::make_shared<script::ScriptObjectArray>();
-	auto arr = std::make_shared<script::ScriptObjectArray>();
-	//arr->add(str2);
-	//arr->add(str2);
-	arr->add(int1);
+	auto renderer = std::make_shared<RendererWrapper>();
 
-	auto res = str1->invoke("clone", emtpy)->invoke("add", arr);
-
-	std::cout << str1->toString() << std::endl;
-	std::cout << res->toString() << std::endl;
+	//renderer->invoke("render", arr);
 
 	return 0;
 }

@@ -7,6 +7,7 @@
 namespace script
 {
 	class ScriptObjectArray;
+	class BoolObject;
 
 	class ScriptObject : public std::enable_shared_from_this<ScriptObject>
 	{
@@ -21,16 +22,17 @@ namespace script
 		virtual ~ScriptObject() = default;
 		virtual std::string toString() const = 0;
 		virtual ScriptObjectPtr clone() const = 0;
+		virtual ScriptPtr<BoolObject> equals(const ScriptObjectPtr& other) const;
+		std::string type() const;
+		size_t hashCode() const;
 
 		ScriptObjectPtr invoke(const std::string& funcName, const ScriptPtr<ScriptObjectArray>& args);
-		ScriptObjectPtr getMember(const std::string& memName);
 
 	protected:
 		ScriptObject();
 		void addFunction(const std::string& name, const FunctionT& func);
-		void addMember(const std::string& name, ScriptObjectPtr member);
+
 	private:
 		std::unordered_map<std::string, FunctionT> m_functions;
-		std::unordered_map<std::string, ScriptObjectPtr> m_members;
 	};
 }

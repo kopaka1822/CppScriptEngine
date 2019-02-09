@@ -1,15 +1,15 @@
 #pragma once
-#include "ScriptObject.h"
+#include "GetValueObject.h"
 
 namespace script
 {
 	template<class T>
-	class ValueObject : public ScriptObject
+	class ValueObject : public GetValueObject<T>
 	{
 	public:
 		~ValueObject() override = default;
 
-		const T& getValue() const
+		T& getValue() override final
 		{
 			return m_value;
 		}

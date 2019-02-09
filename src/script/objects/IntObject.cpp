@@ -3,7 +3,7 @@
 
 script::IntObject::IntObject(int value)
 	:
-	ValueObject(value)
+ValueObject(value)
 {
 	addFunction("add", Util::makeFunction(this, &IntObject::add, "IntObject::add(int)"));
 	addFunction("subtract", Util::makeFunction(this, &IntObject::subtract, "IntObject::subtract(int)"));
@@ -41,4 +41,10 @@ void script::IntObject::divide(int i)
 void script::IntObject::multiply(int i)
 {
 	m_value *= i;
+}
+
+template<>
+script::ScriptPtr<script::GetValueObject<int>> script::Util::toScriptObject<int>(const int& value)
+{
+	return std::make_shared<IntObject>(value);
 }

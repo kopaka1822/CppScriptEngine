@@ -1,4 +1,5 @@
 #include "../../../include/script/objects/NullObject.h"
+#include "../../../include/script/Util.h"
 
 std::string script::NullObject::toString() const
 {

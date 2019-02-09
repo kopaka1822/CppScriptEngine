@@ -1,6 +1,7 @@
 #include "../../../include/script/objects/ScriptObject.h"
 #include "../../../include/script/objects/ScriptObjectArray.h"
 #include "../../../include/script/objects/StringObject.h"
+#include "../../../include/script/objects/BoolObject.h"
 #include "../../../include/script/Util.h"
 
 script::ScriptObject::ScriptObject()
@@ -19,6 +20,23 @@ script::ScriptObject::ScriptObject()
 
 		return std::make_shared<StringObject>(toString());
 	});
+	addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
+}
+
+std::shared_ptr<script::BoolObject> script::ScriptObject::equals(const ScriptObjectPtr& other) const
+{
+	// reference equals
+	return std::make_shared<BoolObject>(this == other.get());
+}
+
+std::string script::ScriptObject::type() const
+{
+	return typeid(*this).name();
+}
+
+size_t script::ScriptObject::hashCode() const
+{
+	return typeid(*this).hash_code();
 }
 
 script::ScriptObjectPtr script::ScriptObject::invoke(const std::string& funcName,
@@ -31,15 +49,6 @@ script::ScriptObjectPtr script::ScriptObject::invoke(const std::string& funcName
 	return it->second(args);
 }
 
-script::ScriptObjectPtr script::ScriptObject::getMember(const std::string& memName)
-{
-	const auto it = m_members.find(memName);
-	if(it == m_members.end())
-		throw std::runtime_error("ScriptObject::getMember member " + memName + " not found");
-
-	return it->second;
-}
-
 void script::ScriptObject::addFunction(const std::string& name, const FunctionT& func)
 {
 	// elements already inside?
@@ -47,13 +56,4 @@ void script::ScriptObject::addFunction(const std::string& name, const FunctionT&
 		throw std::runtime_error("ScriptObject::addFunction name already used: " + name);
 
 	m_functions[name] = func;
-}
-
-void script::ScriptObject::addMember(const std::string& name, ScriptObjectPtr member)
-{
-	// elements already inside?
-	if (m_members.find(name) != m_members.end())
-		throw std::runtime_error("ScriptObject::addMember name already used: " + name);
-
-	m_members[name] = std::move(member);
 }

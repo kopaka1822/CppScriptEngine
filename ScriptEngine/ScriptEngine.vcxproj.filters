@@ -50,6 +50,12 @@
     <ClCompile Include="..\src\script\objects\IntObject.cpp">
       <Filter>src\script\objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\objects\BoolObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\Exception.cpp">
+      <Filter>src\script</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -64,9 +70,6 @@
     <ClInclude Include="..\include\script\objects\ScriptObject.h">
       <Filter>include\script\objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\script\objects\ValueObject.h">
-      <Filter>include\script\objects</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\script\objects\StringObject.h">
       <Filter>include\script\objects</Filter>
     </ClInclude>
@@ -77,6 +80,21 @@
       <Filter>include\script\objects</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\Util.h">
+      <Filter>include\script</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\BoolObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\FloatObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\GetValueObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\ValueObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\Exception.h">
       <Filter>include\script</Filter>
     </ClInclude>
   </ItemGroup>
