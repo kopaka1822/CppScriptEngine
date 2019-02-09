@@ -6,21 +6,9 @@
 
 script::ScriptObject::ScriptObject()
 {
-	addFunction("clone", [this](ScriptObjectArrayPtr args)
-	{
-		if (args->count() != 0)
-			throw std::runtime_error("invalid argument count ScriptObject::clone()");
-
-		return this->clone();
-	});
-	addFunction("toString", [this](ScriptObjectArrayPtr args)
-	{
-		if (args->count() != 0)
-			throw std::runtime_error("invalid argument count ScriptObject::toString()");
-
-		return std::make_shared<StringObject>(toString());
-	});
-	//addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
+	addFunction("clone", Util::makeReturnFunction(this, &ScriptObject::clone, "ScriptObject::clone()"));
+	addFunction("toString", Util::makeReturnFunction(this, &ScriptObject::toString, "ScriptObject::toString()"));
+	addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
 }
 
 bool script::ScriptObject::equals(const ScriptObjectPtr& other) const

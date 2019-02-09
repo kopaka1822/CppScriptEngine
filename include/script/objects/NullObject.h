@@ -3,6 +3,7 @@
 
 namespace script
 {
+	/// \brief represents the null constant. This class is a singleton
 	class NullObject final : public ScriptObject
 	{
 		NullObject() = default;

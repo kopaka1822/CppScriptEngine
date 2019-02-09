@@ -6,12 +6,10 @@
 class Renderer
 {
 public:
-	void render(const int* iterations)
+	void render(int& iterations)
 	{
-		if (iterations == nullptr)
-			std::cout << "infinity!";
-		else 
-			std::cout << *iterations;
+		std::cout << iterations << std::endl;
+		iterations++;
 	}
 };
 
@@ -55,11 +53,15 @@ int main() try
 	auto int1 = script::Util::toScriptObject(5);
 	auto int2 = script::Util::toScriptObject(6);
 	auto null = script::NullObject::get();
-	auto arr = script::Util::makeArray(null);
+	auto arr = script::Util::makeArray(str2);
 
+	//auto cloned = str1->invoke("clone", arr);
+	auto res = str1->invoke("equals", arr);
+	std::cout << res->toString();
 	auto renderer = std::make_shared<RendererWrapper>();
 
-	renderer->invoke("render", arr);
+	//renderer->invoke("render", arr);
+	//std::cout << int1->toString();
 
 	return 0;
 }

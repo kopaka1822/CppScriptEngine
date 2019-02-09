@@ -3,7 +3,7 @@
 
 script::IntObject::IntObject(int value)
 	:
-ValueObject(value)
+ValueComparableObject(value)
 {
 	addFunction("add", Util::makeFunction(this, &IntObject::add, "IntObject::add(int)"));
 	addFunction("subtract", Util::makeFunction(this, &IntObject::subtract, "IntObject::subtract(int)"));

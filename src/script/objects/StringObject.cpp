@@ -3,7 +3,7 @@
 
 script::StringObject::StringObject(std::string value)
 	:
-ValueObject(std::move(value))
+ValueComparableObject(std::move(value))
 {
 	addFunction("add", [this](ScriptObjectArrayPtr args)
 	{

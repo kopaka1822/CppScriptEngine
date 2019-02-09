@@ -1,9 +1,9 @@
 #pragma once
-#include "ValueObject.h"
+#include "ValueComparableObject.h"
 
 namespace script
 {
-	class BoolObject final : public ValueObject<bool>
+	class BoolObject final : public ValueComparableObject<bool>
 	{
 	public:
 		explicit BoolObject(bool value);

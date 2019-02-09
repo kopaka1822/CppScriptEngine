@@ -3,7 +3,7 @@
 
 script::BoolObject::BoolObject(bool value)
 	:
-ValueObject(value)
+ValueComparableObject(value)
 {
 
 }

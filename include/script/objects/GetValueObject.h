@@ -3,6 +3,7 @@
 
 namespace script
 {
+	/// \brief extends ScriptObject by a T& getValue() interface function
 	template<class T>
 	class GetValueObject : public ScriptObject
 	{

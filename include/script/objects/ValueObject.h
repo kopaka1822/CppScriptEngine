@@ -3,6 +3,7 @@
 
 namespace script
 {
+	/// \brief hold a value of T as member (m_value) and implements GetValueObject<T>::getValue() by returning it
 	template<class T>
 	class ValueObject : public GetValueObject<T>
 	{

@@ -19,7 +19,7 @@ namespace script
 		/// \param parent pointer of the class that owns this function
 		/// \param thisPtr pointer for the member function
 		/// \param func member function pointer
-		/// \param functionSignature syntax: functionName(type1 name, type2...)
+		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class... TArgs>
 		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeFunction(ScriptObject* parent, TClass* thisPtr, void(TClass::* func)(TArgs...), std::string functionSignature)
@@ -43,7 +43,7 @@ namespace script
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
 		/// \param func member function pointer
-		/// \param functionSignature syntax: functionName(type1 name, type2...)
+		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class... TArgs>
 		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeFunction(TClass* thisPtr, void(TClass::* func)(TArgs...), std::string functionSignature)
@@ -56,13 +56,11 @@ namespace script
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
 		/// \param func member function pointer
-		/// \param functionSignature syntax: returnType functionName(type1 name, type2...)
+		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
 		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeReturnFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), std::string functionSignature)
 		{
-			static_assert(std::is_convertible<TReturn, ScriptObjectPtr>::value, "return type must be convertible to ScriptObjectPtr");
-
 			std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> res = (
 				[thisPtr, func, functionSignature]
 			(ScriptObjectArrayPtr args) -> ScriptObjectPtr
@@ -71,7 +69,12 @@ namespace script
 				if (argCount != args->count())
 					throw InvalidArgumentCount(functionSignature, argCount, args);
 
-				return std::invoke(func, thisPtr, unpackArg<TArgs>(args, argCount, functionSignature)...);
+				if constexpr(std::is_convertible<TReturn, ScriptObjectPtr>::value)
+					// return type is already a script object
+					return std::invoke(func, thisPtr, unpackArg<TArgs>(args, argCount, functionSignature)...);
+				else
+					// return type must be transformed to a script object
+					return toScriptObject(std::invoke(func, thisPtr, unpackArg<TArgs>(args, argCount, functionSignature)...));
 			});
 			return res;
 		}
@@ -81,7 +84,7 @@ namespace script
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
 		/// \param func member function pointer
-		/// \param functionSignature syntax: returnType functionName(type1 name, type2...)
+		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
 		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeReturnFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, std::string functionSignature)
@@ -90,6 +93,7 @@ namespace script
 			return makeReturnFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
+		/// \brief puts the arguments into a ScriptObjectArrayPtr
 		template<class... TClass>
 		static ScriptObjectArrayPtr makeArray(const TClass&... objects)
 		{
@@ -98,13 +102,44 @@ namespace script
 			return arr;
 		}
 
+		/// \brief converts the T value into a GetValueObject<T>
+		/// this is used to convert basic return types of functions to SciptObjects
 		template<class T>
 		static ScriptPtr<GetValueObject<T>> toScriptObject(const T& value);
 
 	private:
+		// helper functions to remove the shared_ptr wrapper
+		template<class T> struct remove_shared { typedef T type; };
+		template<class T> struct remove_shared<std::shared_ptr<T>> { typedef T type; };
+		template<class T> struct remove_shared<std::shared_ptr<T>&> { typedef T type; };
+		template<class T> struct remove_shared<const std::shared_ptr<T>> { typedef T type; };
+		template<class T> struct remove_shared<const std::shared_ptr<T>&> { typedef T type; };
+		template<class T> using remove_shared_t = typename  remove_shared<T>::type;
+
+		/// \brief converts the argument at args->get(argCount - 1) to T where T is a shared_ptr<ScriptObject>
+		template<class T>
+		static std::remove_reference_t<T> unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature,
+			// convertible to ScriptObjectPtr
+			std::enable_if_t<std::is_convertible<T, ScriptObjectPtr>::value, int> = 0)
+		{
+			const auto index = --argCount;
+			const auto& objectPtr = args->get(index);
+
+			// T is a base of ScriptObject
+			// try to convert objectPtr to T
+			using bare_type = remove_shared_t<T>;
+			std::shared_ptr<bare_type> res = std::dynamic_pointer_cast<bare_type>(objectPtr);
+			if (!res)
+				throw InvalidArgumentType(functionSignature, index, *objectPtr, args);
+
+			return res;
+		}
+
+		/// \brief converts the argument at args->get(argCount - 1) to T if the argument has the type GetValueObject<T>
 		template<class T>
 		static T& unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature, 
-			std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
+			// not convertible to ScriptObjectPtr and not pointer
+			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
 		{
 			const auto index = --argCount;
 			const auto& objectPtr = args->get(index);
@@ -112,9 +147,11 @@ namespace script
 			return getGetValueObjectValue<T>(objectPtr.get(), args, index, functionSignature);
 		}
 
+		/// \brief converts the argument at args->get(argCount - 1) to T* if the argument has the type GetValueObject<T> or NullObject
 		template<class T>
 		static T unpackArg(ScriptObjectArrayPtr& args, size_t& argCount, const std::string& functionSignature, 
-			std::enable_if_t<std::is_pointer<T>::value, int> = 0)
+			// not convertible to ScriptObjectPtr but pointer
+			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<std::is_pointer<T>::value, int> = 0)
 		{
 			const auto index = --argCount;
 			const auto& objectPtr = args->get(index);
@@ -128,6 +165,7 @@ namespace script
 			return &(getGetValueObjectValue<value_type>(objectPtr.get(), args, index, functionSignature));
 		}
 
+		/// \brief retrieves the value T from the ScriptObject by casting it to a GetValueObject<T>
 		template<class T>
 		static T& getGetValueObjectValue(ScriptObject* object, ScriptObjectArrayPtr& args, size_t index, const std::string& functionSignature)
 		{
@@ -146,6 +184,7 @@ namespace script
 			return valuePtr->getValue();
 		}
 
+		/// \brief helper function to create a ScriptObjectArray
 		template<class TFirst, class... TRest>
 		static void makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
 		{
@@ -153,7 +192,7 @@ namespace script
 			makeArray(array, objects...);
 		}
 
-		// end recursion
+		/// \brief recursion end of the helper function
 		static void makeArray(ScriptObjectArray&) {}
 	};
 }

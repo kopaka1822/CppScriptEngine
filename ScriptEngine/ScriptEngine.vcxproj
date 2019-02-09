@@ -150,6 +150,7 @@
     <ClInclude Include="..\include\script\objects\ScriptObject.h" />
     <ClInclude Include="..\include\script\objects\StringObject.h" />
     <ClInclude Include="..\include\script\objects\GetValueObject.h" />
+    <ClInclude Include="..\include\script\objects\ValueComparableObject.h" />
     <ClInclude Include="..\include\script\objects\ValueObject.h" />
     <ClInclude Include="..\include\script\Script.h" />
     <ClInclude Include="..\include\script\ScriptEngine.h" />

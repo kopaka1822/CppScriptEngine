@@ -1,9 +1,9 @@
 #pragma once
-#include "ValueObject.h"
+#include "ValueComparableObject.h"
 
 namespace script
 {
-	class StringObject final : public ValueObject<std::string>
+	class StringObject final : public ValueComparableObject<std::string>
 	{
 	public:
 		explicit StringObject(std::string value);

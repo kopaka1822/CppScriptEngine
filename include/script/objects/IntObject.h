@@ -1,9 +1,9 @@
 #pragma once
-#include "ValueObject.h"
+#include "ValueComparableObject.h"
 
 namespace script
 {
-	class IntObject : public ValueObject<int>
+	class IntObject : public ValueComparableObject<int>
 	{
 	public:
 		explicit IntObject(int value);

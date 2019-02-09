@@ -97,5 +97,8 @@
     <ClInclude Include="..\include\script\Exception.h">
       <Filter>include\script</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\script\objects\ValueComparableObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
