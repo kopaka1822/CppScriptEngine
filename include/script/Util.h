@@ -105,7 +105,7 @@ namespace script
 		/// \brief converts the T value into a GetValueObject<T>
 		/// this is used to convert basic return types of functions to SciptObjects
 		template<class T>
-		static ScriptPtr<GetValueObject<T>> toScriptObject(const T& value);
+		static ScriptObjectPtr toScriptObject(const T& value);
 
 	private:
 		// helper functions to remove the shared_ptr wrapper

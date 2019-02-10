@@ -44,7 +44,7 @@ void script::IntObject::multiply(int i)
 }
 
 template<>
-script::ScriptPtr<script::GetValueObject<int>> script::Util::toScriptObject<int>(const int& value)
+script::ScriptObjectPtr script::Util::toScriptObject<int>(const int& value)
 {
 	return std::make_shared<IntObject>(value);
 }

@@ -37,7 +37,7 @@ size_t script::StringObject::length() const
 }
 
 template<>
-script::ScriptPtr<script::GetValueObject<std::string>> script::Util::toScriptObject<std::string>(const std::string& value)
+script::ScriptObjectPtr script::Util::toScriptObject<std::string>(const std::string& value)
 {
 	return std::make_shared<StringObject>(value);
 }

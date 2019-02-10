@@ -16,3 +16,9 @@ script::ScriptObjectPtr script::NullObject::get()
 	static auto instance = std::shared_ptr<ScriptObject>(new NullObject());
 	return instance;
 }
+
+template <>
+script::ScriptObjectPtr script::Util::toScriptObject(const nullptr_t& value)
+{
+	return NullObject::get();
+}

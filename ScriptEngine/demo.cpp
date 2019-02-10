@@ -52,8 +52,9 @@ int main() try
 	auto str2 = script::Util::toScriptObject(std::string("test"));
 	auto int1 = script::Util::toScriptObject(5);
 	auto int2 = script::Util::toScriptObject(6);
-	auto null = script::NullObject::get();
-	auto arr = script::Util::makeArray(str2);
+	//auto null = script::NullObject::get();
+	auto null = script::Util::toScriptObject(nullptr);
+	auto arr = script::Util::makeArray(nullptr, str2);
 
 	//auto cloned = str1->invoke("clone", arr);
 	auto res = str1->invoke("equals", arr);
