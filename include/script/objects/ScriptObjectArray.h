@@ -13,9 +13,14 @@ namespace script
 		std::string toString() const override final;
 		ScriptObjectPtr clone() const override final;
 
-		const ScriptObjectPtr& get(size_t index) const;
+		const ScriptObjectPtr& get(int index) const;
 		void add(ScriptObjectPtr object);
-		size_t count() const;
+		void remove(int index);
+		void clear();
+		void addAll(const ScriptPtr<ScriptObjectArray>& other);
+		int count() const;
+		/// \brief returns the array subset [from, from + count) as shallow copy
+		ScriptPtr<ScriptObjectArray> slice(int from, int count);
 	private:
 		std::vector<ScriptObjectPtr> m_values;
 	};

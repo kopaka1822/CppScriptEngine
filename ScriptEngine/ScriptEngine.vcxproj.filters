@@ -56,6 +56,9 @@
     <ClCompile Include="..\src\script\Exception.cpp">
       <Filter>src\script</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\objects\FloatObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -98,6 +101,9 @@
       <Filter>include\script</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\objects\ValueComparableObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\NumericalObject.h">
       <Filter>include\script\objects</Filter>
     </ClInclude>
   </ItemGroup>

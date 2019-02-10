@@ -51,6 +51,22 @@ namespace script
 			return makeFunction(static_cast<ScriptObject*>(thisPtr), thisPtr, func, functionSignature);
 		}
 
+		/*/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \tparam TClass 
+		/// \tparam TArgs 
+		/// \param thisPtr class pointer
+		/// \param func member function pointer
+		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
+		/// \return ScriptObject compatible function
+		template<class TClass, class... TArgs>
+		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeFunction(const TClass* thisPtr, void(TClass::* func)(TArgs...) const, std::string functionSignature)
+		{
+			// its okay because this and function were const => no change will happen
+			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
+		}*/
+
+		
+
 		/// \brief converts a class memberfunction into a ScriptObject compatible function
 		/// \tparam TClass 
 		/// \tparam TArgs 
@@ -107,6 +123,8 @@ namespace script
 		template<class T>
 		static ScriptObjectPtr toScriptObject(const T& value);
 
+		/// \brief calls toScriptObject with an std::string parameter
+		static ScriptObjectPtr toScriptObject(const char* text);
 	private:
 		// helper functions to remove the shared_ptr wrapper
 		template<class T> struct remove_shared { typedef T type; };
@@ -184,11 +202,21 @@ namespace script
 			return valuePtr->getValue();
 		}
 
-		/// \brief helper function to create a ScriptObjectArray
+		/// \brief helper function to create a ScriptObjectArray (used if first is a ScriptObject)
 		template<class TFirst, class... TRest>
-		static void makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
+		static std::enable_if_t<std::is_convertible_v<TFirst, ScriptObjectPtr> && !std::is_same_v<std::nullptr_t, TFirst>> 
+		makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
 		{
 			array.add(first);
+			makeArray(array, objects...);
+		}
+
+		/// \brief helper function to create a ScriptObjectArray (used if first is not a ScriptObject)
+		template<class TFirst, class... TRest>
+		static std::enable_if_t<!std::is_convertible_v<TFirst, ScriptObjectPtr> || std::is_same_v<std::nullptr_t, TFirst>>
+			makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
+		{
+			array.add(toScriptObject(first));
 			makeArray(array, objects...);
 		}
 

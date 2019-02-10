@@ -30,12 +30,12 @@ namespace script
 	class InvalidArgumentCount : public Exception
 	{
 	public:
-		explicit InvalidArgumentCount(const std::string& functionSignature, int expectedCount, const ScriptObjectArrayPtr& args);
+		explicit InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, const ScriptObjectArrayPtr& args);
 	};
 
 	class InvalidArgumentType : public Exception
 	{
 	public:
-		explicit InvalidArgumentType(const std::string& functionSignature, int argIndex, const ScriptObject& invalidArg, const ScriptObjectArrayPtr& args);
+		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ScriptObjectArrayPtr& args);
 	};
 }

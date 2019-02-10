@@ -8,12 +8,11 @@ ValueComparableObject(std::move(value))
 	addFunction("add", [this](ScriptObjectArrayPtr args)
 	{
 		// add all arguments
-		for (size_t i = 0; i < args->count(); ++i)
+		for (int i = 0; i < args->count(); ++i)
 			m_value += args->get(i)->toString();
 
 		return this->shared_from_this();
 	});
-	//ScriptObject::addFunction("add", Util::makeFunction(this, &StringObject::add, "StringObject::add(string)"));
 }
 
 std::string script::StringObject::toString() const
@@ -40,4 +39,9 @@ template<>
 script::ScriptObjectPtr script::Util::toScriptObject<std::string>(const std::string& value)
 {
 	return std::make_shared<StringObject>(value);
+}
+
+script::ScriptObjectPtr script::Util::toScriptObject(const char* text)
+{
+	return std::make_shared<StringObject>(std::string(text));
 }

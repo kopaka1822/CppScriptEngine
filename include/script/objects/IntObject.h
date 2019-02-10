@@ -1,9 +1,9 @@
 #pragma once
-#include "ValueComparableObject.h"
+#include "NumericalObject.h"
 
 namespace script
 {
-	class IntObject : public ValueComparableObject<int>
+	class IntObject final : public NumericalObject<int>
 	{
 	public:
 		explicit IntObject(int value);
@@ -12,9 +12,6 @@ namespace script
 		std::string toString() const override;
 		ScriptObjectPtr clone() const final override;
 
-		void add(int i);
-		void subtract(int i);
-		void divide(int i);
-		void multiply(int i);
+		void divide(const int& other) override;
 	};
 }
