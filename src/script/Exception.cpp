@@ -41,10 +41,10 @@ script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSi
 }
 
 script::InvalidArgumentType::InvalidArgumentType(const std::string& functionSignature, size_t argIndex,
-	const ScriptObject& invalidArg, const ScriptObjectArrayPtr& args)
+	const ScriptObject& invalidArg, const ScriptObjectArray& args)
 {
 	stream << "invalid argument type for " << functionSignature << ". argument " << argIndex
 		<< " ('" << invalidArg.toString() << "' of type '" << invalidArg.type() << "') is invalid"
-		<< ". args: " << args->toString();
+		<< ". args: " << args.toString();
 }
 

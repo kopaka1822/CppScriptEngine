@@ -12,7 +12,7 @@ namespace script
 	class ScriptObject : public std::enable_shared_from_this<ScriptObject>
 	{
 	public:
-		using FunctionT = std::function<ScriptObjectPtr(ScriptPtr<ScriptObjectArray>)>;
+		using FunctionT = std::function<ScriptObjectPtr(const ScriptPtr<ScriptObjectArray>&)>;
 
 		ScriptObject(const ScriptObject&) = delete;
 		ScriptObject(ScriptObject&&) = delete;

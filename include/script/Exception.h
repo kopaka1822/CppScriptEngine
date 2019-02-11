@@ -36,6 +36,6 @@ namespace script
 	class InvalidArgumentType : public Exception
 	{
 	public:
-		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ScriptObjectArrayPtr& args);
+		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ScriptObjectArray& args);
 	};
 }
