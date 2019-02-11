@@ -5,7 +5,7 @@ script::ScriptObjectArray::ScriptObjectArray(std::vector<ScriptObjectPtr> values
 	:
 	m_values(std::move(values))
 {
-	addFunction("get", Util::makeReturnFunction(this, &ScriptObjectArray::get, "ScriptObjectArray::get(int index)"));
+	addFunction("get", Util::makeFunction(this, &ScriptObjectArray::get, "ScriptObjectArray::get(int index)"));
 	addFunction("add", [this](const ScriptObjectArrayPtr& args)
 	{
 		// add all elements
@@ -15,8 +15,8 @@ script::ScriptObjectArray::ScriptObjectArray(std::vector<ScriptObjectPtr> values
 	addFunction("addAll", Util::makeFunction(this, &ScriptObjectArray::addAll, "ScriptObjectArray::addAll(ScriptObjectArray)"));
 	addFunction("remove", Util::makeFunction(this, &ScriptObjectArray::remove, "ScriptObjectArray::remove(int index)"));
 	addFunction("clear", Util::makeFunction(this, &ScriptObjectArray::clear, "ScriptObjectArray::clear()"));
-	addFunction("count", Util::makeReturnFunction(this, &ScriptObjectArray::count, "int ScriptObjectArray::count()"));
-	addFunction("slice", Util::makeReturnFunction(this, &ScriptObjectArray::slice, "ScriptObjectArray ScriptObjectArray::slice(int from, int count)"));
+	addFunction("count", Util::makeFunction(this, &ScriptObjectArray::count, "int ScriptObjectArray::count()"));
+	addFunction("slice", Util::makeFunction(this, &ScriptObjectArray::slice, "ScriptObjectArray ScriptObjectArray::slice(int from, int count)"));
 }
 
 std::string script::ScriptObjectArray::toString() const

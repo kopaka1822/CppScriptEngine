@@ -49,6 +49,7 @@ public:
 		EXPECT_EQ(a, 5);
 		EXPECT_EQ(b, 6.0f);
 	}
+
 	void mutatorPtr(int* a, float b)
 	{
 		EXPECT_NE(a, nullptr);
@@ -56,6 +57,7 @@ public:
 		EXPECT_EQ(b, 2.0f);
 		*a = 5;
 	}
+
 	void mutatorScript(ScriptPtr<IntObject> intObj, int a)
 	{
 		EXPECT_EQ(intObj->getValue(), 6);
@@ -63,12 +65,14 @@ public:
 		intObj->add(1);
 		intObj.reset();
 	}
+
 	void mutatorConstScriptRef(const ScriptPtr<IntObject>& intObj, int a)
 	{
 		EXPECT_EQ(intObj->getValue(), 6);
 		EXPECT_EQ(a, 10);
 		intObj->add(1);
 	}
+
 	void mutatorScriptRef(ScriptPtr<IntObject>& intObj, int a)
 	{
 		EXPECT_EQ(intObj->getValue(), 9);
@@ -137,6 +141,7 @@ public:
 	}
 };
 
+// tests wrapper functions with void return value
 TEST(TestSuite, MakeFunctionForWrapper)
 {
 	auto intObj = std::dynamic_pointer_cast<IntObject>(Util::toScriptObject(1));

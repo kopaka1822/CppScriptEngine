@@ -89,7 +89,7 @@ namespace script
 		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
-		static ScriptObject::FunctionT makeReturnFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const std::string& functionSignature)
+		static ScriptObject::FunctionT makeFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature]
 			(const ScriptObjectArrayPtr& args) -> ScriptObjectPtr
@@ -115,10 +115,10 @@ namespace script
 		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
-		static ScriptObject::FunctionT makeReturnFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, const std::string& functionSignature)
+		static ScriptObject::FunctionT makeFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, const std::string& functionSignature)
 		{
 			// its okay because this and function were const => no change will happen
-			return makeReturnFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
+			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
 		/// \brief puts the arguments into a ScriptObjectArrayPtr

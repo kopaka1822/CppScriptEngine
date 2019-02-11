@@ -6,9 +6,9 @@
 
 script::ScriptObject::ScriptObject()
 {
-	addFunction("clone", Util::makeReturnFunction(this, &ScriptObject::clone, "ScriptObject::clone()"));
-	addFunction("toString", Util::makeReturnFunction(this, &ScriptObject::toString, "ScriptObject::toString()"));
-	addFunction("equals", Util::makeReturnFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
+	addFunction("clone", Util::makeFunction(this, &ScriptObject::clone, "ScriptObject::clone()"));
+	addFunction("toString", Util::makeFunction(this, &ScriptObject::toString, "ScriptObject::toString()"));
+	addFunction("equals", Util::makeFunction(this, &ScriptObject::equals, "ScriptObject::equals(object)"));
 }
 
 bool script::ScriptObject::equals(const ScriptObjectPtr& other) const
