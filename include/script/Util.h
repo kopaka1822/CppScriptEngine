@@ -137,6 +137,23 @@ namespace script
 
 		/// \brief calls toScriptObject with an std::string parameter
 		static ScriptObjectPtr toScriptObject(const char* text);
+
+		/// \brief converts an std vector into an array object
+		/// \tparam T must be convertible to a ScriptObject or have an appropriate toScriptObject function
+		template<class T>
+		static ArrayObjectPtr toScriptObject(const std::vector<T>& vec)
+		{
+			std::vector<ScriptObjectPtr> res;
+			res.reserve(vec.size());
+			for(const auto& e : vec)
+			{
+				if constexpr (std::is_convertible_v<T, ScriptObjectPtr>)
+					res.push_back(e);
+				else
+					res.push_back(Util::toScriptObject(e));
+			}
+			return std::make_shared<ArrayObject>(res);
+		}
 	private:
 		// helper functions to remove the shared_ptr wrapper
 		template<class T> struct remove_shared { typedef T type; };

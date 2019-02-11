@@ -7,7 +7,11 @@ namespace script
 	{
 	public:
 		explicit BoolObject(bool value);
+
 		std::string toString() const override;
 		ScriptObjectPtr clone() const override;
+
+		/// \brief reverses the value
+		void invert();
 	};
 }

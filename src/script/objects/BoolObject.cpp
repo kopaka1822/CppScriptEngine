@@ -5,7 +5,7 @@ script::BoolObject::BoolObject(bool value)
 	:
 ValueComparableObject(value)
 {
-
+	addFunction("invert", Util::makeFunction(this, &BoolObject::invert, "BoolObject::invert()"));
 }
 
 std::string script::BoolObject::toString() const
@@ -16,6 +16,11 @@ std::string script::BoolObject::toString() const
 script::ScriptObjectPtr script::BoolObject::clone() const
 {
 	return std::make_shared<BoolObject>(m_value);
+}
+
+void script::BoolObject::invert()
+{
+	m_value = !m_value;
 }
 
 template<>

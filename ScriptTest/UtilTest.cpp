@@ -52,7 +52,7 @@ public:
 
 	void mutatorPtr(int* a, float b)
 	{
-		EXPECT_NE(a, nullptr);
+		EXPECT_TRUE(a != nullptr);
 		EXPECT_EQ(*a, 3);
 		EXPECT_EQ(b, 2.0f);
 		*a = 5;
@@ -105,7 +105,29 @@ public:
 
 	void mutatorNullptr(int* a)
 	{
-		EXPECT_EQ(a, nullptr);
+		EXPECT_TRUE(a == nullptr);
+	}
+
+	int returnInt(int a)
+	{
+		EXPECT_EQ(a, 10);
+		return a + 5;
+	}
+
+	ScriptPtr<IntObject> returnIntObj(int a)
+	{
+		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(a));
+	}
+
+	int returnIntConst(int a) const
+	{
+		EXPECT_EQ(a, 10);
+		return a + 5;
+	}
+
+	ScriptPtr<IntObject> returnIntObjConst(int a) const
+	{
+		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(a));
 	}
 };
 
@@ -122,27 +144,9 @@ public:
 	}
 };
 
-class UtilTestDerived : GetValueObject<UtilTestDerived>
-{
-public:
-	std::string toString() const override
-	{
-		return "UtilTestDerived";
-	}
-
-	ScriptObjectPtr clone() const override
-	{
-		throw ObjectNotCloneableException("UtilTestDerived");
-	}
-
-	UtilTestDerived& getValue() override
-	{
-		return *this;
-	}
-};
-
 // tests wrapper functions with void return value
-TEST(TestSuite, MakeFunctionForWrapper)
+// tests all sorts of parameters as well
+TEST(TestSuite, MakeVoidFunctionForWrapper)
 {
 	auto intObj = std::dynamic_pointer_cast<IntObject>(Util::toScriptObject(1));
 	
@@ -212,4 +216,97 @@ TEST(TestSuite, MakeFunctionForWrapper)
 	ASSERT_TRUE(func);
 	ASSERT_NO_THROW(func(Util::makeArray(nullptr)));
 	ASSERT_NO_THROW(func(Util::makeArray(NullObject::get())));
+}
+
+// tests wrapper functions with return value
+TEST(TestSuite, MakeReturnFunctionForWrapper)
+{
+	auto w = std::make_shared<UtilTestWrapper>();
+	UtilTest& t = w->getValue();
+	auto func = Util::makeFunction(&t, &UtilTest::returnInt, "");
+	ASSERT_TRUE(func);
+	auto retVal = func(Util::makeArray(10));
+	ASSERT_TRUE(retVal->equals(Util::toScriptObject(15)));
+
+	func = Util::makeFunction(&t, &UtilTest::returnIntObj, "");
+	ASSERT_TRUE(func);
+	retVal = func(Util::makeArray(12));
+	ASSERT_TRUE(retVal->equals(Util::toScriptObject(12)));
+
+	func = Util::makeFunction(&t, &UtilTest::returnIntConst, "");
+	ASSERT_TRUE(func);
+	retVal = func(Util::makeArray(10));
+	ASSERT_TRUE(retVal->equals(Util::toScriptObject(15)));
+
+	func = Util::makeFunction(&t, &UtilTest::returnIntObjConst, "");
+	ASSERT_TRUE(func);
+	retVal = func(Util::makeArray(16));
+	ASSERT_TRUE(retVal->equals(Util::toScriptObject(16)));
+}
+
+class UtilTestDerived : public GetValueObject<UtilTestDerived>
+{
+public:
+	std::string toString() const override
+	{
+		return "UtilTestDerived";
+	}
+
+	ScriptObjectPtr clone() const override
+	{
+		throw ObjectNotCloneableException("UtilTestDerived");
+	}
+
+	UtilTestDerived& getValue() override
+	{
+		return *this;
+	}
+
+	void mutator(int a, float b)
+	{
+		EXPECT_EQ(a, 2);
+		EXPECT_EQ(b, 3.0f);
+	}
+
+	void mutatorConst(int* a, float b) const
+	{
+		EXPECT_TRUE(a == nullptr);
+		EXPECT_EQ(b, 5.0f);
+	}
+
+	int returnInt()
+	{
+		return 15;
+	}
+
+	ScriptPtr<IntObject> returnIntConst()
+	{
+		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(5));
+	}
+};
+
+// tests void functions called from a wrapper object
+TEST(TestSuit, MakeVoidFunctionForDerived)
+{
+	auto d = std::make_shared<UtilTestDerived>();
+	auto func = Util::makeFunction(d.get(), &UtilTestDerived::mutator, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(2, 3.0f)));
+
+	func = Util::makeFunction(d.get(), &UtilTestDerived::mutatorConst, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(nullptr, 5.0f)));
+}
+
+// tests non-void functions called from a wrapper object
+TEST(TestSuit, MakeReturnFunctionForDerived)
+{
+	auto d = std::make_shared<UtilTestDerived>();
+	auto func = Util::makeFunction(d.get(), &UtilTestDerived::returnInt, "");
+	ASSERT_TRUE(func);
+	ASSERT_TRUE(func(Util::makeArray())->equals(Util::toScriptObject(15)));
+
+	func = Util::makeFunction(d.get(), &UtilTestDerived::returnIntConst, "");
+	ASSERT_TRUE(func);
+	ASSERT_TRUE(func(Util::makeArray())->equals(Util::toScriptObject(5)));
 }
