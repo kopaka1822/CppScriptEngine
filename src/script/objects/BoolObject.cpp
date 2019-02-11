@@ -24,7 +24,7 @@ void script::BoolObject::invert()
 }
 
 template<>
-script::ScriptObjectPtr script::Util::toScriptObject<bool>(const bool& value)
+script::ScriptObjectPtr script::Util::makeObject<bool>(const bool& value)
 {
 	return std::make_shared<BoolObject>(value);
 }

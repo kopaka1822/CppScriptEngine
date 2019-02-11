@@ -17,7 +17,7 @@ script::ScriptObjectPtr script::FloatObject::clone() const
 }
 
 template <>
-script::ScriptObjectPtr script::Util::toScriptObject<float>(const float& value)
+script::ScriptObjectPtr script::Util::makeObject<float>(const float& value)
 {
 	return std::make_shared<FloatObject>(value);
 }

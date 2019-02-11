@@ -24,7 +24,7 @@ void script::IntObject::divide(const int& other)
 }
 
 template<>
-script::ScriptObjectPtr script::Util::toScriptObject<int>(const int& value)
+script::ScriptObjectPtr script::Util::makeObject<int>(const int& value)
 {
 	return std::make_shared<IntObject>(value);
 }

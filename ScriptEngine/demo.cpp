@@ -48,12 +48,12 @@ int main() try
 {
 
 
-	auto str1 = script::Util::toScriptObject(std::string("test"));
-	auto str2 = script::Util::toScriptObject(std::string("test"));
-	auto int1 = script::Util::toScriptObject(5);
-	auto int2 = script::Util::toScriptObject(6);
+	auto str1 = script::Util::makeObject(std::string("test"));
+	auto str2 = script::Util::makeObject(std::string("test"));
+	auto int1 = script::Util::makeObject(5);
+	auto int2 = script::Util::makeObject(6);
 	//auto null = script::NullObject::get();
-	auto null = script::Util::toScriptObject(nullptr);
+	auto null = script::Util::makeObject(nullptr);
 	auto arr = script::Util::makeArray(nullptr, str2);
 
 	//auto cloned = str1->invoke("clone", arr);

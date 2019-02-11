@@ -18,7 +18,7 @@ script::ScriptObjectPtr script::NullObject::get()
 }
 
 template <>
-script::ScriptObjectPtr script::Util::toScriptObject(const nullptr_t& value)
+script::ScriptObjectPtr script::Util::makeObject(const nullptr_t& value)
 {
 	return NullObject::get();
 }

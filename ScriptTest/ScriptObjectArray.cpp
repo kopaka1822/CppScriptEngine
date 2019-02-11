@@ -5,8 +5,8 @@ using namespace script;
 
 TEST(TestSuite, ArrayBounds)
 {
-	auto intObj = Util::toScriptObject(1);
-	auto strObj = Util::toScriptObject("test");
+	auto intObj = Util::makeObject(1);
+	auto strObj = Util::makeObject("test");
 	
 	auto arr = Util::makeArray(intObj, strObj);
 	EXPECT_EQ(arr->count(), 2);
@@ -19,7 +19,7 @@ TEST(TestSuite, ArrayBounds)
 
 TEST(TestSuite, DeepCopy)
 {
-	auto obj = Util::toScriptObject(1);
+	auto obj = Util::makeObject(1);
 	auto intObj = std::dynamic_pointer_cast<IntObject>(obj);
 	EXPECT_TRUE(intObj);
 

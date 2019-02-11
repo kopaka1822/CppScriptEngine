@@ -5,7 +5,7 @@ using namespace script;
 
 TEST(TestSuite, UtilityCreation) 
 {
-	auto obj = Util::toScriptObject(5);
+	auto obj = Util::makeObject(5);
 	EXPECT_TRUE(obj);
 	auto intObj = std::dynamic_pointer_cast<script::IntObject>(obj);
 	EXPECT_TRUE(intObj);
@@ -14,8 +14,8 @@ TEST(TestSuite, UtilityCreation)
 
 TEST(TestSuite, DivisionZero)
 {
-	auto nom = Util::toScriptObject(5);
-	auto denom = Util::toScriptObject(0);
+	auto nom = Util::makeObject(5);
+	auto denom = Util::makeObject(0);
 
 	// division by not zero
 	EXPECT_NO_THROW(nom->invoke("divide", Util::makeArray(nom)));

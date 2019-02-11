@@ -5,19 +5,19 @@ using namespace script;
 
 TEST(TestSuite, ToScriptObject) 
 {
-	EXPECT_TRUE(Util::toScriptObject(1)); // integer
-	EXPECT_TRUE(Util::toScriptObject(true)); // bool
-	EXPECT_TRUE(Util::toScriptObject(nullptr)); // null
-	EXPECT_TRUE(Util::toScriptObject(std::string("test"))); // string
-	EXPECT_TRUE(Util::toScriptObject("test")); // const char*
-	EXPECT_TRUE(Util::toScriptObject(3.14f)); // float
+	EXPECT_TRUE(Util::makeObject(1)); // integer
+	EXPECT_TRUE(Util::makeObject(true)); // bool
+	EXPECT_TRUE(Util::makeObject(nullptr)); // null
+	EXPECT_TRUE(Util::makeObject(std::string("test"))); // string
+	EXPECT_TRUE(Util::makeObject("test")); // const char*
+	EXPECT_TRUE(Util::makeObject(3.14f)); // float
 }
 
 TEST(TestSuite, MakeArray)
 {
 	// make array with script objects
-	auto intObj = Util::toScriptObject(1);
-	auto strObj = Util::toScriptObject("test");
+	auto intObj = Util::makeObject(1);
+	auto strObj = Util::makeObject("test");
 
 	auto arr = Util::makeArray();
 	EXPECT_TRUE(arr);
@@ -116,7 +116,7 @@ public:
 
 	ScriptPtr<IntObject> returnIntObj(int a)
 	{
-		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(a));
+		return std::reinterpret_pointer_cast<IntObject>(Util::makeObject(a));
 	}
 
 	int returnIntConst(int a) const
@@ -127,7 +127,7 @@ public:
 
 	ScriptPtr<IntObject> returnIntObjConst(int a) const
 	{
-		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(a));
+		return std::reinterpret_pointer_cast<IntObject>(Util::makeObject(a));
 	}
 };
 
@@ -148,7 +148,7 @@ public:
 // tests all sorts of parameters as well
 TEST(TestSuite, MakeVoidFunctionForWrapper)
 {
-	auto intObj = std::dynamic_pointer_cast<IntObject>(Util::toScriptObject(1));
+	auto intObj = std::dynamic_pointer_cast<IntObject>(Util::makeObject(1));
 	
 	auto w = std::make_shared<UtilTestWrapper>();
 	UtilTest& t = w->getValue();
@@ -226,22 +226,22 @@ TEST(TestSuite, MakeReturnFunctionForWrapper)
 	auto func = Util::makeFunction(&t, &UtilTest::returnInt, "");
 	ASSERT_TRUE(func);
 	auto retVal = func(Util::makeArray(10));
-	ASSERT_TRUE(retVal->equals(Util::toScriptObject(15)));
+	ASSERT_TRUE(retVal->equals(Util::makeObject(15)));
 
 	func = Util::makeFunction(&t, &UtilTest::returnIntObj, "");
 	ASSERT_TRUE(func);
 	retVal = func(Util::makeArray(12));
-	ASSERT_TRUE(retVal->equals(Util::toScriptObject(12)));
+	ASSERT_TRUE(retVal->equals(Util::makeObject(12)));
 
 	func = Util::makeFunction(&t, &UtilTest::returnIntConst, "");
 	ASSERT_TRUE(func);
 	retVal = func(Util::makeArray(10));
-	ASSERT_TRUE(retVal->equals(Util::toScriptObject(15)));
+	ASSERT_TRUE(retVal->equals(Util::makeObject(15)));
 
 	func = Util::makeFunction(&t, &UtilTest::returnIntObjConst, "");
 	ASSERT_TRUE(func);
 	retVal = func(Util::makeArray(16));
-	ASSERT_TRUE(retVal->equals(Util::toScriptObject(16)));
+	ASSERT_TRUE(retVal->equals(Util::makeObject(16)));
 }
 
 class UtilTestDerived : public GetValueObject<UtilTestDerived>
@@ -281,7 +281,7 @@ public:
 
 	ScriptPtr<IntObject> returnIntConst()
 	{
-		return std::reinterpret_pointer_cast<IntObject>(Util::toScriptObject(5));
+		return std::reinterpret_pointer_cast<IntObject>(Util::makeObject(5));
 	}
 };
 
@@ -304,9 +304,9 @@ TEST(TestSuit, MakeReturnFunctionForDerived)
 	auto d = std::make_shared<UtilTestDerived>();
 	auto func = Util::makeFunction(d.get(), &UtilTestDerived::returnInt, "");
 	ASSERT_TRUE(func);
-	ASSERT_TRUE(func(Util::makeArray())->equals(Util::toScriptObject(15)));
+	ASSERT_TRUE(func(Util::makeArray())->equals(Util::makeObject(15)));
 
 	func = Util::makeFunction(d.get(), &UtilTestDerived::returnIntConst, "");
 	ASSERT_TRUE(func);
-	ASSERT_TRUE(func(Util::makeArray())->equals(Util::toScriptObject(5)));
+	ASSERT_TRUE(func(Util::makeArray())->equals(Util::makeObject(5)));
 }

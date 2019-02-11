@@ -103,7 +103,7 @@ namespace script
 					return Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
 				else
 					// return type must be transformed to a script object
-					return Util::toScriptObject(Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+					return Util::makeObject(Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
 
@@ -133,15 +133,15 @@ namespace script
 		/// \brief converts the T value into a GetValueObject<T>
 		/// this is used to convert basic return types of functions to SciptObjects
 		template<class T>
-		static ScriptObjectPtr toScriptObject(const T& value);
+		static ScriptObjectPtr makeObject(const T& value);
 
-		/// \brief calls toScriptObject with an std::string parameter
-		static ScriptObjectPtr toScriptObject(const char* text);
+		/// \brief calls makeObject with an std::string parameter
+		static ScriptObjectPtr makeObject(const char* text);
 
 		/// \brief converts an std vector into an array object
-		/// \tparam T must be convertible to a ScriptObject or have an appropriate toScriptObject function
+		/// \tparam T must be convertible to a ScriptObject or have an appropriate makeObject function
 		template<class T>
-		static ArrayObjectPtr toScriptObject(const std::vector<T>& vec)
+		static ArrayObjectPtr makeObject(const std::vector<T>& vec)
 		{
 			std::vector<ScriptObjectPtr> res;
 			res.reserve(vec.size());
@@ -150,7 +150,7 @@ namespace script
 				if constexpr (std::is_convertible_v<T, ScriptObjectPtr>)
 					res.push_back(e);
 				else
-					res.push_back(Util::toScriptObject(e));
+					res.push_back(Util::makeObject(e));
 			}
 			return std::make_shared<ArrayObject>(res);
 		}
@@ -249,7 +249,7 @@ namespace script
 		static std::enable_if_t<!std::is_convertible_v<TFirst, ScriptObjectPtr> || std::is_same_v<std::nullptr_t, TFirst>>
 			makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
 		{
-			array.add(Util::toScriptObject(first));
+			array.add(Util::makeObject(first));
 			Util::makeArray(array, objects...);
 		}
 
