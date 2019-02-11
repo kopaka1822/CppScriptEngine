@@ -47,6 +47,7 @@ void script::ArrayObject::add(ScriptObjectPtr object)
 {
 	if (!object)
 		throw std::runtime_error("ArrayObject::add object not set to a reference (nullptr)");
+
 	m_values.push_back(std::move(object));
 }
 
@@ -101,4 +102,24 @@ script::ScriptObjectPtr script::ArrayObject::clone() const
 		copy.push_back(v->clone());
 	}
 	return std::make_shared<ArrayObject>(copy);
+}
+
+bool script::ArrayObject::equals(const ScriptObjectPtr& other) const
+{
+	// reference equals
+	if (this == other.get()) return true;
+
+	// other must be an array
+	const auto arr = dynamic_cast<const ArrayObject*>(other.get());
+	if (arr == nullptr) return false;
+
+	if (count() != arr->count())
+		return false;
+
+	// memberwise compare
+	for (int i = 0; i < count(); ++i)
+		if (!m_values[i]->equals(arr->m_values[i]))
+			return false;
+
+	return true;
 }

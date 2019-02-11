@@ -9,9 +9,12 @@ namespace script
 	public:
 		ArrayObject() = default;
 		explicit ArrayObject(std::vector<ScriptObjectPtr> values);
+		~ArrayObject() override = default;
 
 		std::string toString() const override final;
 		ScriptObjectPtr clone() const override final;
+		/// \brief memberwise comparision with another array
+		bool equals(const ScriptObjectPtr& other) const override;
 
 		const ScriptObjectPtr& get(int index) const;
 		void add(ScriptObjectPtr object);
