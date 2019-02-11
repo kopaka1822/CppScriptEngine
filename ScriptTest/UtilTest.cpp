@@ -76,22 +76,32 @@ public:
 		intObj->add(1);
 		intObj.reset();
 	}
-	void mutatorConst(int a) const
+
+	void mutatorConst(int* a) const
 	{
-		EXPECT_EQ(a, 12);
+		EXPECT_EQ(*a, 12);
+		*a = 10;
 	}
+
 	void mutatorConstPtr(const int* a)
 	{
 		EXPECT_EQ(*a, 13);
 	}
+
 	void mutatorRef(int& a)
 	{
 		EXPECT_EQ(a, 7);
 		a = 9;
 	}
+
 	void mutatorConstRef(const int& a)
 	{
 		EXPECT_EQ(a, 14);
+	}
+
+	void mutatorNullptr(int* a)
+	{
+		EXPECT_EQ(a, nullptr);
 	}
 };
 
@@ -168,9 +178,12 @@ TEST(TestSuite, MakeFunctionForWrapper)
 	ASSERT_TRUE(intObj);
 	EXPECT_EQ(intObj->getValue(), 10);
 
-	//func = decltype(func)(); // assign empty function
-	//func = Util::makeFunction(w.get(), &t, &UtilTest::mutatorConst, "");
-	//EXPECT_TRUE(func);
+	func = decltype(func)(); // assign empty function
+	func = Util::makeFunction(w.get(), &t, &UtilTest::mutatorConst, "");
+	EXPECT_TRUE(func);
+	intObj->getValue() = 12;
+	ASSERT_NO_THROW(func(Util::makeArray(intObj)));
+	EXPECT_EQ(intObj->getValue(), 10);
 
 	func = decltype(func)(); // assign empty function
 	func = Util::makeFunction(w.get(), &t, &UtilTest::mutatorConstPtr, "");
@@ -188,4 +201,10 @@ TEST(TestSuite, MakeFunctionForWrapper)
 	func = Util::makeFunction(w.get(), &t, &UtilTest::mutatorConstRef, ""); 
 	ASSERT_TRUE(func);
 	ASSERT_NO_THROW(func(Util::makeArray(14)));
+
+	func = decltype(func)(); // assign empty function
+	func = Util::makeFunction(w.get(), &t, &UtilTest::mutatorNullptr, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(nullptr)));
+	ASSERT_NO_THROW(func(Util::makeArray(NullObject::get())));
 }

@@ -22,7 +22,7 @@ namespace script
 		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class... TArgs>
-		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, TClass* thisPtr, void(TClass::* func)(TArgs...), std::string functionSignature)
+		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, TClass* thisPtr, void(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature, parent]
 			(const ScriptObjectArrayPtr& args) -> ScriptObjectPtr
@@ -37,33 +37,49 @@ namespace script
 		}
 
 		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// same as above but with a constant function
 		/// \tparam TClass 
+		/// \tparam TArgs 
+		/// \param parent pointer of the class that owns this function
+		/// \param thisPtr pointer for the member function
+		/// \param func member function pointer
+		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
+		/// \return ScriptObject compatible function
+		template<class TClass, class... TArgs>
+		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, const TClass* thisPtr, void(TClass::* func)(TArgs...) const, const std::string& functionSignature)
+		{
+			// its okay because this and function were const => no change will happen
+			return Util::makeFunction(parent, const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
+		}
+
+		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \tparam TClass must be convertible to ScriptObject
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
 		/// \param func member function pointer
 		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class... TArgs>
-		static ScriptObject::FunctionT makeFunction(TClass* thisPtr, void(TClass::* func)(TArgs...), std::string functionSignature)
+		static ScriptObject::FunctionT makeFunction(TClass* thisPtr, void(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
+			static_assert(std::is_base_of_v<ScriptObject, TClass>, "the first argument must be derived from ScriptObject");
 			return Util::makeFunction(static_cast<ScriptObject*>(thisPtr), thisPtr, func, functionSignature);
 		}
 
-		/*/// \brief converts a class memberfunction into a ScriptObject compatible function
-		/// \tparam TClass 
+		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// same as above but with a constant function
+		/// \tparam TClass must be convertible to ScriptObject
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
 		/// \param func member function pointer
 		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class... TArgs>
-		static std::function<ScriptObjectPtr(ScriptObjectArrayPtr)> makeFunction(const TClass* thisPtr, void(TClass::* func)(TArgs...) const, std::string functionSignature)
+		static ScriptObject::FunctionT makeFunction(const TClass* thisPtr, void(TClass::* func)(TArgs...) const, const std::string& functionSignature)
 		{
 			// its okay because this and function were const => no change will happen
-			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
-		}*/
-
-		
+			return Util::makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
+		}
 
 		/// \brief converts a class memberfunction into a ScriptObject compatible function
 		/// \tparam TClass 
@@ -73,7 +89,7 @@ namespace script
 		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
-		static ScriptObject::FunctionT makeReturnFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), std::string functionSignature)
+		static ScriptObject::FunctionT makeReturnFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature]
 			(const ScriptObjectArrayPtr& args) -> ScriptObjectPtr
@@ -99,7 +115,7 @@ namespace script
 		/// \param functionSignature syntax: returnType className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
 		template<class TClass, class TReturn, class... TArgs>
-		static ScriptObject::FunctionT makeReturnFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, std::string functionSignature)
+		static ScriptObject::FunctionT makeReturnFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, const std::string& functionSignature)
 		{
 			// its okay because this and function were const => no change will happen
 			return makeReturnFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
