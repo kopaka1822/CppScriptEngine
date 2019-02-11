@@ -25,5 +25,5 @@ namespace script
 		std::vector<ScriptObjectPtr> m_values;
 	};
 
-	using ScriptObjectArrayPtr = ScriptPtr<ArrayObject>;
+	using ArrayObjectPtr = ScriptPtr<ArrayObject>;
 }

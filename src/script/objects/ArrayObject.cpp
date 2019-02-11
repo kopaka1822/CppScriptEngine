@@ -6,7 +6,7 @@ script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	m_values(std::move(values))
 {
 	addFunction("get", Util::makeFunction(this, &ArrayObject::get, "ArrayObject::get(int index)"));
-	addFunction("add", [this](const ScriptObjectArrayPtr& args)
+	addFunction("add", [this](const ArrayObjectPtr& args)
 	{
 		// add all elements
 		this->addAll(args);

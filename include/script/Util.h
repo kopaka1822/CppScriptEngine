@@ -1,6 +1,6 @@
 #pragma once
 #include "objects/ScriptObject.h"
-#include "objects/ScriptObjectArray.h"
+#include "objects/ArrayObject.h"
 #include "objects/ValueObject.h"
 #include "Exception.h"
 #include <sstream>
@@ -25,7 +25,7 @@ namespace script
 		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, TClass* thisPtr, void(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature, parent]
-			(const ScriptObjectArrayPtr& args) -> ScriptObjectPtr
+			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
 				if (int(argCount) != args->count())
@@ -92,7 +92,7 @@ namespace script
 		static ScriptObject::FunctionT makeFunction(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature]
-			(const ScriptObjectArrayPtr& args) -> ScriptObjectPtr
+			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
 				if (int(argCount) != args->count())
@@ -121,11 +121,11 @@ namespace script
 			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
-		/// \brief puts the arguments into a ScriptObjectArrayPtr
+		/// \brief puts the arguments into a ArrayObjectPtr
 		template<class... TClass>
-		static ScriptObjectArrayPtr makeArray(const TClass&... objects)
+		static ArrayObjectPtr makeArray(const TClass&... objects)
 		{
-			auto arr = std::make_shared<ScriptObjectArray>();
+			auto arr = std::make_shared<ArrayObject>();
 			makeArray(*arr, objects...);
 			return arr;
 		}
@@ -148,14 +148,14 @@ namespace script
 
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
 		template<class TClass, class TReturn, class... TArgs, size_t... Is>
-		static TReturn invokeArgs(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const ScriptObjectArray& args, std::index_sequence<Is...>, std::string functionSignature)
+		static TReturn invokeArgs(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const ArrayObject& args, std::index_sequence<Is...>, std::string functionSignature)
 		{
 			return std::invoke(func, thisPtr, Util::unpackArg<TArgs>(args, Is, functionSignature)...);
 		}
 
 		/// \brief converts the argument at args->get(argCount - 1) to T where T is a shared_ptr<ScriptObject>
 		template<class T>
-		static std::remove_reference_t<T> unpackArg(const ScriptObjectArray& args, size_t index, const std::string& functionSignature,
+		static std::remove_reference_t<T> unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature,
 			// convertible to ScriptObjectPtr
 			std::enable_if_t<std::is_convertible<T, ScriptObjectPtr>::value, int> = 0)
 		{
@@ -173,7 +173,7 @@ namespace script
 
 		/// \brief converts the argument at args->get(argCount - 1) to T if the argument has the type GetValueObject<T>
 		template<class T>
-		static T& unpackArg(const ScriptObjectArray& args, size_t index, const std::string& functionSignature, 
+		static T& unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature, 
 			// not convertible to ScriptObjectPtr and not pointer
 			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
 		{
@@ -184,7 +184,7 @@ namespace script
 
 		/// \brief converts the argument at args->get(argCount - 1) to T* if the argument has the type GetValueObject<T> or NullObject
 		template<class T>
-		static T unpackArg(const ScriptObjectArray& args, size_t index, const std::string& functionSignature, 
+		static T unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature, 
 			// not convertible to ScriptObjectPtr but pointer
 			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<std::is_pointer<T>::value, int> = 0)
 		{
@@ -201,7 +201,7 @@ namespace script
 
 		/// \brief retrieves the value T from the ScriptObject by casting it to a GetValueObject<T>
 		template<class T>
-		static T& getGetValueObjectValue(ScriptObject* object, const ScriptObjectArray& args, size_t index, const std::string& functionSignature)
+		static T& getGetValueObjectValue(ScriptObject* object, const ArrayObject& args, size_t index, const std::string& functionSignature)
 		{
 			using bare_type =
 				std::remove_const_t< // const T => T
@@ -218,25 +218,25 @@ namespace script
 			return valuePtr->getValue();
 		}
 
-		/// \brief helper function to create a ScriptObjectArray (used if first is a ScriptObject)
+		/// \brief helper function to create a ArrayObject (used if first is a ScriptObject)
 		template<class TFirst, class... TRest>
 		static std::enable_if_t<std::is_convertible_v<TFirst, ScriptObjectPtr> && !std::is_same_v<std::nullptr_t, TFirst>> 
-		makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
+		makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
 		{
 			array.add(first);
 			Util::makeArray(array, objects...);
 		}
 
-		/// \brief helper function to create a ScriptObjectArray (used if first is not a ScriptObject)
+		/// \brief helper function to create a ArrayObject (used if first is not a ScriptObject)
 		template<class TFirst, class... TRest>
 		static std::enable_if_t<!std::is_convertible_v<TFirst, ScriptObjectPtr> || std::is_same_v<std::nullptr_t, TFirst>>
-			makeArray(ScriptObjectArray& array, const TFirst& first, const TRest&... objects)
+			makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
 		{
 			array.add(Util::toScriptObject(first));
 			Util::makeArray(array, objects...);
 		}
 
 		/// \brief recursion end of the helper function
-		static void makeArray(ScriptObjectArray&) {}
+		static void makeArray(ArrayObject&) {}
 	};
 }

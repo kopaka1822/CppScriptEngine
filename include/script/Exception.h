@@ -1,7 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include <sstream>
-#include "objects/ScriptObjectArray.h"
+#include "objects/ArrayObject.h"
 
 namespace script
 {
@@ -30,12 +30,12 @@ namespace script
 	class InvalidArgumentCount : public Exception
 	{
 	public:
-		explicit InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, const ScriptObjectArrayPtr& args);
+		explicit InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, const ArrayObjectPtr& args);
 	};
 
 	class InvalidArgumentType : public Exception
 	{
 	public:
-		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ScriptObjectArray& args);
+		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ArrayObject& args);
 	};
 }

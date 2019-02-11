@@ -140,7 +140,7 @@
     <ClCompile Include="..\src\script\objects\IntObject.cpp" />
     <ClCompile Include="..\src\script\objects\NullObject.cpp" />
     <ClCompile Include="..\src\script\objects\ScriptObject.cpp" />
-    <ClCompile Include="..\src\script\objects\ScriptObjectArray.cpp" />
+    <ClCompile Include="..\src\script\objects\ArrayObject.cpp" />
     <ClCompile Include="..\src\script\objects\StringObject.cpp" />
     <ClCompile Include="..\src\script\ScriptEngine.cpp" />
     <ClCompile Include="demo.cpp" />
@@ -152,7 +152,7 @@
     <ClInclude Include="..\include\script\objects\IntObject.h" />
     <ClInclude Include="..\include\script\objects\NullObject.h" />
     <ClInclude Include="..\include\script\objects\NumericalObject.h" />
-    <ClInclude Include="..\include\script\objects\ScriptObjectArray.h" />
+    <ClInclude Include="..\include\script\objects\ArrayObject.h" />
     <ClInclude Include="..\include\script\objects\ScriptObject.h" />
     <ClInclude Include="..\include\script\objects\StringObject.h" />
     <ClInclude Include="..\include\script\objects\GetValueObject.h" />

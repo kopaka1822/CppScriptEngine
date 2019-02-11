@@ -1,5 +1,5 @@
 #include "../../../include/script/objects/ScriptObject.h"
-#include "../../../include/script/objects/ScriptObjectArray.h"
+#include "../../../include/script/objects/ArrayObject.h"
 #include "../../../include/script/objects/StringObject.h"
 #include "../../../include/script/objects/BoolObject.h"
 #include "../../../include/script/Util.h"
@@ -28,7 +28,7 @@ size_t script::ScriptObject::hashCode() const
 }
 
 script::ScriptObjectPtr script::ScriptObject::invoke(const std::string& funcName,
-	const ScriptPtr<ScriptObjectArray>& args)
+	const ScriptPtr<ArrayObject>& args)
 {
 	const auto it = m_functions.find(funcName);
 	if (it == m_functions.end())

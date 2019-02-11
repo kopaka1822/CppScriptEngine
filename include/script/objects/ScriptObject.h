@@ -6,13 +6,13 @@
 
 namespace script
 {
-	class ScriptObjectArray;
+	class ArrayObject;
 	class BoolObject;
 
 	class ScriptObject : public std::enable_shared_from_this<ScriptObject>
 	{
 	public:
-		using FunctionT = std::function<ScriptObjectPtr(const ScriptPtr<ScriptObjectArray>&)>;
+		using FunctionT = std::function<ScriptObjectPtr(const ScriptPtr<ArrayObject>&)>;
 
 		ScriptObject(const ScriptObject&) = delete;
 		ScriptObject(ScriptObject&&) = delete;
@@ -26,7 +26,7 @@ namespace script
 		std::string type() const;
 		size_t hashCode() const;
 
-		ScriptObjectPtr invoke(const std::string& funcName, const ScriptPtr<ScriptObjectArray>& args);
+		ScriptObjectPtr invoke(const std::string& funcName, const ScriptPtr<ArrayObject>& args);
 
 	protected:
 		ScriptObject();

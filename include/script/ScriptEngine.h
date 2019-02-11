@@ -2,7 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include "objects/ScriptObject.h"
-#include "objects/ScriptObjectArray.h"
+#include "objects/ArrayObject.h"
 #include "objects/IntObject.h"
 #include "objects/StringObject.h"
 #include "objects/NullObject.h"

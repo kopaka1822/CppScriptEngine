@@ -5,7 +5,7 @@ script::StringObject::StringObject(std::string value)
 	:
 ValueComparableObject(std::move(value))
 {
-	addFunction("add", [this](ScriptObjectArrayPtr args)
+	addFunction("add", [this](ArrayObjectPtr args)
 	{
 		// add all arguments
 		for (int i = 0; i < args->count(); ++i)

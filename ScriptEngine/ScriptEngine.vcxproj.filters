@@ -38,9 +38,6 @@
     <ClCompile Include="..\src\script\objects\ScriptObject.cpp">
       <Filter>src\script\objects</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\script\objects\ScriptObjectArray.cpp">
-      <Filter>src\script\objects</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\script\objects\StringObject.cpp">
       <Filter>src\script\objects</Filter>
     </ClCompile>
@@ -59,6 +56,9 @@
     <ClCompile Include="..\src\script\objects\FloatObject.cpp">
       <Filter>src\script\objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\objects\ArrayObject.cpp">
+      <Filter>src\script\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -66,9 +66,6 @@
     </ClInclude>
     <ClInclude Include="..\include\script\ScriptEngine.h">
       <Filter>include\script</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\script\objects\ScriptObjectArray.h">
-      <Filter>include\script\objects</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\objects\ScriptObject.h">
       <Filter>include\script\objects</Filter>
@@ -104,6 +101,9 @@
       <Filter>include\script\objects</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\objects\NumericalObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\objects\ArrayObject.h">
       <Filter>include\script\objects</Filter>
     </ClInclude>
   </ItemGroup>

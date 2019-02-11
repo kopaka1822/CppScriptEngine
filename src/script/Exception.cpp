@@ -32,7 +32,7 @@ Exception(objectName + " cannot be cloned")
 {}
 
 script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount,
-	const ScriptObjectArrayPtr& args)
+	const ArrayObjectPtr& args)
 {
 	stream << "invalid argument count for " << functionSignature
 		<< ". expected " << expectedCount << " argument" << (expectedCount == 1?"":"s")
@@ -41,7 +41,7 @@ script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSi
 }
 
 script::InvalidArgumentType::InvalidArgumentType(const std::string& functionSignature, size_t argIndex,
-	const ScriptObject& invalidArg, const ScriptObjectArray& args)
+	const ScriptObject& invalidArg, const ArrayObject& args)
 {
 	stream << "invalid argument type for " << functionSignature << ". argument " << argIndex
 		<< " ('" << invalidArg.toString() << "' of type '" << invalidArg.type() << "') is invalid"
