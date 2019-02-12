@@ -4,7 +4,9 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="IntObjectTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
-    <ClCompile Include="ScriptObjectArray.cpp" />
+    <ClCompile Include="ArrayObjectTest.cpp" />
+    <ClCompile Include="ValueObjectTest.cpp" />
+    <ClCompile Include="ScriptObjectTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

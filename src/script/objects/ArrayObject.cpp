@@ -1,5 +1,6 @@
 #include "../../../include/script/objects/ArrayObject.h"
 #include "../../../include/script/Util.h"
+#include <cassert>
 
 script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	:
@@ -45,8 +46,9 @@ const script::ScriptObjectPtr& script::ArrayObject::get(int index) const
 
 void script::ArrayObject::add(ScriptObjectPtr object)
 {
-	if (!object)
-		throw std::runtime_error("ArrayObject::add object not set to a reference (nullptr)");
+	assert(object != nullptr);
+	//if (!object)
+	//	throw std::runtime_error("ArrayObject::add object not set to a reference (nullptr)");
 
 	m_values.push_back(std::move(object));
 }
@@ -79,7 +81,7 @@ std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from, int co
 	if (count < 0)
 		throw std::runtime_error("ArrayObject::slice count may not be smaller than zero");
 	if (from + count > int(m_values.size()))
-		throw std::runtime_error("ArrayObject::slice count exceeds array");
+		throw std::out_of_range("ArrayObject::slice count exceeds array");
 
 	std::vector<ScriptObjectPtr> res;
 	for (int i = from; i < from + count; ++i)
