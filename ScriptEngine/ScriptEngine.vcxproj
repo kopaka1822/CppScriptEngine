@@ -143,6 +143,7 @@
     <ClCompile Include="..\src\script\objects\ArrayObject.cpp" />
     <ClCompile Include="..\src\script\objects\StringObject.cpp" />
     <ClCompile Include="..\src\script\ScriptEngine.cpp" />
+    <ClCompile Include="..\src\script\Tokenizer.cpp" />
     <ClCompile Include="demo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,9 @@
     <ClInclude Include="..\include\script\objects\ValueObject.h" />
     <ClInclude Include="..\include\script\Script.h" />
     <ClInclude Include="..\include\script\ScriptEngine.h" />
+    <ClInclude Include="..\include\script\Tokenizer.h" />
+    <ClInclude Include="..\include\script\tokens\L1Token.h" />
+    <ClInclude Include="..\include\script\tokens\L1Rule.h" />
     <ClInclude Include="..\include\script\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

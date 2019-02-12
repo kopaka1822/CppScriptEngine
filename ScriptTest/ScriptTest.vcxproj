@@ -57,6 +57,7 @@
     </ClCompile>
     <ClCompile Include="ArrayObjectTest.cpp" />
     <ClCompile Include="ScriptObjectTest.cpp" />
+    <ClCompile Include="TokenizerTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
     <ClCompile Include="ValueObjectTest.cpp" />
   </ItemGroup>

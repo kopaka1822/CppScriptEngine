@@ -38,4 +38,11 @@ namespace script
 	public:
 		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ArrayObject& args);
 	};
+
+	class SyntaxError : public Exception
+	{
+	public:
+		explicit SyntaxError(size_t position, const std::string& token, const std::string& error);
+		const size_t position;
+	};
 }

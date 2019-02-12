@@ -48,3 +48,10 @@ script::InvalidArgumentType::InvalidArgumentType(const std::string& functionSign
 		<< ". args: " << args.toString();
 }
 
+script::SyntaxError::SyntaxError(size_t position, const std::string& token, const std::string& error)
+	:
+position(position)
+{
+	stream << "invalid token \"" << token << "\". " << error;
+}
+
