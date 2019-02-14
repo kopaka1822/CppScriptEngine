@@ -124,5 +124,8 @@
     <ClInclude Include="..\include\script\tokens\L1Rule.h">
       <Filter>include\script\tokens</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2Token.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

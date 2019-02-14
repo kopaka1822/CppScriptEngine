@@ -17,6 +17,15 @@ namespace script
 		void execute(const std::string& command);
 		void addStatic(const std::string& name, ScriptObjectPtr object);
 
+		/// \brief retrieves the object with the given name
+		/// \param object name
+		/// \return pointer to the object or nullptr if not found
+		ScriptObjectPtr getObject(const std::string& object) const;
+
+		/// \brief sets or removes the object with the given name
+		/// \param name object name
+		/// \param object valid object to add or nullptr if object should be removed
+		void setObject(const std::string& name, ScriptObjectPtr object);
 	private:
 		std::unordered_map<std::string, ScriptObjectPtr> m_objects;
 	};

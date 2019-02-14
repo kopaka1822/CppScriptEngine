@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <algorithm>
+#include "script/Exception.h"
 
 namespace script
 {
@@ -21,13 +22,18 @@ namespace script
 			Identifier,
 			Dot,
 			Plus,
+			PlusAssign,
 			Minus,
+			MinusAssign,
 			Multiply,
+			MultiplyAssign,
 			Divide,
+			DivideAssign,
 			Float,
 			Function,
 			Bool,
 			Integer,
+			IdentifierAssign,
 		};
 		explicit L1Token(Type type, size_t position, std::string value = "")
 			:
@@ -80,6 +86,33 @@ namespace script
 		{
 			if (m_value.empty()) return false;
 			return islower(static_cast<unsigned char>(m_value[0]));
+		}
+
+		int getIntValue()const try
+		{
+			return std::stoi(m_value);
+		}
+		catch (const std::exception&)
+		{
+			throw ParseError(m_position,"cannot convert " + m_value + " to int");
+		}
+
+		float getFloatValue() const try
+		{
+			return std::stof(m_value);
+		}
+		catch (const std::exception&)
+		{
+			throw ParseError(m_position, "cannot convert " + m_value + " to float");
+		}
+
+		bool getBoolValue() const
+		{
+			if (m_value == "true")
+				return true;
+			if (m_value == "false")
+				return false;
+			throw ParseError(m_position, "cannot convert " + m_value + " to bool");
 		}
 	private:
 		std::string m_value;

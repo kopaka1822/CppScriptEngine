@@ -48,10 +48,38 @@ script::InvalidArgumentType::InvalidArgumentType(const std::string& functionSign
 		<< ". args: " << args.toString();
 }
 
-script::SyntaxError::SyntaxError(size_t position, const std::string& token, const std::string& error)
+script::InvalidFunctionName::InvalidFunctionName(const std::string& functionSignature,
+	const std::string& missingFunction)
+{
+	stream << functionSignature << " function \"" << missingFunction << "\" not found";
+}
+
+script::ParseError::ParseError(size_t position, const std::string& error)
 	:
 position(position)
 {
-	stream << "invalid token \"" << token << "\". " << error;
+	stream << error;
+}
+
+
+script::SyntaxError::SyntaxError(size_t position, const std::string& token, const std::string& error)
+	:
+ParseError(position)
+{
+	stream << "syntax error: invalid token \"" << token << "\". " << error;
+}
+
+script::IdentifierError::IdentifierError(size_t position, const std::string& identifier)
+	: 
+ParseError(position)
+{
+	stream << "identifier \"" << identifier << "\" not found";
+}
+
+script::BracketMismatch::BracketMismatch(size_t position, const std::string& expected, const std::string& found)
+	:
+ParseError(position)
+{
+	stream << "bracket mismatch: expected " << expected << " but got " << found;
 }
 

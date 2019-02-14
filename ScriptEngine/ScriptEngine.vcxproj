@@ -164,6 +164,7 @@
     <ClInclude Include="..\include\script\Tokenizer.h" />
     <ClInclude Include="..\include\script\tokens\L1Token.h" />
     <ClInclude Include="..\include\script\tokens\L1Rule.h" />
+    <ClInclude Include="..\include\script\tokens\L2Token.h" />
     <ClInclude Include="..\include\script\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

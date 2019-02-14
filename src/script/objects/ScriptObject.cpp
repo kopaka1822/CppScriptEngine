@@ -36,7 +36,7 @@ script::ScriptObjectPtr script::ScriptObject::invoke(const std::string& funcName
 {
 	const auto it = m_functions.find(funcName);
 	if (it == m_functions.end())
-		throw std::runtime_error("ScriptObject::invoke function " + funcName + " not found");
+		throw InvalidFunctionName("ScriptObject::invoke", funcName);
 	
 	return it->second(args);
 }

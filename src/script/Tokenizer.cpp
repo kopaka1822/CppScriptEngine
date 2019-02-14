@@ -2,11 +2,13 @@
 #include <regex>
 #include <array>
 #include "script/tokens/L1Rule.h"
+#include <stack>
 
 std::vector<script::L1Token> script::Tokenizer::getTokens(const std::string& command)
 {
 	std::vector<L1Token> tokens = getL1Tokens(command);
-	finalizeL1Tokens(tokens);
+	applyL1Rules(tokens);
+	verifyBrackets(tokens);
 
 	return tokens;
 }
@@ -109,14 +111,17 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 	return tokens;
 }
 
-void script::Tokenizer::finalizeL1Tokens(std::vector<L1Token>& tokens)
+void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 {
 	static const L1FloatRule1 floatRule1;
 	static const L1FloatRule2 floatRule2;
 	static const L1NumberRule numberRule;
 	static const L1FunctionRule functionRule;
-	static const std::array<const L1Rule*, 4> rules = {
-		&floatRule1, &floatRule2,&numberRule, &functionRule
+	static const L1OperatorAssignRule operatorAssignRule;
+	static const L1IdentifierAssignRule idAssignRule;
+	static const std::array<const L1Rule*, 6> rules = {
+		&floatRule1, &floatRule2,&numberRule, 
+		&functionRule, &operatorAssignRule, &idAssignRule
 	};
 
 	// apply rules in order
@@ -133,4 +138,100 @@ void script::Tokenizer::finalizeL1Tokens(std::vector<L1Token>& tokens)
 			}
 		}
 	}
+}
+
+void script::Tokenizer::verifyBrackets(const std::vector<L1Token>& tokens)
+{
+	// test if  brackets are correctly set
+	std::stack<L1Token::Type> brackets;
+	for (const auto& t : tokens)
+	{
+		switch (t.getType())
+		{
+		case L1Token::Type::Separator:
+			// this does only make sense inside a function or array
+			if (brackets.empty())
+				throw SyntaxError(t.getPosition(), ",", "Separator is only allowed within a function or array");
+			break;
+		case L1Token::Type::BracketOpen:
+			brackets.push(t.getType());
+			break;
+		case L1Token::Type::BracketClosed:
+			if (brackets.empty())
+				throw SyntaxError(t.getPosition(), ")", "all brackets were closed");
+			if (brackets.top() != L1Token::Type::BracketOpen && brackets.top() != L1Token::Type::Function)
+				throw BracketMismatch(t.getPosition(), "]", ")");
+			brackets.pop();
+			break;
+
+		case L1Token::Type::ArrayOpen:
+			brackets.push(t.getType());
+			break;
+		case L1Token::Type::ArrayClosed:
+			if (brackets.empty())
+				throw SyntaxError(t.getPosition(), ")", "all brackets were closed");
+			if (brackets.top() != L1Token::Type::ArrayClosed)
+				throw BracketMismatch(t.getPosition(), ")", "]");
+			break;
+		}
+	}
+}
+
+std::vector<std::unique_ptr<script::L2Token>> script::Tokenizer::getL2Tokens(const std::vector<L1Token>& tokens)
+{
+	std::vector<std::unique_ptr<L2Token>> res;
+	for (auto t = tokens.begin(), end = tokens.end(); t != end;)
+	{
+		switch (t->getType())
+		{
+			// primitives
+		case L1Token::Type::String: 
+			res.emplace_back(std::make_unique<PrimitiveValueToken<std::string>>(t->getValue()));
+			break;
+		case L1Token::Type::Float: 
+			res.emplace_back(std::make_unique<PrimitiveValueToken<float>>(t->getFloatValue()));
+			break;
+		case L1Token::Type::Integer: 
+			res.emplace_back(std::make_unique<PrimitiveValueToken<int>>(t->getIntValue()));
+			break;
+		case L1Token::Type::Bool: 
+			res.emplace_back(std::make_unique<PrimitiveValueToken<bool>>(t->getBoolValue()));
+			break;
+		case L1Token::Type::Null: 
+			res.emplace_back(std::make_unique<PrimitiveValueToken<nullptr_t>>(nullptr));
+			break;
+		case L1Token::Type::Identifier:
+			res.emplace_back(std::make_unique<IdentifierToken>(t->getValue(), t->getPosition()));
+			break;
+
+		case L1Token::Type::Assign: 
+			break;
+		case L1Token::Type::PlusAssign: break;
+		case L1Token::Type::MinusAssign: break;
+		case L1Token::Type::MultiplyAssign: break;
+		case L1Token::Type::DivideAssign: break;
+
+		case L1Token::Type::Separator: break;
+		case L1Token::Type::BracketOpen: break;
+		case L1Token::Type::BracketClosed: break;
+		
+		case L1Token::Type::ArrayOpen: break;
+		case L1Token::Type::ArrayClosed: break;
+
+		case L1Token::Type::Dot: 
+		
+			break;
+		case L1Token::Type::Plus: break;
+		case L1Token::Type::Minus: break;
+		case L1Token::Type::Multiply: break;
+		case L1Token::Type::Divide: break;
+
+		case L1Token::Type::Function: break;
+		default: ;
+		}
+
+		++t;
+	}
+
+	return res;
 }

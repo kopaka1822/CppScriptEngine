@@ -75,7 +75,7 @@ TEST(TestSuite, FinalizeL1Test)
 {
 	// check number and function conversion
 	auto tokens = Tokenizer::getL1Tokens("a342234(3.1f,.5f,123f,30)");
-	Tokenizer::finalizeL1Tokens(tokens);
+	Tokenizer::applyL1Rules(tokens);
 	ASSERT_EQ(tokens.size(), 9);
 	EXPECT_EQ(tokens[0].getType(), L1Token::Type::Function);
 	EXPECT_EQ(tokens[0].getValue(), std::string("a342234"));
@@ -91,7 +91,7 @@ TEST(TestSuite, FinalizeL1Test)
 
 	// test for other constants
 	tokens = Tokenizer::getL1Tokens("[true, false, null, v23]");
-	Tokenizer::finalizeL1Tokens(tokens);
+	Tokenizer::applyL1Rules(tokens);
 	ASSERT_EQ(tokens.size(), 9);
 	EXPECT_EQ(tokens[0].getType(), L1Token::Type::ArrayOpen);
 	EXPECT_EQ(tokens[1].getType(), L1Token::Type::Bool);
@@ -105,13 +105,13 @@ TEST(TestSuite, FinalizeL1Test)
 
 	// test for invalid types
 	tokens = Tokenizer::getL1Tokens("1func()");
-	ASSERT_THROW(Tokenizer::finalizeL1Tokens(tokens), SyntaxError);
+	ASSERT_THROW(Tokenizer::applyL1Rules(tokens), SyntaxError);
 
 	tokens = Tokenizer::getL1Tokens("3a33f");
-	ASSERT_THROW(Tokenizer::finalizeL1Tokens(tokens), SyntaxError);
+	ASSERT_THROW(Tokenizer::applyL1Rules(tokens), SyntaxError);
 
 	tokens = Tokenizer::getL1Tokens("342f.4f");
-	Tokenizer::finalizeL1Tokens(tokens);
+	Tokenizer::applyL1Rules(tokens);
 	ASSERT_EQ(tokens.size(), 2);
 	EXPECT_EQ(tokens[0].getType(), L1Token::Type::Float);
 	EXPECT_EQ(tokens[0].getValue(), std::string("342f"));
