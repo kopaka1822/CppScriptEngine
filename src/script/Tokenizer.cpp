@@ -55,18 +55,18 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		case '.':
 			curToken = L1Token(L1Token::Type::Dot, position);
 			break;
-		case '+':
-			curToken = L1Token(L1Token::Type::Plus, position);
-			break;
-		case '-':
-			curToken = L1Token(L1Token::Type::Minus, position);
-			break;
-		case '*':
-			curToken = L1Token(L1Token::Type::Multiply, position);
-			break;
-		case '/':
-			curToken = L1Token(L1Token::Type::Divide, position);
-			break;
+		//case '+':
+		//	curToken = L1Token(L1Token::Type::Plus, position);
+		//	break;
+		//case '-':
+		//	curToken = L1Token(L1Token::Type::Minus, position);
+		//	break;
+		//case '*':
+		//	curToken = L1Token(L1Token::Type::Multiply, position);
+		//	break;
+		//case '/':
+		//	curToken = L1Token(L1Token::Type::Divide, position);
+		//	break;
 		case ',':
 			curToken = L1Token(L1Token::Type::Separator, position);
 			break;
@@ -85,6 +85,8 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		default:
 			if (!isspace(static_cast<unsigned char>(c)))
 			{
+				if (!isalnum(static_cast<unsigned char>(c)))
+					throw SyntaxError(position, std::string(&c, 1), "variables and functions must be alphanumeric");
 				current += c;
 				continue;
 			}
@@ -117,11 +119,11 @@ void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 	static const L1FloatRule2 floatRule2;
 	static const L1NumberRule numberRule;
 	static const L1FunctionRule functionRule;
-	static const L1OperatorAssignRule operatorAssignRule;
+	//static const L1OperatorAssignRule operatorAssignRule;
 	static const L1IdentifierAssignRule idAssignRule;
-	static const std::array<const L1Rule*, 6> rules = {
+	static const std::array<const L1Rule*, 5> rules = {
 		&floatRule1, &floatRule2,&numberRule, 
-		&functionRule, &operatorAssignRule, &idAssignRule
+		&functionRule, /*&operatorAssignRule,*/ &idAssignRule
 	};
 
 	// apply rules in order
@@ -206,10 +208,6 @@ std::vector<std::unique_ptr<script::L2Token>> script::Tokenizer::getL2Tokens(con
 
 		case L1Token::Type::Assign: 
 			break;
-		case L1Token::Type::PlusAssign: break;
-		case L1Token::Type::MinusAssign: break;
-		case L1Token::Type::MultiplyAssign: break;
-		case L1Token::Type::DivideAssign: break;
 
 		case L1Token::Type::Separator: break;
 		case L1Token::Type::BracketOpen: break;
@@ -221,10 +219,6 @@ std::vector<std::unique_ptr<script::L2Token>> script::Tokenizer::getL2Tokens(con
 		case L1Token::Type::Dot: 
 		
 			break;
-		case L1Token::Type::Plus: break;
-		case L1Token::Type::Minus: break;
-		case L1Token::Type::Multiply: break;
-		case L1Token::Type::Divide: break;
 
 		case L1Token::Type::Function: break;
 		default: ;

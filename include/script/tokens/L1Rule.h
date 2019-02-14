@@ -126,42 +126,42 @@ namespace script
 	};
 
 	// converts + (Plus) and = (assign) into += PlusAssign (same for - * /)
-	class L1OperatorAssignRule final : public L1Rule
-	{
-	public:
-		int patternLength() const override { return 2; }
-
-		bool matches(std::vector<L1Token>::const_iterator begin) const override
-		{
-			switch (begin->getType())
-			{
-			case L1Token::Type::Plus:
-			case L1Token::Type::Minus:
-			case L1Token::Type::Multiply:
-			case L1Token::Type::Divide:
-				break;
-			default: return false;
-			}
-
-			return (begin + 1)->getType() == L1Token::Type::Assign;
-		}
-		
-		L1Token apply(std::vector<L1Token>::const_iterator begin) const override
-		{
-			switch (begin->getType())
-			{
-			case L1Token::Type::Plus:
-				return L1Token(L1Token::Type::PlusAssign, begin->getPosition());
-			case L1Token::Type::Minus:
-				return L1Token(L1Token::Type::MinusAssign, begin->getPosition());
-			case L1Token::Type::Multiply:
-				return L1Token(L1Token::Type::MultiplyAssign, begin->getPosition());
-			case L1Token::Type::Divide:
-				return L1Token(L1Token::Type::DivideAssign, begin->getPosition());
-			}
-			return L1Token(L1Token::Type::Undefined, begin->getPosition());
-		}
-	};
+	//class L1OperatorAssignRule final : public L1Rule
+	//{
+	//public:
+	//	int patternLength() const override { return 2; }
+	//
+	//	bool matches(std::vector<L1Token>::const_iterator begin) const override
+	//	{
+	//		switch (begin->getType())
+	//		{
+	//		case L1Token::Type::Plus:
+	//		case L1Token::Type::Minus:
+	//		case L1Token::Type::Multiply:
+	//		case L1Token::Type::Divide:
+	//			break;
+	//		default: return false;
+	//		}
+	//
+	//		return (begin + 1)->getType() == L1Token::Type::Assign;
+	//	}
+	//	
+	//	L1Token apply(std::vector<L1Token>::const_iterator begin) const override
+	//	{
+	//		switch (begin->getType())
+	//		{
+	//		case L1Token::Type::Plus:
+	//			return L1Token(L1Token::Type::PlusAssign, begin->getPosition());
+	//		case L1Token::Type::Minus:
+	//			return L1Token(L1Token::Type::MinusAssign, begin->getPosition());
+	//		case L1Token::Type::Multiply:
+	//			return L1Token(L1Token::Type::MultiplyAssign, begin->getPosition());
+	//		case L1Token::Type::Divide:
+	//			return L1Token(L1Token::Type::DivideAssign, begin->getPosition());
+	//		}
+	//		return L1Token(L1Token::Type::Undefined, begin->getPosition());
+	//	}
+	//};
 
 	class L1IdentifierAssignRule final : public L1Rule
 	{
