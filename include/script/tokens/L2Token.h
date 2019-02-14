@@ -7,21 +7,14 @@ namespace script
 	{
 	public:
 		virtual ~L2Token() = default;
-
-		
-	};
-
-	class ValueToken : public L2Token
-	{
-	public:
 		virtual ScriptObjectPtr execute(ScriptEngine& engine) const = 0;
 	};
 
 	template<class T>
-	class PrimitiveValueToken final : public ValueToken
+	class L2PrimitiveValueToken final : public L2Token
 	{
 	public:
-		explicit PrimitiveValueToken(T value)
+		explicit L2PrimitiveValueToken(T value)
 			:
 		m_value(value)
 		{}
@@ -35,10 +28,10 @@ namespace script
 		T m_value;
 	};
 
-	class IdentifierToken final : public ValueToken
+	class L2IdentifierToken final : public L2Token
 	{
 	public:
-		IdentifierToken(std::string name, size_t position)
+		L2IdentifierToken(std::string name, size_t position)
 			: m_name(std::move(name)),
 			  m_position(position)
 		{}
@@ -56,10 +49,10 @@ namespace script
 		size_t m_position;
 	};
 
-	class IdentifierAssignToken final : public ValueToken
+	class L2IdentifierAssignToken final : public L2Token
 	{
 	public:
-		IdentifierAssignToken(std::string name, std::unique_ptr<ValueToken> value)
+		L2IdentifierAssignToken(std::string name, std::unique_ptr<L2Token> value)
 			:
 		m_name(move(name)),
 		m_value(move(value))
@@ -73,10 +66,10 @@ namespace script
 		}
 	private:
 		std::string m_name;
-		std::unique_ptr<ValueToken> m_value;
+		std::unique_ptr<L2Token> m_value;
 	};
 
-	class ArgumentListToken final : ValueToken
+	class L2ArgumentListToken final : public L2Token
 	{
 	public:
 		ScriptObjectPtr execute(ScriptEngine& engine) const override
@@ -89,18 +82,18 @@ namespace script
 			return arr;
 		}
 
-		void add(std::unique_ptr<ValueToken> value)
+		void add(std::unique_ptr<L2Token> value)
 		{
 			m_values.emplace_back(move(value));
 		}
 	private:
-		std::vector<std::unique_ptr<ValueToken>> m_values;
+		std::vector<std::unique_ptr<L2Token>> m_values;
 	};
 
-	class FunctionToken : ValueToken
+	class L2FunctionToken : public L2Token
 	{
 	public:
-		FunctionToken(std::unique_ptr<ValueToken> value, std::string name, size_t position, std::unique_ptr<ArgumentListToken> args)
+		L2FunctionToken(std::unique_ptr<L2Token> value, std::string name, size_t position, std::unique_ptr<L2ArgumentListToken> args)
 			:
 		m_value(move(value)),
 		m_position(position),
@@ -133,9 +126,9 @@ namespace script
 			return res;
 		}
 	private:
-		std::unique_ptr<ValueToken> m_value;
+		std::unique_ptr<L2Token> m_value;
 		size_t m_position;
 		std::string m_funcName;
-		std::unique_ptr<ArgumentListToken> m_args;
+		std::unique_ptr<L2ArgumentListToken> m_args;
 	};
 }

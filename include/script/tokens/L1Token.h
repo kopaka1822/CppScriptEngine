@@ -35,7 +35,7 @@ namespace script
 			Integer,
 			IdentifierAssign,
 		};
-		explicit L1Token(Type type, size_t position, std::string value = "")
+		explicit L1Token(Type type, size_t position, std::string value)
 			:
 		m_value(move(value)),
 		m_type(type),

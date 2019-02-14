@@ -3,14 +3,20 @@
 #include <array>
 #include "script/tokens/L1Rule.h"
 #include <stack>
+#include <cassert>
 
-std::vector<script::L1Token> script::Tokenizer::getTokens(const std::string& command)
+std::unique_ptr<script::L2Token> script::Tokenizer::getExecuteable(const std::string& command)
 {
 	std::vector<L1Token> tokens = getL1Tokens(command);
 	applyL1Rules(tokens);
 	verifyBrackets(tokens);
 
-	return tokens;
+	auto start = tokens.cbegin();
+	auto res = getL2Tokens(start, tokens.cend(), false);
+	if (start != tokens.cend())
+		throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+	return res;
 }
 
 std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& command)
@@ -29,7 +35,7 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		++position;
 
 		// new token
-		L1Token curToken = L1Token(L1Token::Type::Undefined, 0);
+		L1Token curToken = L1Token(L1Token::Type::Undefined, 0, "");
 		if (isString)
 		{
 			if (c != '\"' || // no closing " or
@@ -50,10 +56,10 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 			isString = true;
 			break;
 		case '=':
-			curToken = L1Token(L1Token::Type::Assign, position);
+			curToken = L1Token(L1Token::Type::Assign, position, "=");
 			break;
 		case '.':
-			curToken = L1Token(L1Token::Type::Dot, position);
+			curToken = L1Token(L1Token::Type::Dot, position, ".");
 			break;
 		//case '+':
 		//	curToken = L1Token(L1Token::Type::Plus, position);
@@ -68,19 +74,19 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		//	curToken = L1Token(L1Token::Type::Divide, position);
 		//	break;
 		case ',':
-			curToken = L1Token(L1Token::Type::Separator, position);
+			curToken = L1Token(L1Token::Type::Separator, position, ",");
 			break;
 		case '(':
-			curToken = L1Token(L1Token::Type::BracketOpen, position);
+			curToken = L1Token(L1Token::Type::BracketOpen, position, "(");
 			break;
 		case ')':
-			curToken = L1Token(L1Token::Type::BracketClosed, position);
+			curToken = L1Token(L1Token::Type::BracketClosed, position, ")");
 			break;
 		case '[':
-			curToken = L1Token(L1Token::Type::ArrayOpen, position);
+			curToken = L1Token(L1Token::Type::ArrayOpen, position, "[");
 			break;
 		case ']':
-			curToken = L1Token(L1Token::Type::ArrayClosed, position);
+			curToken = L1Token(L1Token::Type::ArrayClosed, position, "]");
 			break;
 		default:
 			if (!isspace(static_cast<unsigned char>(c)))
@@ -179,53 +185,159 @@ void script::Tokenizer::verifyBrackets(const std::vector<L1Token>& tokens)
 	}
 }
 
-std::vector<std::unique_ptr<script::L2Token>> script::Tokenizer::getL2Tokens(const std::vector<L1Token>& tokens)
+std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, bool isArgumentList)
 {
-	std::vector<std::unique_ptr<L2Token>> res;
-	for (auto t = tokens.begin(), end = tokens.end(); t != end;)
+	std::unique_ptr<L2Token> curToken;
+	while (start != end)
 	{
-		switch (t->getType())
+		switch (start->getType())
 		{
 			// primitives
-		case L1Token::Type::String: 
-			res.emplace_back(std::make_unique<PrimitiveValueToken<std::string>>(t->getValue()));
-			break;
-		case L1Token::Type::Float: 
-			res.emplace_back(std::make_unique<PrimitiveValueToken<float>>(t->getFloatValue()));
-			break;
-		case L1Token::Type::Integer: 
-			res.emplace_back(std::make_unique<PrimitiveValueToken<int>>(t->getIntValue()));
-			break;
-		case L1Token::Type::Bool: 
-			res.emplace_back(std::make_unique<PrimitiveValueToken<bool>>(t->getBoolValue()));
-			break;
-		case L1Token::Type::Null: 
-			res.emplace_back(std::make_unique<PrimitiveValueToken<nullptr_t>>(nullptr));
-			break;
-		case L1Token::Type::Identifier:
-			res.emplace_back(std::make_unique<IdentifierToken>(t->getValue(), t->getPosition()));
-			break;
+		case L1Token::Type::String:
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
-		case L1Token::Type::Assign: 
-			break;
+			curToken = std::make_unique<L2PrimitiveValueToken<std::string>>(start++->getValue());
+		case L1Token::Type::Float:
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
-		case L1Token::Type::Separator: break;
-		case L1Token::Type::BracketOpen: break;
-		case L1Token::Type::BracketClosed: break;
-		
-		case L1Token::Type::ArrayOpen: break;
-		case L1Token::Type::ArrayClosed: break;
+			curToken = std::make_unique<L2PrimitiveValueToken<float>>(start++->getFloatValue());
+		case L1Token::Type::Integer:
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
-		case L1Token::Type::Dot: 
-		
-			break;
+			curToken = std::make_unique<L2PrimitiveValueToken<int>>(start++->getIntValue());
+		case L1Token::Type::Bool:
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
-		case L1Token::Type::Function: break;
-		default: ;
+			curToken = std::make_unique<L2PrimitiveValueToken<bool>>(start++->getBoolValue());
+		case L1Token::Type::Null:
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+			++start;
+			curToken = std::make_unique<L2PrimitiveValueToken<nullptr_t>>(nullptr);
+		case L1Token::Type::Identifier: {
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+			const auto val = start++;
+			curToken = std::make_unique<L2IdentifierToken>(val->getValue(), val->getPosition());
+		}
+		case L1Token::Type::Assign:
+			// not supported yet... replace with identifier assign
+			throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+		case L1Token::Type::IdentifierAssign: {
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+			auto name = start->getValue();
+			auto val = getL2Tokens(++start, end, true);
+			return std::make_unique<L2IdentifierAssignToken>(name, move(val));
 		}
 
-		++t;
+		case L1Token::Type::Separator:
+			if (isArgumentList) 
+				break;
+			throw SyntaxError(start->getPosition(), start->getValue(), "separator is only valid within a function or array");
+
+		case L1Token::Type::BracketOpen: {
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+
+			// read value within brackets
+			const auto pos = start->getPosition();
+			curToken = getL2Tokens(++start, end, true);
+			// start should point to bracket end
+			if (start == end) 
+				throw SyntaxError(pos, "end of command", "missing closing bracket");
+			if (start->getType() != L1Token::Type::BracketClosed)
+				throw BracketMismatch(start->getPosition(), ")",start->getValue());
+			// everything is fine
+			++start;
+		}
+
+		case L1Token::Type::ArrayClosed:
+		case L1Token::Type::BracketClosed:
+			if (isArgumentList)
+				break;
+			throw SyntaxError(start->getPosition(), start->getValue(), "");
+		
+		case L1Token::Type::ArrayOpen: {
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+			// parse arguments
+			auto args = parseArgumentList(++start, end, L1Token::Type::ArrayClosed, "array");
+			curToken = move(args);
+		} break;
+
+		case L1Token::Type::Dot: {
+			if (!curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "function call needs a valid object");
+			auto pos = start->getPosition();
+			++start;
+			if (start == end)
+				throw SyntaxError(pos, "end of command", "missing function call after \".\"");
+			if (start->getType() != L1Token::Type::Function)
+				throw SyntaxError(start->getPosition(), start->getValue(), "expected function call");
+			auto funcName = start->getValue();
+			// parse arguments
+			auto args = parseArgumentList(++start, end, L1Token::Type::BracketClosed, "function call");
+
+			// function call ended
+			curToken = std::make_unique<L2FunctionToken>(move(curToken), funcName, pos, move(args));
+		}break;
+
+		case L1Token::Type::Function:
+			// function call without a preceding dot (maybe support that later?)
+			throw SyntaxError(start->getPosition(), start->getValue(), "functions call must be preceded by a dot");
+		default: ;
+		}
 	}
 
-	return res;
+	if (!curToken)
+	{
+		if(start == end)
+			throw SyntaxError(-1, "end of command", "");
+		throw SyntaxError(start->getPosition(), start->getValue(), "could not parse a value prior to this token");
+	}
+
+	return curToken;
+}
+
+std::unique_ptr<script::L2ArgumentListToken> script::Tokenizer::parseArgumentList(
+	std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, L1Token::Type endToken, const std::string& type)
+{
+	auto args = std::make_unique<L2ArgumentListToken>();
+
+	if (start == end)
+		throw SyntaxError(-1, "end of command", type + " was not closed");
+	if (start->getType() == endToken)
+	{
+		++start;
+		return args;
+	}
+
+	while (true)
+	{
+		if (start == end)
+			throw SyntaxError(-1, "end of command", type + " was not closed");
+
+		auto value = getL2Tokens(++start, end, true);
+		args->add(move(value));
+
+		if (start == end)
+			throw SyntaxError(-1, "end of command", type + " was not closed");
+		if (start->getType() == endToken)
+			break; // function call end
+		if (start->getType() != L1Token::Type::Separator)
+			throw SyntaxError(start->getPosition(), start->getValue(), type + " not closed. expected either \",\" or \"=\"");
+		++start;
+	}
+
+	++start;
+	return args;
 }
