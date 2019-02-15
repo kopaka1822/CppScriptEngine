@@ -11,7 +11,7 @@ namespace script
 	public:
 		Tokenizer() = delete;
 
-		static std::unique_ptr<L2Token> getExecuteable(const std::string& command);
+		static std::unique_ptr<L2Token> getExecutable(const std::string& command);
 
 		static std::vector<L1Token> getL1Tokens(const std::string& command);
 		static void applyL1Rules(std::vector<L1Token>& tokens);

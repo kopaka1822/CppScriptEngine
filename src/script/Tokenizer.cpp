@@ -5,11 +5,11 @@
 #include <stack>
 #include <cassert>
 
-std::unique_ptr<script::L2Token> script::Tokenizer::getExecuteable(const std::string& command)
+std::unique_ptr<script::L2Token> script::Tokenizer::getExecutable(const std::string& command)
 {
 	std::vector<L1Token> tokens = getL1Tokens(command);
-	applyL1Rules(tokens);
 	verifyBrackets(tokens);
+	applyL1Rules(tokens);
 
 	auto start = tokens.cbegin();
 	auto res = getL2Tokens(start, tokens.cend(), false);
@@ -113,6 +113,9 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		}
 	}
 
+	if (isString)
+		throw SyntaxError(-1, "end of command", "string not closed");
+
 	if (current.length())
 		tokens.emplace_back(L1Token::Type::Identifier, position - current.length(), current);
 
@@ -151,38 +154,36 @@ void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 void script::Tokenizer::verifyBrackets(const std::vector<L1Token>& tokens)
 {
 	// test if  brackets are correctly set
-	std::stack<L1Token::Type> brackets;
+	std::stack<L1Token> expectedBracket;
 	for (const auto& t : tokens)
 	{
 		switch (t.getType())
 		{
 		case L1Token::Type::Separator:
 			// this does only make sense inside a function or array
-			if (brackets.empty())
+			if (expectedBracket.empty())
 				throw SyntaxError(t.getPosition(), ",", "Separator is only allowed within a function or array");
 			break;
 		case L1Token::Type::BracketOpen:
-			brackets.push(t.getType());
+			expectedBracket.push(L1Token(L1Token::Type::BracketClosed, t.getPosition(), ")"));
 			break;
-		case L1Token::Type::BracketClosed:
-			if (brackets.empty())
-				throw SyntaxError(t.getPosition(), ")", "all brackets were closed");
-			if (brackets.top() != L1Token::Type::BracketOpen && brackets.top() != L1Token::Type::Function)
-				throw BracketMismatch(t.getPosition(), "]", ")");
-			brackets.pop();
+		case L1Token::Type::ArrayOpen:
+			expectedBracket.push(L1Token(L1Token::Type::ArrayClosed, t.getPosition(), "]"));
 			break;
 
-		case L1Token::Type::ArrayOpen:
-			brackets.push(t.getType());
-			break;
+		case L1Token::Type::BracketClosed:
 		case L1Token::Type::ArrayClosed:
-			if (brackets.empty())
-				throw SyntaxError(t.getPosition(), ")", "all brackets were closed");
-			if (brackets.top() != L1Token::Type::ArrayClosed)
-				throw BracketMismatch(t.getPosition(), ")", "]");
+			if (expectedBracket.empty())
+				throw SyntaxError(t.getPosition(), t.getValue(), "all brackets were closed");
+			if (expectedBracket.top().getType() != t.getType())
+				throw BracketMismatch(t.getPosition(), expectedBracket.top().getValue(), t.getValue());
+			expectedBracket.pop();
 			break;
 		}
 	}
+
+	if (!expectedBracket.empty())
+		throw SyntaxError(-1, "end of command", std::to_string(expectedBracket.size()) + " unclosed brackets");
 }
 
 std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, bool isArgumentList)
@@ -198,34 +199,39 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			curToken = std::make_unique<L2PrimitiveValueToken<std::string>>(start++->getValue());
+			break;
 		case L1Token::Type::Float:
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			curToken = std::make_unique<L2PrimitiveValueToken<float>>(start++->getFloatValue());
+			break;
 		case L1Token::Type::Integer:
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			curToken = std::make_unique<L2PrimitiveValueToken<int>>(start++->getIntValue());
+			break;
 		case L1Token::Type::Bool:
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			curToken = std::make_unique<L2PrimitiveValueToken<bool>>(start++->getBoolValue());
+			break;
 		case L1Token::Type::Null:
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			++start;
 			curToken = std::make_unique<L2PrimitiveValueToken<nullptr_t>>(nullptr);
+			break;
 		case L1Token::Type::Identifier: {
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			const auto val = start++;
 			curToken = std::make_unique<L2IdentifierToken>(val->getValue(), val->getPosition());
-		}
+		}   break;
 		case L1Token::Type::Assign:
 			// not supported yet... replace with identifier assign
 			throw SyntaxError(start->getPosition(), start->getValue(), "");
@@ -241,7 +247,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 
 		case L1Token::Type::Separator:
 			if (isArgumentList) 
-				break;
+				goto loopend;
 			throw SyntaxError(start->getPosition(), start->getValue(), "separator is only valid within a function or array");
 
 		case L1Token::Type::BracketOpen: {
@@ -258,12 +264,13 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 				throw BracketMismatch(start->getPosition(), ")",start->getValue());
 			// everything is fine
 			++start;
+			break;
 		}
 
 		case L1Token::Type::ArrayClosed:
 		case L1Token::Type::BracketClosed:
 			if (isArgumentList)
-				break;
+				goto loopend;  // NOLINT(cppcoreguidelines-avoid-goto, hicpp-avoid-goto)
 			throw SyntaxError(start->getPosition(), start->getValue(), "");
 		
 		case L1Token::Type::ArrayOpen: {
@@ -289,7 +296,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 
 			// function call ended
 			curToken = std::make_unique<L2FunctionToken>(move(curToken), funcName, pos, move(args));
-		}break;
+		} break;
 
 		case L1Token::Type::Function:
 			// function call without a preceding dot (maybe support that later?)
@@ -297,6 +304,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 		default: ;
 		}
 	}
+	loopend:
 
 	if (!curToken)
 	{
@@ -326,7 +334,7 @@ std::unique_ptr<script::L2ArgumentListToken> script::Tokenizer::parseArgumentLis
 		if (start == end)
 			throw SyntaxError(-1, "end of command", type + " was not closed");
 
-		auto value = getL2Tokens(++start, end, true);
+		auto value = getL2Tokens(start, end, true);
 		args->add(move(value));
 
 		if (start == end)

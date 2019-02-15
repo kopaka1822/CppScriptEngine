@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
 #include "ScriptObject.h"
+#include "script/BoolMutex.h"
 
 namespace script
 {
 	class ArrayObject final : public ScriptObject
 	{
 	public:
-		ArrayObject() = default;
+		ArrayObject();
 		explicit ArrayObject(std::vector<ScriptObjectPtr> values);
 		~ArrayObject() override = default;
 
@@ -26,6 +27,7 @@ namespace script
 		ScriptPtr<ArrayObject> slice(int from, int count);
 	private:
 		std::vector<ScriptObjectPtr> m_values;
+		mutable BoolMutex m_toStringMutex;
 	};
 
 	using ArrayObjectPtr = ScriptPtr<ArrayObject>;

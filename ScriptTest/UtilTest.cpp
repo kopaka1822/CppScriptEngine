@@ -286,7 +286,7 @@ public:
 };
 
 // tests void functions called from a wrapper object
-TEST(TestSuit, MakeVoidFunctionForDerived)
+TEST(TestSuite, MakeVoidFunctionForDerived)
 {
 	auto d = std::make_shared<UtilTestDerived>();
 	auto func = Util::makeFunction(d.get(), &UtilTestDerived::mutator, "");
@@ -299,7 +299,7 @@ TEST(TestSuit, MakeVoidFunctionForDerived)
 }
 
 // tests non-void functions called from a wrapper object
-TEST(TestSuit, MakeReturnFunctionForDerived)
+TEST(TestSuite, MakeReturnFunctionForDerived)
 {
 	auto d = std::make_shared<UtilTestDerived>();
 	auto func = Util::makeFunction(d.get(), &UtilTestDerived::returnInt, "");

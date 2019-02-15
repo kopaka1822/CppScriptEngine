@@ -115,3 +115,32 @@ TEST(TestSuite, FinalizeL1Test)
 	EXPECT_EQ(tokens[0].getValue(), std::string("342f"));
 	EXPECT_EQ(tokens[1].getType(), L1Token::Type::Float);
 }
+
+TEST(TestSuite, BracketsTest)
+{
+	auto tokens = Tokenizer::getL1Tokens("");
+	ASSERT_NO_THROW(Tokenizer::verifyBrackets(tokens));
+
+	tokens = Tokenizer::getL1Tokens("()()[()]");
+	ASSERT_NO_THROW(Tokenizer::verifyBrackets(tokens));
+
+	tokens = Tokenizer::getL1Tokens("[((())),[],()]");
+	ASSERT_NO_THROW(Tokenizer::verifyBrackets(tokens));
+
+	tokens = Tokenizer::getL1Tokens("[[)]");
+	ASSERT_THROW(Tokenizer::verifyBrackets(tokens), ParseError);
+
+	tokens = Tokenizer::getL1Tokens("(((()))");
+	ASSERT_THROW(Tokenizer::verifyBrackets(tokens), ParseError);
+}
+
+TEST(TestSuite, GetExecutableTests)
+{
+	ASSERT_THROW(Tokenizer::getExecutable(""), SyntaxError);
+
+	ASSERT_NO_THROW(Tokenizer::getExecutable("a=1.0f.add(2.0f)"));
+	ASSERT_NO_THROW(Tokenizer::getExecutable("[].add(4, 3, \"test\")"));
+	ASSERT_NO_THROW(Tokenizer::getExecutable("a=b=4"));
+	ASSERT_NO_THROW(Tokenizer::getExecutable("varName = a.func1( 1.0f.add(2.0f), [6])"));
+	ASSERT_NO_THROW(Tokenizer::getExecutable("c =    [6 , 67, 7]"));
+}

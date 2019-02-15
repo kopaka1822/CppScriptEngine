@@ -1,6 +1,12 @@
 #include "../../../include/script/objects/ArrayObject.h"
 #include "../../../include/script/Util.h"
 #include <cassert>
+#include <mutex>
+
+script::ArrayObject::ArrayObject()
+	:
+ArrayObject(std::vector<ScriptObjectPtr>{})
+{}
 
 script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	:
@@ -24,6 +30,11 @@ std::string script::ArrayObject::toString() const
 {
 	if (m_values.empty())
 		return "[]";
+
+	if (m_toStringMutex.locked())
+		return "[...]";
+
+	std::lock_guard<BoolMutex> g(m_toStringMutex);
 
 	std::string res = "[";
 	for (size_t i = 0; i < m_values.size() - 1; ++i)

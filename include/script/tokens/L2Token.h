@@ -103,7 +103,7 @@ namespace script
 
 		ScriptObjectPtr execute(ScriptEngine& engine) const override
 		{
-			auto args = std::reinterpret_pointer_cast<ArrayObject>(m_args->execute(engine));
+			auto args = std::dynamic_pointer_cast<ArrayObject>(m_args->execute(engine));
 			auto obj = m_value->execute(engine);
 			ScriptObjectPtr res;
 

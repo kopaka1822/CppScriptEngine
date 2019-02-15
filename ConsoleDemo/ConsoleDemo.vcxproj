@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{35DBA2AB-255B-4C6B-9116-6A684444BDF7}</ProjectGuid>
-    <RootNamespace>ScriptEngine</RootNamespace>
+    <ProjectGuid>{F4123D19-4035-4426-8873-6C3046F6B933}</ProjectGuid>
+    <RootNamespace>ConsoleDemo</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,19 +71,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\include;$(IncludePath)</IncludePath>
-    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\include;$(IncludePath)</IncludePath>
-    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\include;$(IncludePath)</IncludePath>
-    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\include;$(IncludePath)</IncludePath>
-    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -91,7 +87,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,7 +95,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -111,7 +105,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -126,7 +119,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -134,38 +126,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\script\Exception.cpp" />
-    <ClCompile Include="..\src\script\objects\BoolObject.cpp" />
-    <ClCompile Include="..\src\script\objects\FloatObject.cpp" />
-    <ClCompile Include="..\src\script\objects\IntObject.cpp" />
-    <ClCompile Include="..\src\script\objects\NullObject.cpp" />
-    <ClCompile Include="..\src\script\objects\ScriptObject.cpp" />
-    <ClCompile Include="..\src\script\objects\ArrayObject.cpp" />
-    <ClCompile Include="..\src\script\objects\StringObject.cpp" />
-    <ClCompile Include="..\src\script\ScriptEngine.cpp" />
-    <ClCompile Include="..\src\script\Tokenizer.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\script\BoolMutex.h" />
-    <ClInclude Include="..\include\script\Exception.h" />
-    <ClInclude Include="..\include\script\objects\BoolObject.h" />
-    <ClInclude Include="..\include\script\objects\FloatObject.h" />
-    <ClInclude Include="..\include\script\objects\IntObject.h" />
-    <ClInclude Include="..\include\script\objects\NullObject.h" />
-    <ClInclude Include="..\include\script\objects\NumericalObject.h" />
-    <ClInclude Include="..\include\script\objects\ArrayObject.h" />
-    <ClInclude Include="..\include\script\objects\ScriptObject.h" />
-    <ClInclude Include="..\include\script\objects\StringObject.h" />
-    <ClInclude Include="..\include\script\objects\GetValueObject.h" />
-    <ClInclude Include="..\include\script\objects\ValueComparableObject.h" />
-    <ClInclude Include="..\include\script\objects\ValueObject.h" />
-    <ClInclude Include="..\include\script\Script.h" />
-    <ClInclude Include="..\include\script\ScriptEngine.h" />
-    <ClInclude Include="..\include\script\Tokenizer.h" />
-    <ClInclude Include="..\include\script\tokens\L1Token.h" />
-    <ClInclude Include="..\include\script\tokens\L1Rule.h" />
-    <ClInclude Include="..\include\script\tokens\L2Token.h" />
-    <ClInclude Include="..\include\script\Util.h" />
+    <ProjectReference Include="..\ScriptEngine\ScriptEngine.vcxproj">
+      <Project>{35dba2ab-255b-4c6b-9116-6a684444bdf7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

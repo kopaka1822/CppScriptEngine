@@ -9,7 +9,18 @@ ValueComparableObject(std::move(value))
 	{
 		// add all arguments
 		for (int i = 0; i < args->count(); ++i)
-			m_value += args->get(i)->toString();
+		{
+			// add string without " "
+			auto strObj = std::dynamic_pointer_cast<StringObject>(args->get(i));
+			if (strObj)
+			{
+				m_value += strObj->getValue();
+			}
+			else
+			{
+				m_value += args->get(i)->toString();
+			}
+		}
 
 		return this->shared_from_this();
 	});
