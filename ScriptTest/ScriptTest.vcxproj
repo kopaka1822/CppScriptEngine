@@ -56,6 +56,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ArrayObjectTest.cpp" />
+    <ClCompile Include="ScriptEngineTest.cpp" />
     <ClCompile Include="ScriptObjectTest.cpp" />
     <ClCompile Include="TokenizerTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />

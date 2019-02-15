@@ -8,6 +8,7 @@
     <ClCompile Include="ValueObjectTest.cpp" />
     <ClCompile Include="ScriptObjectTest.cpp" />
     <ClCompile Include="TokenizerTest.cpp" />
+    <ClCompile Include="ScriptEngineTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
