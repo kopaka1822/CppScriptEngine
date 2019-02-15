@@ -22,8 +22,8 @@ script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	addFunction("addAll", Util::makeFunction(this, &ArrayObject::addAll, "ArrayObject::addAll(ArrayObject)"));
 	addFunction("remove", Util::makeFunction(this, &ArrayObject::remove, "ArrayObject::remove(int index)"));
 	addFunction("clear", Util::makeFunction(this, &ArrayObject::clear, "ArrayObject::clear()"));
-	addFunction("count", Util::makeFunction(this, &ArrayObject::count, "int ArrayObject::count()"));
-	addFunction("slice", Util::makeFunction(this, &ArrayObject::slice, "ArrayObject ArrayObject::slice(int from, int count)"));
+	addFunction("getCount", Util::makeFunction(this, &ArrayObject::getCount, "int ArrayObject::getCount()"));
+	addFunction("slice", Util::makeFunction(this, &ArrayObject::slice, "ArrayObject ArrayObject::slice(int from, int getCount)"));
 }
 
 std::string script::ArrayObject::toString() const
@@ -80,7 +80,7 @@ void script::ArrayObject::clear()
 void script::ArrayObject::addAll(const ScriptPtr<ArrayObject>& other)
 {
 	// add all elements
-	const int count = other->count();
+	const int count = other->getCount();
 	for (int i = 0; i < count; ++i)
 		m_values.push_back(other->get(i));
 }
@@ -90,9 +90,9 @@ std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from, int co
 	if (from >= int(m_values.size()) || from < 0)
 		throw std::out_of_range("ArrayObject::slice from out of range");
 	if (count < 0)
-		throw std::runtime_error("ArrayObject::slice count may not be smaller than zero");
+		throw std::runtime_error("ArrayObject::slice getCount may not be smaller than zero");
 	if (from + count > int(m_values.size()))
-		throw std::out_of_range("ArrayObject::slice count exceeds array");
+		throw std::out_of_range("ArrayObject::slice getCount exceeds array");
 
 	std::vector<ScriptObjectPtr> res;
 	for (int i = from; i < from + count; ++i)
@@ -101,7 +101,7 @@ std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from, int co
 	return std::make_shared<ArrayObject>(res);
 }
 
-int script::ArrayObject::count() const
+int script::ArrayObject::getCount() const
 {
 	return static_cast<int>(m_values.size());
 }
@@ -126,11 +126,11 @@ bool script::ArrayObject::equals(const ScriptObjectPtr& other) const
 	const auto arr = dynamic_cast<const ArrayObject*>(other.get());
 	if (arr == nullptr) return false;
 
-	if (count() != arr->count())
+	if (getCount() != arr->getCount())
 		return false;
 
 	// memberwise compare
-	for (int i = 0; i < count(); ++i)
+	for (int i = 0; i < getCount(); ++i)
 		if (!m_values[i]->equals(arr->m_values[i]))
 			return false;
 

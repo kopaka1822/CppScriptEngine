@@ -13,6 +13,6 @@ namespace script
 		ScriptObjectPtr clone() const final override;
 
 		void add(const std::string& value);
-		size_t length() const;
+		int getLength() const;
 	};
 }

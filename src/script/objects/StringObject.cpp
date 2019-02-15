@@ -8,7 +8,7 @@ ValueComparableObject(std::move(value))
 	addFunction("add", [this](ArrayObjectPtr args)
 	{
 		// add all arguments
-		for (int i = 0; i < args->count(); ++i)
+		for (int i = 0; i < args->getCount(); ++i)
 		{
 			// add string without " "
 			auto strObj = std::dynamic_pointer_cast<StringObject>(args->get(i));
@@ -24,6 +24,7 @@ ValueComparableObject(std::move(value))
 
 		return this->shared_from_this();
 	});
+	addFunction("getLength", Util::makeFunction(this, &StringObject::getLength, "int getLength"));
 }
 
 std::string script::StringObject::toString() const
@@ -41,9 +42,9 @@ void script::StringObject::add(const std::string& value)
 	m_value += value;
 }
 
-size_t script::StringObject::length() const
+int script::StringObject::getLength() const
 {
-	return m_value.length();
+	return int(m_value.length());
 }
 
 template<>

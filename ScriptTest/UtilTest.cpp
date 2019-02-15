@@ -21,13 +21,13 @@ TEST(TestSuite, MakeArray)
 
 	auto arr = Util::makeArray();
 	EXPECT_TRUE(arr);
-	EXPECT_EQ(arr->count(), 0);
+	EXPECT_EQ(arr->getCount(), 0);
 
 	EXPECT_NO_THROW(arr->add(intObj));
 	//EXPECT_THROW(arr->add(nullptr), std::runtime_error);
 
 	arr = Util::makeArray(intObj, strObj);
-	EXPECT_EQ(arr->count(), 2);
+	EXPECT_EQ(arr->getCount(), 2);
 	EXPECT_TRUE(arr->get(0)->equals(intObj));
 	EXPECT_TRUE(arr->get(1)->equals(strObj));
 

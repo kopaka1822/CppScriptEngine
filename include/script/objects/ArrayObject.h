@@ -22,8 +22,8 @@ namespace script
 		void remove(int index);
 		void clear();
 		void addAll(const ScriptPtr<ArrayObject>& other);
-		int count() const;
-		/// \brief returns the array subset [from, from + count) as shallow copy
+		int getCount() const;
+		/// \brief returns the array subset [from, from + getCount) as shallow copy
 		ScriptPtr<ArrayObject> slice(int from, int count);
 	private:
 		std::vector<ScriptObjectPtr> m_values;

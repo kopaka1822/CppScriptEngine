@@ -28,7 +28,7 @@ namespace script
 			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->count())
+				if (int(argCount) != args->getCount())
 					throw InvalidArgumentCount(functionSignature, argCount, args);
 
 				Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
@@ -95,7 +95,7 @@ namespace script
 			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->count())
+				if (int(argCount) != args->getCount())
 					throw InvalidArgumentCount(functionSignature, argCount, args);
 
 				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
@@ -176,7 +176,7 @@ namespace script
 			// convertible to ScriptObjectPtr
 			std::enable_if_t<std::is_convertible<T, ScriptObjectPtr>::value, int> = 0)
 		{
-			const auto& objectPtr = args.get(index);
+			const auto& objectPtr = args.get(int(index));
 
 			// T is a base of ScriptObject
 			// try to convert objectPtr to T
@@ -194,7 +194,7 @@ namespace script
 			// not convertible to ScriptObjectPtr and not pointer
 			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
 		{
-			const auto& objectPtr = args.get(index);
+			const auto& objectPtr = args.get(int(index));
 
 			return Util::getGetValueObjectValue<T>(objectPtr.get(), args, index, functionSignature);
 		}
@@ -205,7 +205,7 @@ namespace script
 			// not convertible to ScriptObjectPtr but pointer
 			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<std::is_pointer<T>::value, int> = 0)
 		{
-			const auto& objectPtr = args.get(index);
+			const auto& objectPtr = args.get(int(index));
 
 			// is nullptr?
 			if (objectPtr->equals(NullObject::get())) return nullptr;

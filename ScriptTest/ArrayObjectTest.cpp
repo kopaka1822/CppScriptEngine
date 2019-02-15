@@ -9,7 +9,7 @@ TEST(TestSuite, ArrayBounds)
 	auto strObj = Util::makeObject("test");
 	
 	auto arr = Util::makeArray(intObj, strObj);
-	EXPECT_EQ(arr->count(), 2);
+	EXPECT_EQ(arr->getCount(), 2);
 
 	EXPECT_NO_THROW(arr->get(0));
 	EXPECT_NO_THROW(arr->get(1));
@@ -50,8 +50,8 @@ TEST(TestSuite, Slice)
 {
 	auto arr = Util::makeArray(3, 5, 7, 9, 11);
 	auto slice = arr->slice(1, 2);
-	// count of 2
-	ASSERT_EQ(slice->count(), 2);
+	// getCount of 2
+	ASSERT_EQ(slice->getCount(), 2);
 	// elements are shallow copy
 	ASSERT_TRUE(slice->get(0).get() == arr->get(1).get());
 	ASSERT_TRUE(slice->get(1).get() == arr->get(2).get());
@@ -61,9 +61,9 @@ TEST(TestSuite, Slice)
 	ASSERT_THROW(arr->slice(100, 2), std::out_of_range);
 
 	ASSERT_NO_THROW(arr->slice(1, 0));
-	// count negative
+	// getCount negative
 	ASSERT_THROW(arr->slice(1, -1), std::runtime_error);
-	// count to big
+	// getCount to big
 	ASSERT_THROW(arr->slice(1, 5), std::out_of_range);
 }
 

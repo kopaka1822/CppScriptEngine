@@ -139,7 +139,7 @@ void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 	for(const auto& rule : rules)
 	{
 		// traverse tokens from right to left
-		for(int i = tokens.size() - rule->patternLength(); i >= 0; --i)
+		for(int i = int(tokens.size()) - rule->patternLength(); i >= 0; --i)
 		{
 			if (rule->matches(tokens.begin() + i))
 			{

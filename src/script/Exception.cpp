@@ -34,9 +34,9 @@ Exception(objectName + " cannot be cloned")
 script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount,
 	const ArrayObjectPtr& args)
 {
-	stream << "invalid argument count for " << functionSignature
+	stream << "invalid argument getCount for " << functionSignature
 		<< ". expected " << expectedCount << " argument" << (expectedCount == 1?"":"s")
-		<< " but got " << args->count()
+		<< " but got " << args->getCount()
 		<< ". args: " + args->toString();
 }
 
