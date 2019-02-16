@@ -35,14 +35,6 @@ void script::ScriptEngine::execute(const std::string& command)
 	}
 }
 
-void script::ScriptEngine::addStatic(const std::string& name, ScriptObjectPtr object)
-{
-	if (name.empty())
-		throw std::runtime_error("ScriptEngine::addStatic name was empty");
-
-	m_objects[name] = std::move(object);
-}
-
 script::ScriptObjectPtr script::ScriptEngine::getObject(const std::string& object) const
 {
 	const auto it = m_objects.find(object);
@@ -59,5 +51,36 @@ void script::ScriptEngine::setObject(const std::string& name, ScriptObjectPtr ob
 		return;
 	}
 
+	if (name.empty())
+		throw std::runtime_error("ScriptEngine::setObject object name was empty");
+
+	if (!islower(static_cast<unsigned char>(name[0])))
+		throw std::runtime_error("ScriptEngine::setObject object name must start with a lowercase letter");
+
 	m_objects[name] = object;
+}
+
+script::ScriptObjectPtr script::ScriptEngine::getStaticObject(const std::string& object) const
+{
+	const auto it = m_staticObjects.find(object);
+	if (it == m_staticObjects.end()) return nullptr;
+
+	return it->second;
+}
+
+void script::ScriptEngine::setStaticObject(const std::string& name, ScriptObjectPtr object)
+{
+	if (name.empty())
+		throw std::runtime_error("ScriptEngine::setStaticObject object name was empty");
+
+	if (!isupper(static_cast<unsigned char>(name[0])))
+		throw std::runtime_error("ScriptEngine::setStaticObject object name must start with an uppercase letter");
+
+	if (!object)
+		throw std::runtime_error("ScriptEngine::setStaticObject object was null");
+
+	if (m_staticObjects.find(name) != m_staticObjects.end())
+		throw std::runtime_error("ScriptEngine::setStaticObject object \"" + name + "\" already exists");
+
+	m_staticObjects[name] = object;
 }

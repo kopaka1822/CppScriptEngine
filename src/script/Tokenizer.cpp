@@ -234,7 +234,10 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			const auto val = start++;
-			curToken = std::make_unique<L2IdentifierToken>(val->getValue(), val->getPosition());
+			if (val->startsWithLowercase())
+				curToken = std::make_unique<L2IdentifierToken>(val->getValue(), val->getPosition());
+			else
+				curToken = std::make_unique<L2StaticIdentifierToken>(val->getValue(), val->getPosition());
 		}   break;
 
 		case L1Token::Type::IdentifierAssign: {

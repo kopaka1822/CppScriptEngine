@@ -20,7 +20,7 @@ namespace script
 		ScriptObject& operator=(ScriptObject&&) = delete;
 
 		virtual ~ScriptObject() = default;
-		virtual std::string toString() const = 0;
+		virtual std::string toString() const;
 		virtual ScriptObjectPtr clone() const;
 		virtual bool equals(const ScriptObjectPtr& other) const;
 		std::string type() const;

@@ -16,6 +16,11 @@ script::ScriptObject::ScriptObject()
 	addFunction("getFunctionNames", Util::makeFunction(this, &ScriptObject::getFunctionNames, "array ScriptObject::getFunctionNames()"));
 }
 
+std::string script::ScriptObject::toString() const
+{
+	return type();
+}
+
 script::ScriptObjectPtr script::ScriptObject::clone() const
 {
 	throw ObjectNotCloneableException(type());

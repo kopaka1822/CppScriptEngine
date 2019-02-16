@@ -49,6 +49,27 @@ namespace script
 		size_t m_position;
 	};
 
+	class L2StaticIdentifierToken : public L2Token
+	{
+	public:
+		L2StaticIdentifierToken(std::string name, size_t position)
+			: m_name(std::move(name)),
+			m_position(position)
+		{}
+
+		ScriptObjectPtr execute(ScriptEngine& engine) const override
+		{
+			auto obj = engine.getStaticObject(m_name);
+			if (!obj)
+				throw IdentifierError(m_position, m_name);
+
+			return obj;
+		}
+	private:
+		std::string m_name;
+		size_t m_position;
+	};
+
 	class L2IdentifierAssignToken final : public L2Token
 	{
 	public:
