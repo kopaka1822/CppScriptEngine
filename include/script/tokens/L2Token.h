@@ -76,8 +76,8 @@ namespace script
 		{
 			// make array from arguments
 			auto arr = std::make_shared<ArrayObject>();
-			for (const auto& v : m_values)
-				arr->add(v->execute(engine));
+			for (auto i = m_values.begin(), end = m_values.end(); i != end; ++i)
+				arr->add((*i)->execute(engine));
 
 			return arr;
 		}
@@ -105,12 +105,11 @@ namespace script
 		{
 			auto args = std::dynamic_pointer_cast<ArrayObject>(m_args->execute(engine));
 			auto obj = m_value->execute(engine);
-			ScriptObjectPtr res;
 
 			// call function on value
 			try
 			{
-				res = obj->invoke(m_funcName, args);
+				obj = obj->invoke(m_funcName, args);
 			}
 			catch (const InvalidFunctionName& e)
 			{
@@ -123,13 +122,89 @@ namespace script
 				throw ParseError(m_position, m_funcName + " exception: " + std::string(e.what()));
 			}
 
-			return res;
+			return obj;
 		}
 	private:
 		std::unique_ptr<L2Token> m_value;
 		size_t m_position;
 		std::string m_funcName;
 		std::unique_ptr<L2ArgumentListToken> m_args;
+	};
+
+	class L2PropertyGetterToken final : public L2Token
+	{
+	public:
+		L2PropertyGetterToken(std::unique_ptr<L2Token> object, std::string propName, size_t position)
+			: m_object(move(object)),
+			  m_funcName(propName),
+			  m_position(position)
+		{
+		}
+
+		ScriptObjectPtr execute(ScriptEngine& engine) const override
+		{
+			auto obj = m_object->execute(engine);
+			try
+			{
+				obj = obj->invoke("get" + m_funcName, Util::makeArray());
+			}
+			catch (const InvalidFunctionName&)
+			{
+				// add line number information
+				throw ParseError(m_position, "property getter " + m_funcName + " not found");
+			}
+			catch (const std::exception& e)
+			{
+				// add line number information
+				throw ParseError(m_position, "get" + m_funcName + " exception: " + std::string(e.what()));
+			}
+			return obj;
+		}
+
+	private:
+		std::unique_ptr<L2Token> m_object;
+		std::string m_funcName;
+		size_t m_position;
+	};
+
+	class L2PropertySetterToken final : public L2Token
+	{
+	public:
+		L2PropertySetterToken(std::unique_ptr<L2Token> object, std::unique_ptr<L2Token> arg, std::string propName, size_t position)
+			: m_object(move(object)),
+			m_arg(move(arg)),
+			m_funcName(propName),
+			m_position(position)
+		{
+
+		}
+
+		ScriptObjectPtr execute(ScriptEngine& engine) const override
+		{
+			auto arg = m_object->execute(engine);
+			auto obj = m_object->execute(engine);
+			try
+			{
+				obj = obj->invoke("set" + m_funcName, Util::makeArray(arg));
+			}
+			catch (const InvalidFunctionName&)
+			{
+				// add line number information
+				throw ParseError(m_position, "property setter " + m_funcName + " not found");
+			}
+			catch (const std::exception& e)
+			{
+				// add line number information
+				throw ParseError(m_position, "set" + m_funcName + " exception: " + std::string(e.what()));
+			}
+			return obj;
+		}
+
+	private:
+		std::unique_ptr<L2Token> m_object;
+		std::unique_ptr<L2Token> m_arg;
+		std::string m_funcName;
+		size_t m_position;
 	};
 
 	class L2OperatorToken : public L2Token
@@ -155,6 +230,10 @@ namespace script
 
 		ScriptObjectPtr execute(ScriptEngine& engine) const override
 		{
+			ScriptObjectPtr right;
+			if(m_right)
+				right = m_right->execute(engine);
+			
 			auto left = m_left->execute(engine);
 
 			// clone object
@@ -173,7 +252,7 @@ namespace script
 			// call the appropriate function
 			if(m_right) // binary operator
 			{
-				auto right = m_right->execute(engine);
+				
 				try
 				{
 					left = left->invoke(m_funcName, Util::makeArray(right));

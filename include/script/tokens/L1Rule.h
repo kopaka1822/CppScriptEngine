@@ -112,6 +112,10 @@ namespace script
 		{
 			if (!(begin->getType() == L1Token::Type::Identifier && (begin + 1)->getType() == L1Token::Type::BracketOpen))
 				return false;
+
+			if (!(begin->startsWithLowercase()))
+				return false; // functions start with lowercase
+
 			// check function syntax
 			if (!(begin->startsWithLetter()))
 				throw SyntaxError(begin->getPosition(), begin->getValue(), "functions must start with a letter");

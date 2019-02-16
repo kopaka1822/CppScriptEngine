@@ -356,14 +356,39 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 			++start;
 			if (start == end)
 				throw SyntaxError(pos, "end of command", "missing function call after \".\"");
-			if (start->getType() != L1Token::Type::Function)
-				throw SyntaxError(start->getPosition(), start->getValue(), "expected function call");
-			auto funcName = start->getValue();
-			// parse arguments
-			auto args = parseArgumentList(++start, end, L1Token::Type::BracketClosed, "function call");
 
-			// function call ended
-			curToken = std::make_unique<L2FunctionToken>(move(curToken), funcName, pos, move(args));
+			if(start->getType() == L1Token::Type::Function)
+			{
+				// make function call
+				auto funcName = start->getValue();
+				// parse arguments
+				auto args = parseArgumentList(++start, end, L1Token::Type::BracketClosed, "function call");
+
+				// function call ended
+				curToken = std::make_unique<L2FunctionToken>(move(curToken), funcName, pos, move(args));
+			}
+			else if(start->getType() == L1Token::Type::Identifier)
+			{
+				// handle getter
+				if (!start->startWithUppercase())
+					throw SyntaxError(pos, start->getValue(), "property token must start with an uppercase letter");
+
+				// make getter function
+				curToken = std::make_unique<L2PropertyGetterToken>(move(curToken), start->getValue(), pos);
+				++start;
+			}
+			else if(start->getType() == L1Token::Type::IdentifierAssign)
+			{
+				// handle setter
+				if (!start->startWithUppercase())
+					throw SyntaxError(pos, start->getValue(), "property token must start with an uppercase letter");
+
+				// make setter function
+				auto setName = start->getValue();
+				auto arg = getL2Tokens(++start, end, false, OpReturnMode::End);
+				curToken = std::make_unique<L2PropertySetterToken>(move(curToken), move(arg), move(setName), pos);
+			}
+			else throw SyntaxError(start->getPosition(), start->getValue(), "expected function call or property");
 		} break;
 
 		case L1Token::Type::Function:

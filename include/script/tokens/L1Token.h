@@ -88,6 +88,12 @@ namespace script
 			return islower(static_cast<unsigned char>(m_value[0]));
 		}
 
+		bool startWithUppercase() const
+		{
+			if (m_value.empty()) return false;
+			return isupper(static_cast<unsigned char>(m_value[0]));
+		}
+
 		int getIntValue()const try
 		{
 			return std::stoi(m_value);
