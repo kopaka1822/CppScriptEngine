@@ -12,7 +12,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getExecutable(const std::str
 	applyL1Rules(tokens);
 
 	auto start = tokens.cbegin();
-	auto res = getL2Tokens(start, tokens.cend(), false);
+	auto res = getL2Tokens(start, tokens.cend(), false, OpReturnMode::End);
 	if (start != tokens.cend())
 		throw SyntaxError(start->getPosition(), start->getValue(), "");
 
@@ -61,18 +61,18 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		case '.':
 			curToken = L1Token(L1Token::Type::Dot, position, ".");
 			break;
-		//case '+':
-		//	curToken = L1Token(L1Token::Type::Plus, position);
-		//	break;
-		//case '-':
-		//	curToken = L1Token(L1Token::Type::Minus, position);
-		//	break;
-		//case '*':
-		//	curToken = L1Token(L1Token::Type::Multiply, position);
-		//	break;
-		//case '/':
-		//	curToken = L1Token(L1Token::Type::Divide, position);
-		//	break;
+		case '+':
+			curToken = L1Token(L1Token::Type::Plus, position, "+");
+			break;
+		case '-':
+			curToken = L1Token(L1Token::Type::Minus, position, "-");
+			break;
+		case '*':
+			curToken = L1Token(L1Token::Type::Multiply, position, "*");
+			break;
+		case '/':
+			curToken = L1Token(L1Token::Type::Divide, position, "/");
+			break;
 		case ',':
 			curToken = L1Token(L1Token::Type::Separator, position, ",");
 			break;
@@ -186,14 +186,15 @@ void script::Tokenizer::verifyBrackets(const std::vector<L1Token>& tokens)
 		throw SyntaxError(-1, "end of command", std::to_string(expectedBracket.size()) + " unclosed brackets");
 }
 
-std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, bool isArgumentList)
+std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end,
+	bool isArgumentList, OpReturnMode mode)
 {
 	std::unique_ptr<L2Token> curToken;
 	while (start != end)
 	{
 		switch (start->getType())
 		{
-			// primitives
+#pragma region Primitives
 		case L1Token::Type::String:
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
@@ -225,6 +226,9 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 			++start;
 			curToken = std::make_unique<L2PrimitiveValueToken<nullptr_t>>(nullptr);
 			break;
+#pragma endregion
+
+#pragma region Identifier
 		case L1Token::Type::Identifier: {
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
@@ -232,19 +236,24 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 			const auto val = start++;
 			curToken = std::make_unique<L2IdentifierToken>(val->getValue(), val->getPosition());
 		}   break;
-		case L1Token::Type::Assign:
-			// not supported yet... replace with identifier assign
-			throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 		case L1Token::Type::IdentifierAssign: {
 			if (curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "");
 
 			auto name = start->getValue();
-			auto val = getL2Tokens(++start, end, true);
+			auto val = getL2Tokens(++start, end, true, OpReturnMode::End);
 			return std::make_unique<L2IdentifierAssignToken>(name, move(val));
 		}
+#pragma endregion
 
+#pragma region Assign
+		case L1Token::Type::Assign:
+			// not supported yet... replace with identifier assign
+			throw SyntaxError(start->getPosition(), start->getValue(), "");
+#pragma endregion
+
+#pragma region Array and Brackets
 		case L1Token::Type::Separator:
 			if (isArgumentList) 
 				goto loopend;
@@ -256,7 +265,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 
 			// read value within brackets
 			const auto pos = start->getPosition();
-			curToken = getL2Tokens(++start, end, true);
+			curToken = getL2Tokens(++start, end, true, OpReturnMode::End);
 			// start should point to bracket end
 			if (start == end) 
 				throw SyntaxError(pos, "end of command", "missing closing bracket");
@@ -281,6 +290,65 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 			curToken = move(args);
 		} break;
 
+#pragma endregion 
+
+#pragma region Operators
+		case L1Token::Type::Plus: {			
+			auto pos = start->getPosition();
+			if (!curToken) // ignore (would no change the sign of the object)
+			{
+				++start;
+				break;
+			}
+			if (mode == OpReturnMode::PlusMinus || mode == OpReturnMode::MultDiv)
+				return curToken;
+
+			// add curToken with the next value
+			auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::PlusMinus);
+			curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, "add", true, "+");
+		} break;
+		case L1Token::Type::Minus:
+			if(!curToken)
+			{
+				// changes the sign of the next object
+				auto pos = start->getPosition();
+				auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::MultDiv);
+				curToken = std::make_unique<L2OperatorToken>(move(nextVal), nullptr, pos, "negate", true, "-");
+			}
+			else
+			{
+				// subtract with the next object
+				if (mode == OpReturnMode::PlusMinus || mode == OpReturnMode::MultDiv)
+					return curToken;
+
+				auto pos = start->getPosition();
+				auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::PlusMinus);
+				curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, "subtract", true, "-");
+			}
+			break;
+		case L1Token::Type::Multiply: {
+			if (!curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "operand on left side missing");
+			if (mode == OpReturnMode::MultDiv)
+				return curToken;
+			auto pos = start->getPosition();
+			// multiply with next value
+			auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::MultDiv);
+			curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, "multiply", true, "*");
+		}break;
+		case L1Token::Type::Divide: {
+			if (!curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "operand on left side missing");
+			if (mode == OpReturnMode::MultDiv)
+				return curToken;
+			auto pos = start->getPosition();
+			// divide with next value
+			auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::MultDiv);
+			curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, "divide", true, "/");
+		}break;
+#pragma endregion 
+
+#pragma region Function Call
 		case L1Token::Type::Dot: {
 			if (!curToken)
 				throw SyntaxError(start->getPosition(), start->getValue(), "function call needs a valid object");
@@ -301,7 +369,9 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 		case L1Token::Type::Function:
 			// function call without a preceding dot (maybe support that later?)
 			throw SyntaxError(start->getPosition(), start->getValue(), "functions call must be preceded by a dot");
-		default: ;
+
+#pragma endregion 
+			default: ;
 		}
 	}
 	loopend:
@@ -334,7 +404,7 @@ std::unique_ptr<script::L2ArgumentListToken> script::Tokenizer::parseArgumentLis
 		if (start == end)
 			throw SyntaxError(-1, "end of command", type + " was not closed");
 
-		auto value = getL2Tokens(start, end, true);
+		auto value = getL2Tokens(start, end, true, OpReturnMode::End);
 		args->add(move(value));
 
 		if (start == end)

@@ -9,6 +9,13 @@ namespace script
 	class Tokenizer
 	{
 	public:
+		enum class OpReturnMode
+		{
+			End,
+			PlusMinus,
+			MultDiv
+		};
+
 		Tokenizer() = delete;
 
 		static std::unique_ptr<L2Token> getExecutable(const std::string& command);
@@ -16,7 +23,7 @@ namespace script
 		static std::vector<L1Token> getL1Tokens(const std::string& command);
 		static void applyL1Rules(std::vector<L1Token>& tokens);
 		static void verifyBrackets(const std::vector<L1Token>& tokens);
-		static std::unique_ptr<L2Token> getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, bool isArgumentList);
+		static std::unique_ptr<L2Token> getL2Tokens(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, bool isArgumentList, OpReturnMode mode);
 
 	private:
 		static std::unique_ptr<L2ArgumentListToken> parseArgumentList(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, L1Token::Type endToken, const std::string& type);

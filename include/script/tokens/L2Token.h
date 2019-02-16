@@ -120,7 +120,7 @@ namespace script
 			catch (const std::exception& e)
 			{
 				// add line number information
-				throw ParseError(m_position, m_funcName + " invocation threw an exception: " + std::string(e.what()));
+				throw ParseError(m_position, m_funcName + " exception: " + std::string(e.what()));
 			}
 
 			return res;
@@ -130,5 +130,92 @@ namespace script
 		size_t m_position;
 		std::string m_funcName;
 		std::unique_ptr<L2ArgumentListToken> m_args;
+	};
+
+	class L2OperatorToken : public L2Token
+	{
+	public:
+		/// \brief token for unary and binary operators
+		/// \param left left operand
+		/// \param right right operand or null if unary operator
+		/// \param position 
+		/// \param funcName operator name (add)
+		/// \param clone object will be cloned before operator invocation
+		/// \param opSign operator sign (+)
+		L2OperatorToken(std::unique_ptr<L2Token> left, std::unique_ptr<L2Token> right, size_t position, std::string funcName,
+			bool clone, std::string opSign)
+		:
+		m_left(move(left)), 
+		m_right(move(right)), 
+		m_position(position), 
+		m_clone(clone), 
+		m_funcName(move(funcName)), 
+		m_opSign(move(opSign))
+		{}
+
+		ScriptObjectPtr execute(ScriptEngine& engine) const override
+		{
+			auto left = m_left->execute(engine);
+
+			// clone object
+			if(m_clone)
+			{
+				try
+				{
+					left = left->clone();
+				}
+				catch (std::exception& e)
+				{
+					throw ParseError(m_position, "object must be cloneable to use the " + m_opSign + " operator: " + std::string(e.what()));
+				}
+			}
+
+			// call the appropriate function
+			if(m_right) // binary operator
+			{
+				auto right = m_right->execute(engine);
+				try
+				{
+					left = left->invoke(m_funcName, Util::makeArray(right));
+				}
+				catch (const InvalidFunctionName&)
+				{
+					// add line number information
+					throw ParseError(m_position, "object requires a " + m_funcName + "(object) function to use the binary \"" + m_opSign + "\" operator");
+				}
+				catch (const std::exception& e)
+				{
+					// add line number information
+					throw ParseError(m_position, m_funcName + " exception: " + std::string(e.what()));
+				}
+			}
+			else // unary operator
+			{
+				try
+				{
+					left = left->invoke(m_funcName, Util::makeArray());
+				}
+				catch (const InvalidFunctionName&)
+				{
+					// add line number information
+					throw ParseError(m_position, "object requires a " + m_funcName + "() function to use the unary \"" + m_opSign + "\" operator");
+				}
+				catch (const std::exception& e)
+				{
+					// add line number information
+					throw ParseError(m_position, m_funcName + " exception: " + std::string(e.what()));
+				}
+			}
+
+			return left;
+		}
+
+	private:
+		std::unique_ptr<L2Token> m_left;
+		std::unique_ptr<L2Token> m_right;
+		size_t m_position;
+		bool m_clone;
+		std::string m_funcName;
+		std::string m_opSign;
 	};
 }
