@@ -21,7 +21,7 @@ namespace script
 
 		virtual ~ScriptObject() = default;
 		virtual std::string toString() const = 0;
-		virtual ScriptObjectPtr clone() const = 0;
+		virtual ScriptObjectPtr clone() const;
 		virtual bool equals(const ScriptObjectPtr& other) const;
 		std::string type() const;
 		size_t hashCode() const;

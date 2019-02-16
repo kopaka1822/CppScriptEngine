@@ -16,6 +16,11 @@ script::ScriptObject::ScriptObject()
 	addFunction("getFunctionNames", Util::makeFunction(this, &ScriptObject::getFunctionNames, "array ScriptObject::getFunctionNames()"));
 }
 
+script::ScriptObjectPtr script::ScriptObject::clone() const
+{
+	throw ObjectNotCloneableException(type());
+}
+
 bool script::ScriptObject::equals(const ScriptObjectPtr& other) const
 {
 	// reference equals

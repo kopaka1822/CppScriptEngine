@@ -18,6 +18,7 @@ namespace script
 		bool equals(const ScriptObjectPtr& other) const override;
 
 		const ScriptObjectPtr& get(int index) const;
+		void set(int index, ScriptObjectPtr object);
 		void add(ScriptObjectPtr object);
 		void remove(int index);
 		void clear();

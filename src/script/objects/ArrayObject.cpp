@@ -13,6 +13,7 @@ script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	m_values(std::move(values))
 {
 	addFunction("get", Util::makeFunction(this, &ArrayObject::get, "ArrayObject::get(int index)"));
+	addFunction("set", Util::makeFunction(this, &ArrayObject::set, "ArrayObject::set(int index, object)"));
 	addFunction("add", [this](const ArrayObjectPtr& args)
 	{
 		// add all elements
@@ -53,6 +54,14 @@ const script::ScriptObjectPtr& script::ArrayObject::get(int index) const
 		throw std::out_of_range("ArrayObject::get index out of range: " + std::to_string(index));
 
 	return m_values[index];
+}
+
+void script::ArrayObject::set(int index, ScriptObjectPtr object)
+{
+	if (index >= int(m_values.size()) || index < 0)
+		throw std::out_of_range("ArrayObject::set index out of range: " + std::to_string(index));
+
+	m_values[index] = object;
 }
 
 void script::ArrayObject::add(ScriptObjectPtr object)
