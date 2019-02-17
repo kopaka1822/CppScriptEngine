@@ -106,3 +106,27 @@ TEST(TestSuite, NumbersTest)
 	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
 	ASSERT_EQ(output, "15");
 }
+
+TEST(TestSuite, PropertiesTest)
+{
+	ScriptEngine engine;
+	decltype(Tokenizer::getExecutable("")) exec;
+	std::string output;
+
+	// getter
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("[1, 2, 5].Count"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "3");
+
+	// TODO add setter
+
+	// static property
+	engine.setStaticObject("Dummy", Util::makeObject("StaticProp"));
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("b = Dummy"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "\"StaticProp\"");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("Dummy.Length"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "10");
+}

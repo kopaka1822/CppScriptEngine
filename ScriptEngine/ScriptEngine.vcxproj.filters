@@ -66,6 +66,9 @@
     <ClCompile Include="..\src\script\statics\ConsoleStaticObject.cpp">
       <Filter>src\script\statics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp">
+      <Filter>src\script\statics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -129,6 +132,9 @@
       <Filter>include\script</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\statics\ConsoleStaticObject.h">
+      <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\SystemStaticObject.h">
       <Filter>include\script\statics</Filter>
     </ClInclude>
   </ItemGroup>

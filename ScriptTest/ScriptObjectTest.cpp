@@ -34,9 +34,6 @@ TEST(TestSuite, AddFunction)
 	class Dummy : public ScriptObject
 	{
 	public:
-		std::string toString() const override { return ""; }
-		ScriptObjectPtr clone() const override { return nullptr; }
-
 		Dummy()
 		{}
 

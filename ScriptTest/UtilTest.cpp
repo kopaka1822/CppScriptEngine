@@ -134,14 +134,6 @@ public:
 class UtilTestWrapper : public ValueObject<UtilTest>
 {
 public:
-	std::string toString() const override
-	{
-		return "UtilTestWrapper";
-	}
-	ScriptObjectPtr clone() const override
-	{
-		throw ObjectNotCloneableException("UtilTestDerived");
-	}
 };
 
 // tests wrapper functions with void return value
@@ -247,16 +239,6 @@ TEST(TestSuite, MakeReturnFunctionForWrapper)
 class UtilTestDerived : public GetValueObject<UtilTestDerived>
 {
 public:
-	std::string toString() const override
-	{
-		return "UtilTestDerived";
-	}
-
-	ScriptObjectPtr clone() const override
-	{
-		throw ObjectNotCloneableException("UtilTestDerived");
-	}
-
 	UtilTestDerived& getValue() override
 	{
 		return *this;
