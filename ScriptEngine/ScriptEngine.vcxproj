@@ -146,6 +146,9 @@
     <ClCompile Include="..\src\script\statics\ConsoleStaticObject.cpp" />
     <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp" />
     <ClCompile Include="..\src\script\Tokenizer.cpp" />
+    <ClCompile Include="..\src\script\tokens\L1Rule.cpp" />
+    <ClCompile Include="..\src\script\tokens\L1Token.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2Token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\BoolMutex.h" />

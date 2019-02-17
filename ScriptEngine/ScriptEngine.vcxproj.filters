@@ -69,6 +69,15 @@
     <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp">
       <Filter>src\script\statics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1Token.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1Rule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2Token.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
