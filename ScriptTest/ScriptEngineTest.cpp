@@ -107,6 +107,43 @@ TEST(TestSuite, NumbersTest)
 	ASSERT_EQ(output, "15");
 }
 
+TEST(TestSuite, NumbersAssingTest)
+{
+	ScriptEngine engine;
+	decltype(Tokenizer::getExecutable("")) exec;
+	std::string output;
+
+	// basic math rules
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable(" 5 += 10"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "15");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("a = 6"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "6");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable(" a /= 1 * 2"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "3");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable(" 1 + a *= b = 2"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "7");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("b"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "2");
+
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("a"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "6");
+
+	// basic operator cloning
+	ASSERT_NO_THROW(exec = Tokenizer::getExecutable("a -= -1"));
+	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
+	ASSERT_EQ(output, "7");
+}
+
 TEST(TestSuite, PropertiesTest)
 {
 	ScriptEngine engine;

@@ -128,11 +128,11 @@ void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 	static const L1FloatRule2 floatRule2;
 	static const L1NumberRule numberRule;
 	static const L1FunctionRule functionRule;
-	//static const L1OperatorAssignRule operatorAssignRule;
+	static const L1OperatorAssignRule operatorAssignRule;
 	static const L1IdentifierAssignRule idAssignRule;
-	static const std::array<const L1Rule*, 5> rules = {
+	static const std::array<const L1Rule*, 6> rules = {
 		&floatRule1, &floatRule2,&numberRule, 
-		&functionRule, /*&operatorAssignRule,*/ &idAssignRule
+		&functionRule, &operatorAssignRule, &idAssignRule
 	};
 
 	// apply rules in order
@@ -251,9 +251,22 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 #pragma endregion
 
 #pragma region Assign
+		case L1Token::Type::Undefined:
 		case L1Token::Type::Assign:
 			// not supported yet... replace with identifier assign
 			throw SyntaxError(start->getPosition(), start->getValue(), "");
+		case L1Token::Type::PlusAssign: 
+			handleOperatorAssign(start, end, curToken, isArgumentList, "add", "+=");
+			break;
+		case L1Token::Type::MinusAssign:
+			handleOperatorAssign(start, end, curToken, isArgumentList, "subtract", "-=");
+			break;
+		case L1Token::Type::MultiplyAssign:
+			handleOperatorAssign(start, end, curToken, isArgumentList, "multiply", "*=");
+			break;
+		case L1Token::Type::DivideAssign:
+			handleOperatorAssign(start, end, curToken, isArgumentList, "divide", "/=");
+			break;
 #pragma endregion
 
 #pragma region Array and Brackets
@@ -446,4 +459,16 @@ std::unique_ptr<script::L2ArgumentListToken> script::Tokenizer::parseArgumentLis
 
 	++start;
 	return args;
+}
+
+void script::Tokenizer::handleOperatorAssign(std::vector<L1Token>::const_iterator& start,
+	std::vector<L1Token>::const_iterator end, std::unique_ptr<L2Token>& curToken, bool isArgumentList,
+	std::string funcName, std::string opName)
+{
+	if (!curToken)
+		throw SyntaxError(start->getPosition(), start->getValue(), "operand on left side missing");
+
+	auto pos = start->getPosition();
+	auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::End);
+	curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, move(funcName), false, move(opName));
 }
