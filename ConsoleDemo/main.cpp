@@ -11,7 +11,16 @@ int main()
 	while (true)
 	{
 		std::getline(std::cin, command);
-		engine.execute(command);
+		try
+		{
+			std::string res;
+			engine.execute(command, &res);
+			std::cout << ">> " << res << std::endl;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "ERR: " << e.what() << std::endl;
+		}
 	}
 	return 0;
 }

@@ -1,8 +1,7 @@
 #include "../include/script/ScriptEngine.h"
-#include "script/Tokenizer.h"
-#include <iostream>
+#include "../include/script/Tokenizer.h"
 
-void script::ScriptEngine::execute(const std::string& command)
+void script::ScriptEngine::execute(const std::string& command, std::string* result)
 {
 	if(command.empty()) return;
 
@@ -10,7 +9,8 @@ void script::ScriptEngine::execute(const std::string& command)
 	{
 		const auto token = Tokenizer::getExecutable(command);
 		const auto res = token->execute(*this);
-		std::cout << ">> " << res->toString() << std::endl;
+		if (result)
+			*result = res->toString();
 	}
 	catch (const ParseError& error)
 	{
@@ -26,12 +26,15 @@ void script::ScriptEngine::execute(const std::string& command)
 			errorPosition = command;
 			errorPosition.insert(pos, ">");
 		}
-		std::cout << "script: " << error.what() << " at " + errorPosition << std::endl;
+		throw std::runtime_error(error.what() + std::string(" at ") + errorPosition);
 	}
-	catch(const std::exception& e)
-	{
-		std::cout << "script: " << e.what() << std::endl;
-	}
+}
+
+std::string script::ScriptEngine::execute(const std::string& command)
+{
+	std::string res;
+	execute(command, &res);
+	return res;
 }
 
 script::ScriptObjectPtr script::ScriptEngine::getObject(const std::string& object) const

@@ -14,7 +14,15 @@ namespace script
 	class ScriptEngine
 	{
 	public:
-		void execute(const std::string& command);
+		
+		/// \brief executes the given command and stores the result into a string
+		/// \param command command to execute
+		/// \param result pointer to empty string or nullptr if result should not be stored
+		void execute(const std::string& command, std::string* result);
+
+		/// \brief executes the given command and returns the result
+		/// \param command command to execute
+		std::string execute(const std::string& command);
 
 		/// \brief retrieves the object with the given name
 		/// \param object name
