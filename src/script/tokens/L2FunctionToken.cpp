@@ -11,7 +11,7 @@ script::L2FunctionToken::L2FunctionToken(std::unique_ptr<L2Token> value, std::st
 
 script::ScriptObjectPtr script::L2FunctionToken::execute(ScriptEngine& engine) const
 {
-	auto args = std::dynamic_pointer_cast<ArrayObject>(m_args->execute(engine));
+	const auto args = std::dynamic_pointer_cast<ArrayObject>(m_args->execute(engine));
 	auto obj = m_value->execute(engine);
 
 	// call function on value

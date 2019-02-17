@@ -1,6 +1,6 @@
 #include "../../include/script/Exception.h"
 
-script::Exception::Exception(std::string message)
+script::Exception::Exception(const std::string& message)
 	:
 std::runtime_error("")
 {

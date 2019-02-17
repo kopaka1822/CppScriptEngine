@@ -1,7 +1,5 @@
 #include "../../../include/script/objects/ScriptObject.h"
 #include "../../../include/script/objects/ArrayObject.h"
-#include "../../../include/script/objects/StringObject.h"
-#include "../../../include/script/objects/BoolObject.h"
 #include "../../../include/script/Util.h"
 #include <cctype>
 #include <any>

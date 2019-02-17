@@ -18,5 +18,5 @@ bool script::L1FloatRule2::matches(std::vector<L1Token>::const_iterator begin) c
 script::L1Token script::L1FloatRule2::apply(std::vector<L1Token>::const_iterator begin) const
 {
 	auto val = "0." + (begin + 1)->getValue();
-	return L1Token(L1Token::Type::Float, begin->getPosition(), val);
+	return L1Token(L1Token::Type::Float, begin->getPosition(), move(val));
 }

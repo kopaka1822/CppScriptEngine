@@ -11,7 +11,7 @@ script::L2PropertySetterToken::L2PropertySetterToken(std::unique_ptr<L2Token> ob
 
 script::ScriptObjectPtr script::L2PropertySetterToken::execute(ScriptEngine& engine) const
 {
-	auto arg = m_object->execute(engine);
+	const auto arg = m_object->execute(engine);
 	auto obj = m_object->execute(engine);
 	try
 	{

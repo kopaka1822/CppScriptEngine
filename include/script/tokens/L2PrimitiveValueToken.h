@@ -9,7 +9,7 @@ namespace script
 	public:
 		explicit L2PrimitiveValueToken(T value)
 			:
-			m_value(value)
+			m_value(std::move(value))
 		{}
 		ScriptObjectPtr execute(ScriptEngine&) const override
 		{

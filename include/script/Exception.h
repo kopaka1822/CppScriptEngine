@@ -8,7 +8,7 @@ namespace script
 	class Exception : public std::runtime_error
 	{
 	public:
-		explicit Exception(std::string message);
+		explicit Exception(const std::string& message);
 		Exception();
 		Exception(const Exception& copy);
 		~Exception() override = default;

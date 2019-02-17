@@ -13,7 +13,7 @@ namespace script
 	public:
 		Util() = delete;
 
-		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function
 		/// \tparam TClass 
 		/// \tparam TArgs 
 		/// \param parent pointer of the class that owns this function
@@ -36,7 +36,7 @@ namespace script
 			};
 		}
 
-		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function
 		/// same as above but with a constant function
 		/// \tparam TClass 
 		/// \tparam TArgs 
@@ -52,7 +52,7 @@ namespace script
 			return Util::makeFunction(parent, const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
-		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function
 		/// \tparam TClass must be convertible to ScriptObject
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
@@ -66,7 +66,7 @@ namespace script
 			return Util::makeFunction(static_cast<ScriptObject*>(thisPtr), thisPtr, func, functionSignature);
 		}
 
-		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function
 		/// same as above but with a constant function
 		/// \tparam TClass must be convertible to ScriptObject
 		/// \tparam TArgs 
@@ -81,7 +81,7 @@ namespace script
 			return Util::makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
-		/// \brief converts a class memberfunction into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function
 		/// \tparam TClass 
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
@@ -107,7 +107,7 @@ namespace script
 			};
 		}
 
-		/// \brief converts a const class memberfunction into a ScriptObject compatible function
+		/// \brief converts a const class member function into a ScriptObject compatible function
 		/// \tparam TClass 
 		/// \tparam TArgs 
 		/// \param thisPtr class pointer
@@ -131,7 +131,7 @@ namespace script
 		}
 
 		/// \brief converts the T value into a GetValueObject<T>
-		/// this is used to convert basic return types of functions to SciptObjects
+		/// this is used to convert basic return types of functions to ScriptObjects
 		template<class T>
 		static ScriptObjectPtr makeObject(const T& value);
 

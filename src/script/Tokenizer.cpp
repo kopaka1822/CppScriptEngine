@@ -16,7 +16,6 @@
 #include "../../include/script/tokens/L2PrimitiveValueToken.h"
 #include <array>
 #include <stack>
-#include <cassert>
 
 std::unique_ptr<script::L2Token> script::Tokenizer::getExecutable(const std::string& command)
 {

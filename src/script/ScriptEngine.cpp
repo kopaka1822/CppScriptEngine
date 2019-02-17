@@ -6,16 +6,15 @@ void script::ScriptEngine::execute(const std::string& command)
 {
 	if(command.empty()) return;
 
-	std::unique_ptr<L2Token> token;
 	try
 	{
-		token = Tokenizer::getExecutable(command);
-		auto res = token->execute(*this);
+		const auto token = Tokenizer::getExecutable(command);
+		const auto res = token->execute(*this);
 		std::cout << ">> " << res->toString() << std::endl;
 	}
 	catch (const ParseError& error)
 	{
-		auto pos = error.position;
+		const auto pos = error.position;
 		std::string errorPosition;
 		if(pos == size_t(-1))
 		{

@@ -4,8 +4,8 @@ script::ScriptObjectPtr script::L2ArgumentListToken::execute(ScriptEngine& engin
 {
 	// make array from arguments
 	auto arr = std::make_shared<ArrayObject>();
-	for (auto i = m_values.begin(), end = m_values.end(); i != end; ++i)
-		arr->add((*i)->execute(engine));
+	for (const auto& m_value : m_values)
+		arr->add(m_value->execute(engine));
 
 	return arr;
 }

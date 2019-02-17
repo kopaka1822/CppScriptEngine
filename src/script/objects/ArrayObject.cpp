@@ -61,7 +61,7 @@ void script::ArrayObject::set(int index, ScriptObjectPtr object)
 	if (index >= int(m_values.size()) || index < 0)
 		throw std::out_of_range("ArrayObject::set index out of range: " + std::to_string(index));
 
-	m_values[index] = object;
+	m_values[index] = move(object);
 }
 
 void script::ArrayObject::add(ScriptObjectPtr object)
