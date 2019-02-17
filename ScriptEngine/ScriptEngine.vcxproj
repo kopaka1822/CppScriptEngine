@@ -146,6 +146,7 @@
     <ClCompile Include="..\src\script\statics\ConsoleStaticObject.cpp" />
     <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp" />
     <ClCompile Include="..\src\script\Tokenizer.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2ArgumentListToken.cpp" />
     <ClCompile Include="..\src\script\tokens\L1FloatRule1.cpp" />
     <ClCompile Include="..\src\script\tokens\L1FloatRule2.cpp" />
     <ClCompile Include="..\src\script\tokens\L1FunctionRule.cpp" />
@@ -153,7 +154,13 @@
     <ClCompile Include="..\src\script\tokens\L1NumberRule.cpp" />
     <ClCompile Include="..\src\script\tokens\L1OperatorAssignRule.cpp" />
     <ClCompile Include="..\src\script\tokens\L1Token.cpp" />
-    <ClCompile Include="..\src\script\tokens\L2Token.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2FunctionToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2IdentifierAssignToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2IdentifierToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2OperatorToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2PropertyGetterToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2PropertySetterToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2StaticIdentifierToken.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\BoolMutex.h" />
@@ -182,6 +189,15 @@
     <ClInclude Include="..\include\script\tokens\L1OperatorAssignRule.h" />
     <ClInclude Include="..\include\script\tokens\L1Token.h" />
     <ClInclude Include="..\include\script\tokens\L1Rule.h" />
+    <ClInclude Include="..\include\script\tokens\L2ArgumentListToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2FunctionToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2IdentifierAssignToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2IdentifierToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2OperatorToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2PrimitiveValueToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2PropertyGetterToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2PropertySetterToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2StaticIdentifierToken.h" />
     <ClInclude Include="..\include\script\tokens\L2Token.h" />
     <ClInclude Include="..\include\script\Util.h" />
   </ItemGroup>

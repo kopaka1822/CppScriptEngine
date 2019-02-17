@@ -5,6 +5,15 @@
 #include "../../include/script/tokens/L1FunctionRule.h"
 #include "../../include/script/tokens/L1OperatorAssignRule.h"
 #include "../../include/script/tokens/L1IdentifierAssignRule.h"
+#include "../../include/script/tokens/L2ArgumentListToken.h"
+#include "../../include/script/tokens/L2FunctionToken.h"
+#include "../../include/script/tokens/L2IdentifierAssignToken.h"
+#include "../../include/script/tokens/L2IdentifierToken.h"
+#include "../../include/script/tokens/L2OperatorToken.h"
+#include "../../include/script/tokens/L2PropertyGetterToken.h"
+#include "../../include/script/tokens/L2PropertySetterToken.h"
+#include "../../include/script/tokens/L2StaticIdentifierToken.h"
+#include "../../include/script/tokens/L2PrimitiveValueToken.h"
 #include <array>
 #include <stack>
 #include <cassert>
@@ -431,7 +440,7 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 	return curToken;
 }
 
-std::unique_ptr<script::L2ArgumentListToken> script::Tokenizer::parseArgumentList(
+std::unique_ptr<script::L2Token> script::Tokenizer::parseArgumentList(
 	std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, L1Token::Type endToken, const std::string& type)
 {
 	auto args = std::make_unique<L2ArgumentListToken>();

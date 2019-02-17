@@ -72,9 +72,6 @@
     <ClCompile Include="..\src\script\tokens\L1Token.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\script\tokens\L2Token.cpp">
-      <Filter>src\script\tokens</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\script\tokens\L1FloatRule1.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
@@ -91,6 +88,30 @@
       <Filter>src\script\tokens</Filter>
     </ClCompile>
     <ClCompile Include="..\src\script\tokens\L1OperatorAssignRule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2FunctionToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2IdentifierAssignToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2IdentifierToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2OperatorToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2PropertyGetterToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2PropertySetterToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2StaticIdentifierToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2ArgumentListToken.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
   </ItemGroup>
@@ -177,6 +198,33 @@
       <Filter>include\script\tokens</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\tokens\L1IdentifierAssignRule.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2PrimitiveValueToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2IdentifierToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2StaticIdentifierToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2IdentifierAssignToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2ArgumentListToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2FunctionToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2PropertyGetterToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2PropertySetterToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2OperatorToken.h">
       <Filter>include\script\tokens</Filter>
     </ClInclude>
   </ItemGroup>
