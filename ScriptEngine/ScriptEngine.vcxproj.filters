@@ -72,10 +72,25 @@
     <ClCompile Include="..\src\script\tokens\L1Token.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\script\tokens\L1Rule.cpp">
+    <ClCompile Include="..\src\script\tokens\L2Token.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\script\tokens\L2Token.cpp">
+    <ClCompile Include="..\src\script\tokens\L1FloatRule1.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1FloatRule2.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1FunctionRule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1IdentifierAssignRule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1NumberRule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1OperatorAssignRule.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
   </ItemGroup>
@@ -145,6 +160,24 @@
     </ClInclude>
     <ClInclude Include="..\include\script\statics\SystemStaticObject.h">
       <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1FloatRule2.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1FloatRule1.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1NumberRule.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1FunctionRule.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1OperatorAssignRule.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1IdentifierAssignRule.h">
+      <Filter>include\script\tokens</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

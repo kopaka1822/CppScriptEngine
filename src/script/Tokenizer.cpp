@@ -1,7 +1,11 @@
 #include "../../include/script/Tokenizer.h"
-#include <regex>
+#include "../../include/script/tokens/L1FloatRule1.h"
+#include "../../include/script/tokens/L1FloatRule2.h"
+#include "../../include/script/tokens/L1NumberRule.h"
+#include "../../include/script/tokens/L1FunctionRule.h"
+#include "../../include/script/tokens/L1OperatorAssignRule.h"
+#include "../../include/script/tokens/L1IdentifierAssignRule.h"
 #include <array>
-#include "script/tokens/L1Rule.h"
 #include <stack>
 #include <cassert>
 
