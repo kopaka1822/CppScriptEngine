@@ -125,6 +125,36 @@ namespace script
 			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
+		/// \brief converts a static function into a ScriptObject compatible function
+		/// \tparam TReturn must be convertible to a ScriptObject
+		/// \tparam TArgs 
+		/// \param func static function
+		/// \param functionSignature returnType className::functionName(type1 name, type2...)
+		/// \return ScriptObject compatible function
+		template<class TReturn, class... TArgs>
+		static ScriptObject::FunctionT makeFunction(TReturn(*func)(TArgs...), const std::string& functionSignature)
+		{
+			return [func, functionSignature](const ArrayObjectPtr& args) -> ScriptObjectPtr
+			{
+				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
+				if (int(argCount) != args->getCount())
+					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
+
+				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
+					// return type is already a script object
+					return Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
+				else
+					// return type must be transformed to a script object
+					return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+			};
+		}
+
+		template<class TLambda>
+		static ScriptObject::FunctionT fromLambda(const TLambda& lambda, const std::string& functionSignature)
+		{
+			return makeFunction(&lambda, &TLambda::operator(), functionSignature);
+		}
+
 		/// \brief merges multiple functions into one.
 		/// The functions will be called in order up to the first function that does not throw an
 		/// InvalidArgumentCount or InvalidArgumentType exception.
@@ -157,7 +187,7 @@ namespace script
 					catch (const InvalidArgumentType& e)
 					{
 						if (!invalidTypeErrors.empty())
-							invalidTypeErrors += "\n";
+							invalidTypeErrors += "; ";
 						invalidTypeErrors += e.what();
 					}
 				}
@@ -243,9 +273,23 @@ namespace script
 
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
 		template<class TClass, class TReturn, class... TArgs, size_t... Is>
-		static TReturn invokeArgs(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const ArrayObject& args, std::index_sequence<Is...>, std::string functionSignature)
+		static TReturn invokeArgs(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
 		{
 			return std::invoke(func, thisPtr, Util::unpackArg<TArgs>(args, Is, functionSignature)...);
+		}
+
+		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
+		template<class TReturn, class... TArgs, size_t... Is>
+		static TReturn invokeArgs(TReturn(*func)(TArgs...), const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
+		{
+			return std::invoke(func, Util::unpackArg<TArgs>(args, Is, functionSignature)...);
+		}
+
+		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
+		template<class TReturn, class... TArgs, size_t... Is>
+		static TReturn invokeArgs(std::function<TReturn(TArgs...)> func, const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
+		{
+			return func(Util::unpackArg<TArgs>(args, Is, functionSignature)...);
 		}
 
 		/// \brief converts the argument at args->get(argCount - 1) to T where T is a shared_ptr<ScriptObject>

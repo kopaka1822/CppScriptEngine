@@ -3,10 +3,12 @@
 #include "../../include/script/tokens/L1FloatRule2.h"
 #include "../../include/script/tokens/L1NumberRule.h"
 #include "../../include/script/tokens/L1FunctionRule.h"
+#include "../../include/script/tokens/L1StaticFunctionRule.h"
 #include "../../include/script/tokens/L1OperatorAssignRule.h"
 #include "../../include/script/tokens/L1IdentifierAssignRule.h"
 #include "../../include/script/tokens/L2ArgumentListToken.h"
 #include "../../include/script/tokens/L2FunctionToken.h"
+#include "../../include/script/tokens/L2StaticFunctionToken.h"
 #include "../../include/script/tokens/L2IdentifierAssignToken.h"
 #include "../../include/script/tokens/L2IdentifierToken.h"
 #include "../../include/script/tokens/L2OperatorToken.h"
@@ -139,12 +141,14 @@ void script::Tokenizer::applyL1Rules(std::vector<L1Token>& tokens)
 	static const L1FloatRule1 floatRule1;
 	static const L1FloatRule2 floatRule2;
 	static const L1NumberRule numberRule;
-	static const L1FunctionRule functionRule;
+	static const L1FunctionRule functionRule1;
+	static const L1StaticFunctionRule functionRule2;
 	static const L1OperatorAssignRule operatorAssignRule;
 	static const L1IdentifierAssignRule idAssignRule;
-	static const std::array<const L1Rule*, 6> rules = {
+	static const std::array<const L1Rule*, 7> rules = {
 		&floatRule1, &floatRule2,&numberRule, 
-		&functionRule, &operatorAssignRule, &idAssignRule
+		&functionRule1, &functionRule2, 
+		&operatorAssignRule, &idAssignRule
 	};
 
 	// apply rules in order
@@ -417,6 +421,16 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getL2Tokens(std::vector<L1To
 				curToken = std::make_unique<L2PropertySetterToken>(move(curToken), move(arg), move(setName), pos);
 			}
 			else throw SyntaxError(start->getPosition(), start->getValue(), "expected function call or property");
+		} break;
+
+		case L1Token::Type::StaticFunction: {
+			if (curToken)
+				throw SyntaxError(start->getPosition(), start->getValue(), "");
+			auto name = start->getValue();
+			auto pos = start->getPosition();
+			auto args = parseArgumentList(++start, end, L1Token::Type::BracketClosed, "function call");
+
+			curToken = std::make_unique<L2StaticFunctionToken>(name, pos, move(args));
 		} break;
 
 		case L1Token::Type::Function:

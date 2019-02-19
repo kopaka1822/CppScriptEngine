@@ -11,5 +11,7 @@ namespace script
 
 		std::string toString() const override;
 		ScriptObjectPtr clone() const final override;
+
+		static ScriptObject::FunctionT getCtor();
 	};
 }

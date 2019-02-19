@@ -6,7 +6,6 @@
 int main()
 {
 	script::ScriptEngine engine;
-	engine.setStaticObject("Console", std::make_shared<script::ConsoleStaticObject>());
 
 	engine.setObject("myVec", std::make_shared<Vec2>(0.0f, 0.0f));
 

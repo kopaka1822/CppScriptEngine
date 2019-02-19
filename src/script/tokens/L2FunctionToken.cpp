@@ -27,7 +27,7 @@ script::ScriptObjectPtr script::L2FunctionToken::execute(ScriptEngine& engine) c
 	catch (const std::exception& e)
 	{
 		// add line number information
-		throw ParseError(m_position, m_funcName + " exception: " + std::string(e.what()));
+		throw ParseError(m_position, m_funcName + "(...) exception: " + std::string(e.what()));
 	}
 
 	return obj;

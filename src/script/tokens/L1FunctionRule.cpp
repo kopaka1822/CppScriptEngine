@@ -1,5 +1,4 @@
 #include "../../../include/script/tokens/L1FunctionRule.h"
-#include "../../../include/script/Exception.h"
 
 int script::L1FunctionRule::patternLength() const
 {
@@ -13,10 +12,6 @@ bool script::L1FunctionRule::matches(std::vector<L1Token>::const_iterator begin)
 
 	if (!(begin->startsWithLowercase()))
 		return false; // functions start with lowercase
-
-	// check function syntax
-	if (!(begin->startsWithLetter()))
-		throw SyntaxError(begin->getPosition(), begin->getValue(), "functions must start with a letter");
 
 	return true;
 }

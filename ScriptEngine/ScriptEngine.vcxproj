@@ -146,6 +146,7 @@
     <ClCompile Include="..\src\script\statics\ConsoleStaticObject.cpp" />
     <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp" />
     <ClCompile Include="..\src\script\Tokenizer.cpp" />
+    <ClCompile Include="..\src\script\tokens\L1StaticFunctionRule.cpp" />
     <ClCompile Include="..\src\script\tokens\L2ArgumentListToken.cpp" />
     <ClCompile Include="..\src\script\tokens\L1FloatRule1.cpp" />
     <ClCompile Include="..\src\script\tokens\L1FloatRule2.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="..\src\script\tokens\L2OperatorToken.cpp" />
     <ClCompile Include="..\src\script\tokens\L2PropertyGetterToken.cpp" />
     <ClCompile Include="..\src\script\tokens\L2PropertySetterToken.cpp" />
+    <ClCompile Include="..\src\script\tokens\L2StaticFunctionToken.cpp" />
     <ClCompile Include="..\src\script\tokens\L2StaticIdentifierToken.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +189,7 @@
     <ClInclude Include="..\include\script\tokens\L1IdentifierAssignRule.h" />
     <ClInclude Include="..\include\script\tokens\L1NumberRule.h" />
     <ClInclude Include="..\include\script\tokens\L1OperatorAssignRule.h" />
+    <ClInclude Include="..\include\script\tokens\L1StaticFunctionRule.h" />
     <ClInclude Include="..\include\script\tokens\L1Token.h" />
     <ClInclude Include="..\include\script\tokens\L1Rule.h" />
     <ClInclude Include="..\include\script\tokens\L2ArgumentListToken.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="..\include\script\tokens\L2PrimitiveValueToken.h" />
     <ClInclude Include="..\include\script\tokens\L2PropertyGetterToken.h" />
     <ClInclude Include="..\include\script\tokens\L2PropertySetterToken.h" />
+    <ClInclude Include="..\include\script\tokens\L2StaticFunctionToken.h" />
     <ClInclude Include="..\include\script\tokens\L2StaticIdentifierToken.h" />
     <ClInclude Include="..\include\script\tokens\L2Token.h" />
     <ClInclude Include="..\include\script\Util.h" />

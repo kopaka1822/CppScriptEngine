@@ -31,6 +31,7 @@ namespace script
 			Bool,
 			Integer,
 			IdentifierAssign,
+			StaticFunction,
 		};
 
 		explicit L1Token(Type type, size_t position, std::string value);

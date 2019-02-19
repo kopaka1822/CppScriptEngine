@@ -114,6 +114,12 @@
     <ClCompile Include="..\src\script\tokens\L2ArgumentListToken.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L1StaticFunctionRule.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\tokens\L2StaticFunctionToken.cpp">
+      <Filter>src\script\tokens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -225,6 +231,12 @@
       <Filter>include\script\tokens</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\tokens\L2OperatorToken.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L1StaticFunctionRule.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\tokens\L2StaticFunctionToken.h">
       <Filter>include\script\tokens</Filter>
     </ClInclude>
   </ItemGroup>
