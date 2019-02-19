@@ -265,6 +265,17 @@ public:
 	{
 		return std::reinterpret_pointer_cast<IntObject>(Util::makeObject(5));
 	}
+
+	void overload1(int a, float b)
+	{
+		EXPECT_EQ(a, 10);
+		EXPECT_EQ(b, 1.0f);
+	}
+	
+	void overload2(bool b)
+	{
+		EXPECT_EQ(b, false);
+	}
 };
 
 // tests void functions called from a wrapper object
@@ -291,4 +302,27 @@ TEST(TestSuite, MakeReturnFunctionForDerived)
 	func = Util::makeFunction(d.get(), &UtilTestDerived::returnIntConst, "");
 	ASSERT_TRUE(func);
 	ASSERT_TRUE(func(Util::makeArray())->equals(Util::makeObject(5)));
+}
+
+TEST(TestSuite, FunctionCombineTest)
+{
+	auto d = std::make_shared<UtilTestDerived>();
+	auto o1 = Util::makeFunction(d.get(), &UtilTestDerived::overload1, "overload1");
+	ASSERT_TRUE(o1);
+	auto o2 = Util::makeFunction(d.get(), &UtilTestDerived::overload2, "overload2");
+	ASSERT_TRUE(o2);
+	auto func = Util::combineFunctions({ o1, o2 });
+
+	// correct overload
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(10, 1.0f)));
+	ASSERT_NO_THROW(func(Util::makeArray(false)));
+
+	// arg count
+	ASSERT_THROW(func(Util::makeArray()), InvalidArgumentCount);
+	ASSERT_THROW(func(Util::makeArray(10, 1.0f, 0.0f)), InvalidArgumentCount);
+
+	// arg types
+	ASSERT_THROW(func(Util::makeArray(10, 1)), InvalidArgumentType);
+	ASSERT_THROW(func(Util::makeArray(nullptr)), InvalidArgumentType);
 }
