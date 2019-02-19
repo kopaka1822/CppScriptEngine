@@ -1,4 +1,5 @@
 #include "../../include/script/Exception.h"
+#include <numeric>
 
 script::Exception::Exception(const std::string& message)
 	:
@@ -31,21 +32,44 @@ script::ObjectNotCloneableException::ObjectNotCloneableException(const std::stri
 Exception(objectName + " cannot be cloned")
 {}
 
-script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount,
-	const ArrayObjectPtr& args)
+script::InvalidArgumentCount::InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, size_t actualCount)
+	:
+	InvalidArgumentCount(std::set<std::string>{functionSignature}, std::set<size_t>{ expectedCount }, actualCount)
 {
-	stream << "invalid argument getCount for " << functionSignature
-		<< ". expected " << expectedCount << " argument" << (expectedCount == 1?"":"s")
-		<< " but got " << args->getCount()
-		<< ". args: " + args->toString();
+	
+}
+
+script::InvalidArgumentCount::InvalidArgumentCount(std::set<std::string> functionSignatures,
+	std::set<size_t> expectedCounts, size_t actualCount)
+	:
+expectedCounts(move(expectedCounts)),
+functionSignatures(move(functionSignatures))
+{
+	stream << "invalid argument count for ";
+	stream << std::accumulate(this->functionSignatures.begin(), this->functionSignatures.end(), std::string(""), [](const std::string& val1, const std::string& val2)
+	{
+		if (val1.empty()) return val2;
+		return val1 + ", " + val2;
+	});
+	stream << ". expected ";
+	stream << std::accumulate(this->expectedCounts.begin(), this->expectedCounts.end(), std::string(""), [](const std::string& val1, size_t val2)
+	{
+		if (val1.empty()) return std::to_string(val2);
+		return val1 + ", " + std::to_string(val2);
+	});
+	stream << " but got " << actualCount;
 }
 
 script::InvalidArgumentType::InvalidArgumentType(const std::string& functionSignature, size_t argIndex,
-	const ScriptObject& invalidArg, const ArrayObject& args)
+	const ScriptObject& invalidArg, const std::string& expectedType)
 {
-	stream << "invalid argument type for " << functionSignature << ". argument " << argIndex
-		<< " ('" << invalidArg.toString() << "' of type '" << invalidArg.type() << "') is invalid"
-		<< ". args: " << args.toString();
+	stream << functionSignature << " cannot convert argument " << (argIndex + 1) 
+	<< " from " << invalidArg.type() << " to " << expectedType;
+}
+
+script::InvalidArgumentType::InvalidArgumentType(const std::string& message)
+{
+	stream << message;
 }
 
 script::InvalidFunctionName::InvalidFunctionName(const std::string& functionSignature,

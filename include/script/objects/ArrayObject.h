@@ -26,6 +26,8 @@ namespace script
 		int getCount() const;
 		/// \brief returns the array subset [from, from + getCount) as shallow copy
 		ScriptPtr<ArrayObject> slice(int from, int count);
+		/// \brief returns the array subset [from, end) as shallow copy
+		ScriptPtr<ArrayObject> slice(int from);
 	private:
 		std::vector<ScriptObjectPtr> m_values;
 		mutable BoolMutex m_toStringMutex;

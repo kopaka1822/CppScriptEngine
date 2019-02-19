@@ -32,7 +32,7 @@ bool script::ScriptObject::equals(const ScriptObjectPtr& other) const
 
 std::string script::ScriptObject::type() const
 {
-	return typeid(*this).name();
+	return Util::prettyTypeName(typeid(*this).name());
 }
 
 size_t script::ScriptObject::hashCode() const

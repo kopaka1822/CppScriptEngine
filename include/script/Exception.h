@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <sstream>
 #include "objects/ArrayObject.h"
+#include <set>
 
 namespace script
 {
@@ -30,13 +31,17 @@ namespace script
 	class InvalidArgumentCount final : public Exception
 	{
 	public:
-		explicit InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, const ArrayObjectPtr& args);
+		explicit InvalidArgumentCount(const std::string& functionSignature, size_t expectedCount, size_t actualCount);
+		explicit InvalidArgumentCount(std::set<std::string> functionSignatures, std::set<size_t> expectedCounts, size_t actualCount);
+		const std::set<size_t> expectedCounts;
+		const std::set<std::string> functionSignatures;
 	};
 
 	class InvalidArgumentType final : public Exception
 	{
 	public:
-		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const ArrayObject& args);
+		explicit InvalidArgumentType(const std::string& functionSignature, size_t argIndex, const ScriptObject& invalidArg, const std::string& expectedType);
+		explicit InvalidArgumentType(const std::string& message);
 	};
 
 	class InvalidFunctionName final : public Exception

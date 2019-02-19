@@ -24,7 +24,10 @@ script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	addFunction("remove", Util::makeFunction(this, &ArrayObject::remove, "ArrayObject::remove(int index)"));
 	addFunction("clear", Util::makeFunction(this, &ArrayObject::clear, "ArrayObject::clear()"));
 	addFunction("getCount", Util::makeFunction(this, &ArrayObject::getCount, "int ArrayObject::getCount()"));
-	addFunction("slice", Util::makeFunction(this, &ArrayObject::slice, "ArrayObject ArrayObject::slice(int from, int getCount)"));
+	addFunction("slice", Util::combineFunctions({
+		Util::makeFunction(this, static_cast<std::shared_ptr<ArrayObject>(ArrayObject::*)(int, int)>(&ArrayObject::slice), "ArrayObject ArrayObject::slice(int from, int count)"),
+		Util::makeFunction(this, static_cast<std::shared_ptr<ArrayObject>(ArrayObject::*)(int)>(&ArrayObject::slice), "ArrayObject ArrayObject::slice(int from)")
+		}));
 }
 
 std::string script::ArrayObject::toString() const
@@ -108,6 +111,11 @@ std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from, int co
 		res.push_back(m_values[i]);
 
 	return std::make_shared<ArrayObject>(res);
+}
+
+std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from)
+{
+	return slice(from, getCount() - from);
 }
 
 int script::ArrayObject::getCount() const

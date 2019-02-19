@@ -5,6 +5,8 @@
 #include "Exception.h"
 #include <sstream>
 #include "objects/NullObject.h"
+#include <set>
+#include <algorithm>
 
 namespace script
 {
@@ -29,7 +31,7 @@ namespace script
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
 				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args);
+					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
 
 				Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
 				return parent->shared_from_this();
@@ -96,7 +98,7 @@ namespace script
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
 				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args);
+					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
 
 				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
 					// return type is already a script object
@@ -119,6 +121,52 @@ namespace script
 		{
 			// its okay because this and function were const => no change will happen
 			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
+		}
+
+		/// \brief merges multiple functions into one.
+		/// The functions will be called in order up to the first function that does not throw an
+		/// InvalidArgumentCount or InvalidArgumentType exception.
+		/// \param functions 
+		/// \return return value of the first matching function
+		static ScriptObject::FunctionT combineFunctions(std::initializer_list<ScriptObject::FunctionT> functions)
+		{
+			return [funcs = std::vector<ScriptObject::FunctionT>(functions)](const ArrayObjectPtr& args) -> ScriptObjectPtr
+			{
+				// keep track of errors
+				std::set<size_t> supportedCounts;
+				std::set<std::string> signatures;
+				std::string invalidTypeErrors;
+
+				// start with the first function
+				for(const auto& func : funcs)
+				{
+					try
+					{
+						return func(args);
+					}
+					catch (const InvalidArgumentCount& e)
+					{
+						// remember error details
+						for (const auto& fs : e.functionSignatures)
+							signatures.insert(fs);
+						for (const auto& num : e.expectedCounts)
+							supportedCounts.insert(num);
+					}
+					catch (const InvalidArgumentType& e)
+					{
+						if (!invalidTypeErrors.empty())
+							invalidTypeErrors += "\n";
+						invalidTypeErrors += e.what();
+					}
+				}
+
+				// found matching functions but arguments were wrong...
+				if (!invalidTypeErrors.empty())
+					throw InvalidArgumentType(invalidTypeErrors);
+
+				// didn't find a matching function concerning arguments count
+				throw InvalidArgumentCount(move(signatures), move(supportedCounts), args->getCount());
+			};
 		}
 
 		/// \brief puts the arguments into a ArrayObjectPtr
@@ -154,6 +202,22 @@ namespace script
 			}
 			return std::make_shared<ArrayObject>(res);
 		}
+
+		static std::string prettyTypeName(std::string name)
+		{
+			if (name == typeid(std::string).name())
+				return "std::string";
+
+			// starts with class?
+			if (name.rfind("class ", 0) == 0)
+				name = name.substr(6);
+
+			// starts with struct
+			if (name.rfind("struct ", 0) == 0)
+				name = name.substr(7);
+
+			return name;
+		}
 	private:
 		// helper functions to remove the shared_ptr wrapper
 		template<class T> struct remove_shared { typedef T type; };
@@ -183,7 +247,7 @@ namespace script
 			using bare_type = remove_shared_t<T>;
 			std::shared_ptr<bare_type> res = std::dynamic_pointer_cast<bare_type>(objectPtr);
 			if (!res)
-				throw InvalidArgumentType(functionSignature, index, *objectPtr, args);
+				throw InvalidArgumentType(functionSignature, index, *objectPtr, prettyTypeName(typeid(bare_type).name()));
 
 			return res;
 		}
@@ -230,7 +294,7 @@ namespace script
 				(object);
 
 			if (valuePtr == nullptr)
-				throw InvalidArgumentType(functionSignature, index, *object, args);
+				throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
 
 			return valuePtr->getValue();
 		}
