@@ -5,21 +5,12 @@ script::StringObject::StringObject(std::string value)
 	:
 ValueComparableObject(std::move(value))
 {
-	addFunction("add", [this](ArrayObjectPtr args)
+	addFunction("add", [this](const ArrayObjectPtr& args)
 	{
 		// add all arguments
-		for (int i = 0; i < args->getCount(); ++i)
+		for (const auto& obj : *args)
 		{
-			// add string without " "
-			auto strObj = std::dynamic_pointer_cast<StringObject>(args->get(i));
-			if (strObj)
-			{
-				m_value += strObj->getValue();
-			}
-			else
-			{
-				m_value += args->get(i)->toString();
-			}
+			m_value += Util::getBareString(obj);
 		}
 
 		return this->shared_from_this();

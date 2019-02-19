@@ -15,16 +15,17 @@ namespace script
 	public:
 		Util() = delete;
 
-		/// \brief converts a class member function into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function (which returns the parent ScriptObject)
 		/// \tparam TClass 
 		/// \tparam TArgs 
+		/// \tparam TReturn this value will be ignored
 		/// \param parent pointer of the class that owns this function
 		/// \param thisPtr pointer for the member function
 		/// \param func member function pointer
 		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
-		template<class TClass, class... TArgs>
-		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, TClass* thisPtr, void(TClass::* func)(TArgs...), const std::string& functionSignature)
+		template<class TClass, class TReturn, class... TArgs>
+		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const std::string& functionSignature)
 		{
 			return [thisPtr, func, functionSignature, parent]
 			(const ArrayObjectPtr& args) -> ScriptObjectPtr
@@ -38,17 +39,18 @@ namespace script
 			};
 		}
 
-		/// \brief converts a class member function into a ScriptObject compatible function
+		/// \brief converts a class member function into a ScriptObject compatible function (which returns the parent ScriptObject)
 		/// same as above but with a constant function
 		/// \tparam TClass 
 		/// \tparam TArgs 
+		/// \tparam TReturn this value will be ignored
 		/// \param parent pointer of the class that owns this function
 		/// \param thisPtr pointer for the member function
 		/// \param func member function pointer
 		/// \param functionSignature syntax: className::functionName(type1 name, type2...)
 		/// \return ScriptObject compatible function
-		template<class TClass, class... TArgs>
-		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, const TClass* thisPtr, void(TClass::* func)(TArgs...) const, const std::string& functionSignature)
+		template<class TClass, class TReturn, class... TArgs>
+		static ScriptObject::FunctionT makeFunction(ScriptObject* parent, const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, const std::string& functionSignature)
 		{
 			// its okay because this and function were const => no change will happen
 			return Util::makeFunction(parent, const_cast<TClass*>(thisPtr), reinterpret_cast<void(TClass::*)(TArgs...)>(func), functionSignature);
@@ -203,6 +205,7 @@ namespace script
 			return std::make_shared<ArrayObject>(res);
 		}
 
+		/// \brief converts the description from typeid(T).name() in a prettier description
 		static std::string prettyTypeName(std::string name)
 		{
 			if (name == typeid(std::string).name())
@@ -217,6 +220,17 @@ namespace script
 				name = name.substr(7);
 
 			return name;
+		}
+
+		/// \brief calls toString on the object. Returns the string without "" if it is a StringObject
+		static std::string getBareString(const ScriptObjectPtr& object)
+		{
+			auto strObj = std::dynamic_pointer_cast<GetValueObject<std::string>>(object);
+			if (strObj)
+			{
+				return strObj->getValue();
+			}
+			return object->toString();
 		}
 	private:
 		// helper functions to remove the shared_ptr wrapper

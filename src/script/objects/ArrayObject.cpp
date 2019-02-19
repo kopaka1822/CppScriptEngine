@@ -27,7 +27,7 @@ script::ArrayObject::ArrayObject(std::vector<ScriptObjectPtr> values)
 	addFunction("slice", Util::combineFunctions({
 		Util::makeFunction(this, static_cast<std::shared_ptr<ArrayObject>(ArrayObject::*)(int, int)>(&ArrayObject::slice), "ArrayObject ArrayObject::slice(int from, int count)"),
 		Util::makeFunction(this, static_cast<std::shared_ptr<ArrayObject>(ArrayObject::*)(int)>(&ArrayObject::slice), "ArrayObject ArrayObject::slice(int from)")
-		}));
+	}));
 }
 
 std::string script::ArrayObject::toString() const
@@ -116,6 +116,26 @@ std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from, int co
 std::shared_ptr<script::ArrayObject> script::ArrayObject::slice(int from)
 {
 	return slice(from, getCount() - from);
+}
+
+std::vector<script::ScriptObjectPtr>::iterator script::ArrayObject::begin()
+{
+	return m_values.begin();
+}
+
+std::vector<script::ScriptObjectPtr>::iterator script::ArrayObject::end()
+{
+	return m_values.end();
+}
+
+std::vector<script::ScriptObjectPtr>::const_iterator script::ArrayObject::begin() const
+{
+	return m_values.cbegin();
+}
+
+std::vector<script::ScriptObjectPtr>::const_iterator script::ArrayObject::end() const
+{
+	return m_values.cend();
 }
 
 int script::ArrayObject::getCount() const

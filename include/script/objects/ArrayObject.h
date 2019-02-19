@@ -28,6 +28,12 @@ namespace script
 		ScriptPtr<ArrayObject> slice(int from, int count);
 		/// \brief returns the array subset [from, end) as shallow copy
 		ScriptPtr<ArrayObject> slice(int from);
+
+		// c++ helper functions
+		std::vector<ScriptObjectPtr>::iterator begin();
+		std::vector<ScriptObjectPtr>::iterator end();
+		std::vector<ScriptObjectPtr>::const_iterator begin() const;
+		std::vector<ScriptObjectPtr>::const_iterator end() const;
 	private:
 		std::vector<ScriptObjectPtr> m_values;
 		mutable BoolMutex m_toStringMutex;
