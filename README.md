@@ -68,6 +68,68 @@ i
 i.getFunctionNames()
 >> ["clone", "toString", "multiply", "getFunctionNames", "invoke", "add", "equals", "subtract", "divide", "negate", "set"]
 ```
+
+## Example Program
+The following example program can be used to create the example from above.
+```c++
+#include <iostream>
+#include <script/ScriptEngine.h>
+
+int main() {
+   script::ScriptEngine engine;
+   
+   std::string command;
+   while (true) {
+      // read console input
+      std::getline(std::cin, command);
+      try {
+         // execute console input and print out result
+         std::cout << ">> " << engine.execute(command) << std::endl;
+      } catch (const std::exception& e) {
+         std::cerr << "ERR: " << e.what() << std::endl;
+      }
+   }
+   return 0;
+}
+```
+
+# Adding Custom Objects
+## Derive from GetValueObject
+The easiest way to add custom objects is to derive directly from `GetValueObject<T>`.
+
+### Example
+This example explains how to write a simple Vector 2D class. In the end, you should be able to create a new instance of a `Vec2` and know how to register the member functions and use them with the script engine.
+```c++
+#include "script/objects/GetValueObject.h"
+
+class Vec2 : public script::GetValueObject<Vec2> {
+public:
+   Vec2(float x, float y);
+   // GetValueObject<> override
+   Vec2& getValue() override;
+   // ScriptObject overrides
+   std::string toString() const override;
+   script::ScriptObjectPtr clone() const override;
+   bool equals(const script::ScriptObjectPtr& other) const override;
+   // new functionality
+   void add(const Vec2& other);
+   void subtract(const Vec2& other);
+   void negate();
+   // properties
+   float getX() const;
+   float getY() const;
+   void setX(float x);
+   void setY(float y);
+   // constructor
+   static FunctionT getCtor();
+
+   float x;
+   float y;
+};
+```
+
+## Embed object with ValueObject
+
 # Naming Conventions
 ## Naming Conventions
 Type | Convention
