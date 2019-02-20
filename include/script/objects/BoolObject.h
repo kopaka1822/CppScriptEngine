@@ -8,6 +8,8 @@ namespace script
 	public:
 		explicit BoolObject(bool value);
 
+		static FunctionT getCtor();
+
 		std::string toString() const override;
 		ScriptObjectPtr clone() const override;
 

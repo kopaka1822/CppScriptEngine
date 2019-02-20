@@ -5,17 +5,24 @@ script::StringObject::StringObject(std::string value)
 	:
 ValueComparableObject(std::move(value))
 {
-	addFunction("add", [this](const ArrayObjectPtr& args)
+	addFunction("add", std::bind(&StringObject::add, this, std::placeholders::_1));
+	addFunction("getLength", Util::makeFunction(this, &StringObject::getLength, "int StringObject::getLength()"));
+}
+
+script::ScriptObject::FunctionT script::StringObject::getCtor()
+{
+	return [](const ArrayObjectPtr& args)
 	{
+		std::string res;
+
 		// add all arguments
 		for (const auto& obj : *args)
 		{
-			m_value += Util::getBareString(obj);
+			res += Util::getBareString(obj);
 		}
 
-		return this->shared_from_this();
-	});
-	addFunction("getLength", Util::makeFunction(this, &StringObject::getLength, "int getLength"));
+		return std::make_shared<StringObject>(res);
+	};
 }
 
 std::string script::StringObject::toString() const
@@ -28,9 +35,15 @@ script::ScriptObjectPtr script::StringObject::clone() const
 	return std::make_shared<StringObject>(m_value);
 }
 
-void script::StringObject::add(const std::string& value)
+script::ScriptObjectPtr script::StringObject::add(const ArrayObjectPtr& args)
 {
-	m_value += value;
+	// add all arguments
+	for (const auto& obj : *args)
+	{
+		m_value += Util::getBareString(obj);
+	}
+
+	return shared_from_this();
 }
 
 int script::StringObject::getLength() const

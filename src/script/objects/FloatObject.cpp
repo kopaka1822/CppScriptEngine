@@ -34,7 +34,7 @@ script::ScriptObject::FunctionT script::FloatObject::getCtor()
 		}, "Float(int)"),
 		Util::fromLambda([](const std::string& val)
 		{
-			return std::stof(val);
+			return std::make_shared<FloatObject>(std::stof(val));
 		}, "Float(string)"),
 	});
 }

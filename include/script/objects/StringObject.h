@@ -1,5 +1,6 @@
 #pragma once
 #include "ValueComparableObject.h"
+#include "ArrayObject.h"
 
 namespace script
 {
@@ -9,10 +10,12 @@ namespace script
 		explicit StringObject(std::string value);
 		~StringObject() override final = default;
 
+		static FunctionT getCtor();
+
 		std::string toString() const override final;
 		ScriptObjectPtr clone() const final override;
 
-		void add(const std::string& value);
+		ScriptObjectPtr add(const ArrayObjectPtr& args);
 		int getLength() const;
 	};
 }

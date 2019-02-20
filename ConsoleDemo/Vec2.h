@@ -8,6 +8,8 @@ public:
 	Vec2(float x, float y);
 	~Vec2() override = default;
 
+	static FunctionT getCtor();
+
 	Vec2& getValue() override;
 
 	std::string toString() const override;

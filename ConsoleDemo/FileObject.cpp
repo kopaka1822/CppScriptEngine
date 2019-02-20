@@ -2,7 +2,7 @@
 
 FileObject::FileObject(const std::string& filename)
 	:
-ValueObject<std::fstream>(filename.c_str())
+ValueObject<std::fstream>(filename.c_str(), std::fstream::out)
 {
 	// simple function with known return value
 	addFunction("isOpen", script::Util::makeFunction(&m_value, &std::fstream::is_open, "bool FileObject::isOpen()"));
@@ -20,4 +20,12 @@ ValueObject<std::fstream>(filename.c_str())
 		}
 		return this->shared_from_this();
 	});
+}
+
+script::ScriptObject::FunctionT FileObject::getCtor()
+{
+	return script::Util::fromLambda([](const std::string& filename)
+	{
+		return std::make_shared<FileObject>(filename);
+	}, "File(string filename)");
 }

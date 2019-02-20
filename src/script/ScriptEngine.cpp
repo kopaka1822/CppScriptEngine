@@ -8,7 +8,10 @@ script::ScriptEngine::ScriptEngine(InitFlags flags)
 {
 	if(flags & PrimitiveConstructor)
 	{
+		setStaticFunction("Int", IntObject::getCtor());
 		setStaticFunction("Float", FloatObject::getCtor());
+		setStaticFunction("Bool", BoolObject::getCtor());
+		setStaticFunction("String", StringObject::getCtor());
 	}
 
 	if(flags & ConsoleClass)

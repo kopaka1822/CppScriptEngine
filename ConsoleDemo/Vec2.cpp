@@ -16,6 +16,24 @@ x(x), y(y)
 	addFunction("setY", script::Util::makeFunction(this, &Vec2::setY, "setY(float y)"));
 }
 
+script::ScriptObject::FunctionT Vec2::getCtor()
+{
+	return script::Util::combineFunctions({
+		script::Util::fromLambda([](const Vec2& other)
+		{
+			return std::make_shared<Vec2>(other.getX(), other.getY());
+		}, "Vec2(Vec2)"),
+		script::Util::fromLambda([](float x, float y)
+		{
+			return std::make_shared<Vec2>(x, y);
+		}, "Vec2(float x, float y)"),
+		script::Util::fromLambda([](float val)
+		{
+			return std::make_shared<Vec2>(val, val);
+		}, "Vec2(float)")
+	});
+}
+
 Vec2& Vec2::getValue()
 {
 	return *this;

@@ -9,6 +9,8 @@ namespace script
 		explicit IntObject(int value);
 		~IntObject() override final = default;
 
+		static FunctionT getCtor();
+
 		std::string toString() const override;
 		ScriptObjectPtr clone() const final override;
 

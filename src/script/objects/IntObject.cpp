@@ -6,6 +6,24 @@ script::IntObject::IntObject(int value)
 	NumericalObject(value)
 {}
 
+script::ScriptObject::FunctionT script::IntObject::getCtor()
+{
+	return Util::combineFunctions({
+		Util::fromLambda([](int val)
+		{
+			return std::make_shared<IntObject>(val);
+		}, "Int(int)"),
+		Util::fromLambda([](float val)
+		{
+			return std::make_shared<IntObject>(int(val));
+		}, "Int(float)"),
+		Util::fromLambda([](const std::string& val)
+		{
+			return std::make_shared<IntObject>(std::stoi(val));
+		}, "Int(string)")
+	});
+}
+
 std::string script::IntObject::toString() const
 {
 	return std::to_string(m_value);
