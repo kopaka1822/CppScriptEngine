@@ -34,7 +34,7 @@ TEST(TestSuite, L1Test)
 	EXPECT_EQ(arr[4].getType(), L1Token::Type::Identifier);
 	EXPECT_EQ(arr[5].getType(), L1Token::Type::BracketOpen);
 	EXPECT_EQ(arr[6].getType(), L1Token::Type::BracketClosed);
-	ASSERT_EQ(arr[2].getValue(), std::string(" my \\\"string\\\""));
+	ASSERT_EQ(arr[2].getValue(), std::string(" my \"string\""));
 
 	arr = Tokenizer::getL1Tokens("a = 124.1f");
 	ASSERT_EQ(arr.size(), size_t(5));
@@ -54,19 +54,19 @@ TEST(TestSuite, L1Test)
 	EXPECT_EQ(arr[5].getType(), L1Token::Type::Identifier);
 	EXPECT_EQ(arr[6].getType(), L1Token::Type::ArrayClosed);
 
-	//arr = Tokenizer::getL1Tokens("-3.12f/4+3*99");
-	//ASSERT_EQ(arr.size(), size_t(10));
-	//EXPECT_EQ(arr[0].getType(), L1Token::Type::Minus);
-	//EXPECT_EQ(arr[1].getType(), L1Token::Type::Identifier);
-	//EXPECT_EQ(arr[2].getType(), L1Token::Type::Dot);
-	//EXPECT_EQ(arr[3].getType(), L1Token::Type::Identifier);
-	//EXPECT_EQ(arr[4].getType(), L1Token::Type::Divide);
-	//EXPECT_EQ(arr[5].getType(), L1Token::Type::Identifier);
-	//EXPECT_EQ(arr[6].getType(), L1Token::Type::Plus);
-	//EXPECT_EQ(arr[7].getType(), L1Token::Type::Identifier);
-	//EXPECT_EQ(arr[8].getType(), L1Token::Type::Multiply);
-	//EXPECT_EQ(arr[9].getType(), L1Token::Type::Identifier);
-	//EXPECT_EQ(arr[9].getValue(), std::string("99"));
+	arr = Tokenizer::getL1Tokens("-3.12f/4+3*99");
+	ASSERT_EQ(arr.size(), size_t(10));
+	EXPECT_EQ(arr[0].getType(), L1Token::Type::Minus);
+	EXPECT_EQ(arr[1].getType(), L1Token::Type::Identifier);
+	EXPECT_EQ(arr[2].getType(), L1Token::Type::Dot);
+	EXPECT_EQ(arr[3].getType(), L1Token::Type::Identifier);
+	EXPECT_EQ(arr[4].getType(), L1Token::Type::Divide);
+	EXPECT_EQ(arr[5].getType(), L1Token::Type::Identifier);
+	EXPECT_EQ(arr[6].getType(), L1Token::Type::Plus);
+	EXPECT_EQ(arr[7].getType(), L1Token::Type::Identifier);
+	EXPECT_EQ(arr[8].getType(), L1Token::Type::Multiply);
+	EXPECT_EQ(arr[9].getType(), L1Token::Type::Identifier);
+	EXPECT_EQ(arr[9].getValue(), std::string("99"));
 }
 
 TEST(TestSuite, FinalizeL1Test)

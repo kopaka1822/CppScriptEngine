@@ -29,5 +29,6 @@ namespace script
 		static std::unique_ptr<L2Token> parseArgumentList(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, L1Token::Type endToken, const std::string& type);
 		static void handleOperatorAssign(std::vector<L1Token>::const_iterator& start, std::vector<L1Token>::const_iterator end, 
 			std::unique_ptr<L2Token>& curToken, bool isArgumentList, std::string funcName, std::string opName);
+		static char getEscapedChar(size_t position, char value);
 	};
 }

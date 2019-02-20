@@ -40,6 +40,10 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 
 	// indicates if a string is being parsed
 	bool isString = false;
+	// indicates if the current character was an escape character
+	bool curEscaped = false;
+	// indicates if the previous character was an escape character
+	bool prevEscaped = false;
 	std::string current;
 	auto position = size_t(-1);
 
@@ -48,12 +52,22 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 	{
 		++position;
 
+		prevEscaped = curEscaped;
+		curEscaped = c == '\\';
+
 		// new token
 		L1Token curToken = L1Token(L1Token::Type::Undefined, 0, "");
 		if (isString)
 		{
-			if (c != '\"' || // no closing " or
-				(!current.empty() && current.back() == '\\')) // previous character was a '\'
+			if (curEscaped) continue;
+
+			if(prevEscaped)
+			{
+				current += getEscapedChar(position, c);
+				continue;
+			}
+
+			if (c != '\"')
 			{
 				current += c;
 				continue;
@@ -497,4 +511,36 @@ void script::Tokenizer::handleOperatorAssign(std::vector<L1Token>::const_iterato
 	auto pos = start->getPosition();
 	auto nextVal = getL2Tokens(++start, end, isArgumentList, OpReturnMode::End);
 	curToken = std::make_unique<L2OperatorToken>(move(curToken), move(nextVal), pos, move(funcName), false, move(opName));
+}
+
+char script::Tokenizer::getEscapedChar(size_t position, char value)
+{
+	switch (value)
+	{
+	case '\'':
+		return '\'';
+	case '"':
+		return '\"';
+	case '?':
+		return '\?';
+	case '\\':
+		return '\\';
+	case 'a':
+		return '\a';
+	case 'b':
+		return '\b';
+	case 'f':
+		return '\f';
+	case 'n':
+		return '\n';
+	case 'r':
+		return '\r';
+	case 't':
+		return '\t';
+	case 'v':
+		return '\v';
+	}
+	std::string token = "\\?";
+	token[1] = value;
+	throw SyntaxError(position, token, "escape sequence not supported");
 }
