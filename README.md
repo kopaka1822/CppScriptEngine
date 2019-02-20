@@ -99,18 +99,21 @@ The easiest way to add custom objects is to derive directly from `GetValueObject
 
 ### Example
 This example explains how to write a simple Vector 2D class. In the end, you should be able to create a new instance of a `Vec2` and know how to register the member functions and use them with the script engine.
+
+The header file for our `Vec2` class looks like this:
+
 ```c++
 #include "script/objects/GetValueObject.h"
 
 class Vec2 : public script::GetValueObject<Vec2> {
 public:
    Vec2(float x, float y);
-   // GetValueObject<> override
-   Vec2& getValue() override;
    // ScriptObject overrides
    std::string toString() const override;
    script::ScriptObjectPtr clone() const override;
    bool equals(const script::ScriptObjectPtr& other) const override;
+   // GetValueObject<> override
+   Vec2& getValue() override;
    // new functionality
    void add(const Vec2& other);
    void subtract(const Vec2& other);
@@ -127,6 +130,42 @@ public:
    float y;
 };
 ```
+
+### ScriptObject overrides
+First of all, we want to overwrite the default behaviour of some `ScriptObjectFunctions`. The `toString` function should print out the x and y value:
+```c++
+std::string Vec2::toString() const {
+   return "Vec2(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+}
+```
+The equals function should do a memberwise value comparision (the default implementation is a reference comparision). Since the argument can be an arbitrary `ScriptObject` we have cast it to a `Vec2` object first.
+```c++
+bool Vec2::equals(const script::ScriptObjectPtr& other) const {
+   const auto v = std::dynamic_pointer_cast<Vec2>(other);
+   if (!v) return false; // cast failed
+   return x == v->x && y == v->y;
+}
+```
+The clone function simply creates a new `Vec2` with the same values. The `ScriptObjectPtr` is defined as a `std::shared_ptr<ScriptObject>`, thus we need to use `std::make_shared` to create a new instance.
+```c++
+script::ScriptObjectPtr Vec2::clone() const {
+   return std::make_shared<Vec2>(x, y);
+}
+```
+### GetValueObject override
+The `getValue()` function will play an important part for some Utility functions (`script::Util`) that will be used for registering new functions for 'invoke(...)'. For now we just return a reference to itself:
+```c++
+Vec2& Vec2::getValue()
+{
+	return *this;
+}
+```
+
+### New Functionality
+
+### Registering Functions for Invoke
+
+### Adding the Constructor
 
 ## Embed object with ValueObject
 
