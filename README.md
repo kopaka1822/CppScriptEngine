@@ -1,13 +1,22 @@
 # CppScriptEngine
 
-C++ based object oriented script language
+C++ 17 based object oriented script language
 
 ## Motivation
 
-This script language should allow the programmer to control a programm by creating new instances of **C++ classes at runtime**. The language should be easy to use **easy to integrate** into an existing C++ programm.
+This script language should allow the programmer to control a programm by creating new instances of **C++ classes at runtime**. The language should be easy to use and **easy to integrate** into an existing C++ programm.
 
-# Language Design
+## Goals
+* easy to use
+* easy to integrate
+* consistent design (no special cases)
+* fixed naming conventions
+* strict syntax
+* type safety without implicit conversions
+* robust
+* well informing exceptions
 
+# Introduction
 ## ScriptObject
 
 Every object derives from the `ScriptObject` class. The important part of the interface looks like this:
@@ -59,7 +68,33 @@ i
 i.getFunctionNames()
 >> ["clone", "toString", "multiply", "getFunctionNames", "invoke", "add", "equals", "subtract", "divide", "negate", "set"]
 ```
+# Naming Conventions
+## Naming Conventions
+Type | Convention
+-----|-----------
+Class Names | UpperCamelCase
+Member Functions | lowerCamelCase(...)
+Getter | getCamelCase
+Setter | setCamelCase = ...
+Static Functions / Constructors | UpperCamelCase(...)
+variables | lowerCamelCase
+Static objects | UpperCamelCase
 
+Additionally functions and objects **must** start with a letter and may be continued with alphanumeric characters.
+
+Reserved Keyword | Type
+-----------------|-----
+true | BoolObject
+false | BoolObject
+null | NullObject
+*number* | IntObject
+*number ending with the letter f* | FloatObject
+"*some text*" | StringObject
+\[*some, elements*\] | ArrayObject
+
+Note that the script engine won't recognize certain commands if you do not follow those naming conventions. For example: You cannot create a variable that starts with an uppercase letter. The script engine assumes that all variables starting with an uppercase letter are static objects (which can not be assigned though a command). 
+
+# Syntactic Sugar
 ## Operators
 
 In order to make basic math operations easier to use, the following operators can be used as well: `+ - * /` and `+= -= *= /=`.
