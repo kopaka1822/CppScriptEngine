@@ -236,14 +236,9 @@ TEST(TestSuite, MakeReturnFunctionForWrapper)
 	ASSERT_TRUE(retVal->equals(Util::makeObject(16)));
 }
 
-class UtilTestDerived : public GetValueObject<UtilTestDerived>
+class UtilTestDerived : public ScriptObject
 {
 public:
-	UtilTestDerived& getValue() override
-	{
-		return *this;
-	}
-
 	void mutator(int a, float b)
 	{
 		EXPECT_EQ(a, 2);
@@ -261,6 +256,11 @@ public:
 		return 15;
 	}
 
+	int returnIntConst() const
+	{
+		return 10;
+	}
+
 	ScriptPtr<IntObject> returnIntConst()
 	{
 		return std::reinterpret_pointer_cast<IntObject>(Util::makeObject(5));
@@ -275,6 +275,22 @@ public:
 	void overload2(bool b)
 	{
 		EXPECT_EQ(b, false);
+	}
+
+	void derivedConstRef(const UtilTestDerived& ref)
+	{
+		ASSERT_EQ(ref.returnIntConst(), 10);
+	}
+
+	void derivedRef(UtilTestDerived& ref)
+	{
+		ASSERT_EQ(ref.returnInt(), 15);
+	}
+
+	void derivedPtr(UtilTestDerived* ptr)
+	{
+		if(ptr != nullptr)
+			ASSERT_EQ(ptr->returnInt(), 15);
 	}
 };
 
@@ -302,6 +318,24 @@ TEST(TestSuite, MakeReturnFunctionForDerived)
 	func = Util::makeFunction(d.get(), &UtilTestDerived::returnIntConst, "");
 	ASSERT_TRUE(func);
 	ASSERT_TRUE(func(Util::makeArray())->equals(Util::makeObject(5)));
+}
+
+TEST(TestSuite, PassDerivedAsArgument)
+{
+	auto d = std::make_shared<UtilTestDerived>();
+	auto d2 = std::make_shared<UtilTestDerived>();
+	auto func = Util::makeFunction(d.get(), &UtilTestDerived::derivedConstRef, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(d2)));
+
+	func = Util::makeFunction(d.get(), &UtilTestDerived::derivedRef, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(d2)));
+
+	func = Util::makeFunction(d.get(), &UtilTestDerived::derivedPtr, "");
+	ASSERT_TRUE(func);
+	ASSERT_NO_THROW(func(Util::makeArray(d2)));
+	ASSERT_NO_THROW(func(Util::makeArray(nullptr)));
 }
 
 TEST(TestSuite, FunctionCombineTest)
