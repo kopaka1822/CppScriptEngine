@@ -344,7 +344,7 @@ namespace script
 		{
 			const auto& objectPtr = args.get(int(index));
 
-			return Util::getGetValueObjectValue<T>(objectPtr.get(), args, index, functionSignature);
+			return Util::getGetValueObjectValue<T>(objectPtr.get(), index, functionSignature);
 		}
 
 		/// \brief converts the argument at args->get(argCount - 1) to T* if the argument has the type GetValueObject<T> or NullObject
@@ -361,24 +361,36 @@ namespace script
 			// remove pointer
 			using value_type = std::remove_pointer_t<T>;
 
-			return &(Util::getGetValueObjectValue<value_type>(objectPtr.get(), args, index, functionSignature));
+			return &(Util::getGetValueObjectValue<value_type>(objectPtr.get(), index, functionSignature));
 		}
 
 		/// \brief retrieves the value T from the ScriptObject by casting it to a GetValueObject<T>
 		template<class T>
-		static T& getGetValueObjectValue(ScriptObject* object, const ArrayObject& args, size_t index, const std::string& functionSignature)
+		static T& getGetValueObjectValue(ScriptObject* object, size_t index, const std::string& functionSignature)
 		{
 			using bare_type = remove_const_ref_t<T>;
 
-			// cast to value object
-			// and transform const T& to T
-			auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*> // T& => T
-				(object);
+			if constexpr(std::is_base_of_v<ScriptObject, bare_type>)
+			{
+				// try dynamic up casting
+				auto* valuePtr = dynamic_cast<bare_type*>(object);
 
-			if (valuePtr == nullptr)
-				throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
+				if (valuePtr == nullptr)
+					throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
 
-			return valuePtr->getValue();
+				return *valuePtr;
+			}
+			else // embedded into value object?
+			{
+				// cast to value object
+				// and transform const T& to T
+				auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*>(object); // T& => T
+
+				if (valuePtr == nullptr)
+					throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
+
+				return valuePtr->getValue();
+			}
 		}
 
 		/// \brief helper function to create a ArrayObject (used if first is a ScriptObject)
