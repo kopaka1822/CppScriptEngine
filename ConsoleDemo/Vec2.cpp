@@ -34,10 +34,10 @@ script::ScriptObject::FunctionT Vec2::getCtor()
 	});
 }
 
-Vec2& Vec2::getValue()
+/*Vec2& Vec2::getValue()
 {
 	return *this;
-}
+}*/
 
 std::string Vec2::toString() const
 {

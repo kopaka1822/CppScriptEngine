@@ -271,6 +271,17 @@ namespace script
 		template<class T> struct remove_shared<const std::shared_ptr<T>&> { typedef T type; };
 		template<class T> using remove_shared_t = typename  remove_shared<T>::type;
 
+		template<class T> struct is_shared { static constexpr bool value = false; };
+		template<class T> struct is_shared<std::shared_ptr<T>> { static constexpr bool value = true; };
+		template<class T> struct is_shared<std::shared_ptr<T>&> { static constexpr bool value = true; };
+		template<class T> struct is_shared<const std::shared_ptr<T>> { static constexpr bool value = true; };
+		template<class T> struct is_shared<const std::shared_ptr<T>&> { static constexpr bool value = true; };
+		template<class T> static constexpr bool is_shared_v = is_shared<T>::value;
+
+		template<class T> using remove_const_ref_t = std::remove_const_t<std::remove_reference_t<T>>;
+
+		template<class T> static constexpr bool is_shared_script_object_v = is_shared_v<T> && std::is_base_of_v<ScriptObject, remove_shared<T>>;
+
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
 		template<class TClass, class TReturn, class... TArgs, size_t... Is>
 		static TReturn invokeArgs(TClass* thisPtr, TReturn(TClass::* func)(TArgs...), const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
@@ -296,7 +307,7 @@ namespace script
 		template<class T>
 		static std::remove_reference_t<T> unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature,
 			// convertible to ScriptObjectPtr
-			std::enable_if_t<std::is_convertible<T, ScriptObjectPtr>::value, int> = 0)
+			std::enable_if_t<std::is_convertible_v<T, ScriptObjectPtr>, int> = 0)
 		{
 			const auto& objectPtr = args.get(int(index));
 
@@ -310,11 +321,26 @@ namespace script
 			return res;
 		}
 
+		template<class T>
+		static T& unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature,
+			// convertible to ScriptObject
+			std::enable_if_t<std::is_base_of_v<ScriptObject, remove_const_ref_t<T>>, int> = 0)
+		{
+			using bare_type = remove_const_ref_t<T>;
+
+			auto objPtr = args.get(int(index)).get();
+			auto val = dynamic_cast<bare_type*>(objPtr);
+			if (val == nullptr)
+				throw InvalidArgumentType(functionSignature, index, *objPtr, prettyTypeName(typeid(bare_type).name()));
+
+			return *val;
+		}
+
 		/// \brief converts the argument at args->get(argCount - 1) to T if the argument has the type GetValueObject<T>
 		template<class T>
 		static T& unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature, 
 			// not convertible to ScriptObjectPtr and not pointer
-			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<!std::is_pointer<T>::value, int> = 0)
+			std::enable_if_t<!std::is_convertible_v<T, ScriptObjectPtr> && !std::is_base_of_v<ScriptObject, remove_const_ref_t<T>> && !std::is_pointer_v<T>, int> = 0)
 		{
 			const auto& objectPtr = args.get(int(index));
 
@@ -325,7 +351,7 @@ namespace script
 		template<class T>
 		static T unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature, 
 			// not convertible to ScriptObjectPtr but pointer
-			std::enable_if_t<!std::is_convertible<T, ScriptObjectPtr>::value, int> = 0, std::enable_if_t<std::is_pointer<T>::value, int> = 0)
+			std::enable_if_t<std::is_pointer_v<T>, int> = 0)
 		{
 			const auto& objectPtr = args.get(int(index));
 
@@ -342,9 +368,7 @@ namespace script
 		template<class T>
 		static T& getGetValueObjectValue(ScriptObject* object, const ArrayObject& args, size_t index, const std::string& functionSignature)
 		{
-			using bare_type =
-				std::remove_const_t< // const T => T
-				std::remove_reference_t<T>>;
+			using bare_type = remove_const_ref_t<T>;
 
 			// cast to value object
 			// and transform const T& to T

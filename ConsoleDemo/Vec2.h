@@ -1,7 +1,7 @@
 #pragma once
 #include "script/objects/GetValueObject.h"
 
-class Vec2 : public script::GetValueObject<Vec2>
+class Vec2 : public script::ScriptObject
 {
 public:
 	Vec2();
@@ -10,7 +10,7 @@ public:
 
 	static FunctionT getCtor();
 
-	Vec2& getValue() override;
+	//Vec2& getValue() override;
 
 	std::string toString() const override;
 	script::ScriptObjectPtr clone() const override;
