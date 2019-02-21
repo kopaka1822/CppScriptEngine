@@ -263,8 +263,8 @@ Type | Convention
 -----|-----------
 Class Names | UpperCamelCase
 Member Functions | lowerCamelCase(...)
-Getter | getCamelCase
-Setter | setCamelCase = ...
+Getter | getCamelCase()
+Setter | setCamelCase(value)
 Static Functions / Constructors | UpperCamelCase(...)
 variables | lowerCamelCase
 Static objects | UpperCamelCase
