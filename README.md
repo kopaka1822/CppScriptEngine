@@ -226,7 +226,7 @@ a.add(Vec2(9.0f, -10.0f))
 If you have already written a class and you don't want to change it's inheritance you can embed the object within the `script::ValueObject<T>`. The `ValueObject<T>` class has an internal instance of the object (`T`) that can be accessed through the protected member variable `m_value`. `ValueObject<T>` inherits from `GetValueObject<T>` which exposes a public `virtual T& getValue()` function to access the stored value. This function is used within the `Util` class to convert arguments. That means, if a function expected an `int`, `Util` tries to convert the argument to a `GetValueObject<int>` to retrieve the `int` value.
 
 The following example shows how to embed the `std::fstream` class into a `script::ValueObject<T>`:
-```
+```c++
 #include <fstream>
 #include <script/ScriptEngine.h>
 
