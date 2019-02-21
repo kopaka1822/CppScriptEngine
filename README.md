@@ -95,7 +95,7 @@ int main() {
 
 # Adding Custom Objects
 ## Derive from GetValueObject
-The easiest way to add custom objects is to derive directly from `GetValueObject<T>`.
+The easiest way to add custom objects is to derive directly from `ScriptObject`.
 
 ### Example
 This example explains how to write a simple Vector 2D class. In the end, you should be able to create a new instance of a `Vec2` and know how to register the member functions and use them with the script engine.
@@ -105,15 +105,13 @@ The header file for our `Vec2` class looks like this:
 ```c++
 #include "script/objects/GetValueObject.h"
 
-class Vec2 : public script::GetValueObject<Vec2> {
+class Vec2 : public script::ScriptObject {
 public:
    Vec2(float x, float y);
    // ScriptObject overrides
    std::string toString() const override;
    script::ScriptObjectPtr clone() const override;
    bool equals(const script::ScriptObjectPtr& other) const override;
-   // GetValueObject<> override
-   Vec2& getValue() override;
    // new functionality
    void add(const Vec2& other);
    void subtract(const Vec2& other);
@@ -152,20 +150,76 @@ script::ScriptObjectPtr Vec2::clone() const {
    return std::make_shared<Vec2>(x, y);
 }
 ```
-### GetValueObject override
-The `getValue()` function will play an important part for some Utility functions (`script::Util`) that will be used for registering new functions for 'invoke(...)'. For now we just return a reference to itself:
+### New Functionality
+The new functions can be implemented as usual. The `add(...)` function for example would look like this:
 ```c++
-Vec2& Vec2::getValue()
-{
-	return *this;
+void Vec2::add(const Vec2& other) {
+   x += other.x;
+   y += other.y;
+}
+```
+### Registering Functions for Invoke
+In order to use the function within the script engine the functions have to be registered with `addFunction(...)` in our constructor. `addFunction` takes two arguments: The first is a string that defines under which name the function will be available. The second one has the type `ScriptObject::FunctionT` which is defined as `std::function<ScriptObjectPtr(const ScriptPtr<ArrayObject>&)>`. That means we need a function that takes an `ArrayObject` (which is an array of ScriptObjects) and returns a `ScriptObject`. 
+
+Our first attempt to register the `add(...)` function might look like this:
+```c++
+addFunction("add", [this](const script::ArrayObjectPtr& args) {
+   if (args->getCount() != 1)
+      throw script::InvalidArgumentCount("Vec2::add(Vec2)", 1, args->getCount());
+   // try to obtain vec2
+   const script::ScriptObjectPtr& arg1 = args->get(0);
+   Vec2* vecArg = dynamic_cast<Vec2*>(arg1.get());
+   if (vecArg == nullptr)
+      throw script::InvalidArgumentType("Vec2::add(Vec2)", 0, *arg1, "Vec2");
+
+   // finally execute the function
+   this->add(*vecArg);
+   return this->shared_from_this();
+});
+```
+However, this snippet contains a lot of argument verification to ensure that the correct arguments were passed to the function. Fortunately, the script engine is equipped with an `Util` class that contains a lot of helpful functions that already do argument verification.
+
+The `Util` version looks like this:
+```c++
+addFunction("add", script::Util::makeFunction(this, &Vec2::add, "add(Vec2)"));
+```
+This small piece of code executed exactly the same piece of code as above.
+
+The remaining functions will be registered similarly and our constructor looks like this:
+```c++
+Vec2::Vec2(float x, float y) : x(x), y(y) {
+   addFunction("add", script::Util::makeFunction(this, &Vec2::add, "Vec2::add(Vec2)"));
+   addFunction("subtract", script::Util::makeFunction(this, &Vec2::subtract, "Vec2::subtract(Vec2)"));
+   addFunction("negate", script::Util::makeFunction(this, &Vec2::negate, "Vec2::negate()"));
+   addFunction("getX", script::Util::makeFunction(this, &Vec2::getX, "Vec2::float getX()"));
+   addFunction("getY", script::Util::makeFunction(this, &Vec2::getY, "Vec2::float getY()"));
+   addFunction("setX", script::Util::makeFunction(this, &Vec2::setX, "Vec2::setX(float x)"));
+   addFunction("setY", script::Util::makeFunction(this, &Vec2::setY, "Vec2::setY(float y)"));
 }
 ```
 
-### New Functionality
-
-### Registering Functions for Invoke
-
 ### Adding the Constructor
+To create a new instance of our `Vec2` class we need to register a constuctor as a static function. First we implement the static `FunctionT Vec2::getCtor()` function:
+```c++
+script::ScriptObject::FunctionT Vec2::getCtor() {
+   return script::Util::fromLambda([](float x, float y) {
+      return std::make_shared<Vec2>(x, y);
+   }, "Vec2(float x, float y)");
+}
+```
+Since there is no easy way to call the contructor with the `Util` functions we need to create a lambda function that creates an instance for us. Last, we need to register this function in our script engine:
+```c++
+script::ScriptEngine engine;
+engine.setStaticFunction("Vec2", Vec2::getCtor());
+...
+```
+Now, we can use our `Vec2` class within the engine:
+```
+a = Vec2(1.0f, 0.0f)
+>> Vec2(1.000000, 0.000000)
+a.add(Vec2(9.0f, -10.0f))
+>> Vec2(10.000000, -10.000000)
+```
 
 ## Embed object with ValueObject
 
