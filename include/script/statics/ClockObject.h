@@ -10,9 +10,9 @@ namespace script
 	public:
 		ClockObject();
 
-		/// \brief returns current point in time
-		ScriptPtr<DateTimeObject> getDate() const;
-
+		/// \brief returns current point in time (low resolution)
+		std::tm getDate() const;
+		/// \brief returns a high resolution timestamp
 		time::Timestamp getTimestamp() const;
 	};
 }

@@ -13,16 +13,6 @@ m_value(value)
 	addFunction("getYear", Util::makeFunction(this, &DateTimeObject::getYear, "int DateTimeObject::getYear()"));
 }
 
-/*script::DateTimeObject::DateTimeObject()
-{
-	time_t rawtime;
-	if (time(&rawtime) == -1)
-		throw std::runtime_error("could not retrieve time");
-
-	struct tm* timeinfo = localtime(&rawtime);
-	memcpy(&m_value, timeinfo, sizeof(tm));
-}*/
-
 std::string script::DateTimeObject::toString() const
 {
 	return asctime(&m_value);
@@ -70,4 +60,10 @@ int script::DateTimeObject::getMonth() const
 int script::DateTimeObject::getYear() const
 {
 	return m_value.tm_year + 1900;
+}
+
+template <>
+script::ScriptObjectPtr script::Util::makeObject<std::tm>(const std::tm& value)
+{
+	return std::make_shared<DateTimeObject>(value);
 }

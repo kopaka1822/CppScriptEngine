@@ -10,13 +10,6 @@ int main()
 	engine.setStaticFunction("Vec2", Vec2::getCtor());
 	engine.setStaticFunction("File", FileObject::getCtor());
 
-	std::chrono::high_resolution_clock::time_point time1 = std::chrono::high_resolution_clock::now();
-	std::chrono::high_resolution_clock::time_point time2 = std::chrono::high_resolution_clock::now();
-
-	std::chrono::high_resolution_clock::duration dur = time1 - time2;
-
-	time1 += dur;
-
 	std::string command;
 	while (true)
 	{

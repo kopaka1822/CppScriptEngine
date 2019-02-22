@@ -8,7 +8,7 @@ script::ClockObject::ClockObject()
 	addFunction("getTimestamp", Util::makeFunction(this, &ClockObject::getTimestamp, "Timestamp ClockObject::getTimestamp()"));
 }
 
-std::shared_ptr<script::DateTimeObject> script::ClockObject::getDate() const
+std::tm script::ClockObject::getDate() const
 {
 	time_t rawtime;
 	if (::time(&rawtime) == -1)
@@ -16,7 +16,7 @@ std::shared_ptr<script::DateTimeObject> script::ClockObject::getDate() const
 
 	struct tm* timeinfo = localtime(&rawtime);
 
-	return std::make_shared<DateTimeObject>(*timeinfo);
+	return *timeinfo;
 }
 
 script::time::Timestamp script::ClockObject::getTimestamp() const
