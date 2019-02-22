@@ -1,6 +1,5 @@
 #include <iostream>
 #include <script/ScriptEngine.h>
-#include <script/statics/ConsoleStaticObject.h>
 #include "Vec2.h"
 #include "FileObject.h"
 

@@ -3,10 +3,10 @@
 
 namespace script
 {
-	class ConsoleStaticObject : public ScriptObject
+	class ConsoleObject : public ScriptObject
 	{
 	public:
-		ConsoleStaticObject();
+		ConsoleObject();
 
 		virtual void write(const std::string& value);
 		virtual void newline();

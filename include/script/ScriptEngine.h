@@ -20,7 +20,9 @@ namespace script
 			// static function to construct primitive types
 			PrimitiveConstructor = 1,
 			// static console object
-			ConsoleClass = 2,
+			ConsoleClass = 1 << 1,
+			// static system object
+			SystemClass = 1 << 2,
 
 			All = 0xFFFFFFFF
 		};

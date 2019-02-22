@@ -10,8 +10,6 @@ public:
 
 	static FunctionT getCtor();
 
-	//Vec2& getValue() override;
-
 	std::string toString() const override;
 	script::ScriptObjectPtr clone() const override;
 	bool equals(const script::ScriptObjectPtr& other) const override;

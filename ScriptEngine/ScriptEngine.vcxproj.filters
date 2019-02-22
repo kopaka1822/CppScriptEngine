@@ -63,12 +63,6 @@
     <ClCompile Include="..\src\script\Tokenizer.cpp">
       <Filter>src\script</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\script\statics\ConsoleStaticObject.cpp">
-      <Filter>src\script\statics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\script\statics\SystemStaticObject.cpp">
-      <Filter>src\script\statics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\script\tokens\L1Token.cpp">
       <Filter>src\script\tokens</Filter>
     </ClCompile>
@@ -119,6 +113,18 @@
     </ClCompile>
     <ClCompile Include="..\src\script\tokens\L2StaticFunctionToken.cpp">
       <Filter>src\script\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\statics\ConsoleObject.cpp">
+      <Filter>src\script\statics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\statics\SystemObject.cpp">
+      <Filter>src\script\statics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\statics\DateTimeObject.cpp">
+      <Filter>src\script\statics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\script\statics\ClockObject.cpp">
+      <Filter>src\script\statics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,12 +188,6 @@
     <ClInclude Include="..\include\script\BoolMutex.h">
       <Filter>include\script</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\script\statics\ConsoleStaticObject.h">
-      <Filter>include\script\statics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\script\statics\SystemStaticObject.h">
-      <Filter>include\script\statics</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\script\tokens\L1FloatRule2.h">
       <Filter>include\script\tokens</Filter>
     </ClInclude>
@@ -238,6 +238,18 @@
     </ClInclude>
     <ClInclude Include="..\include\script\tokens\L2StaticFunctionToken.h">
       <Filter>include\script\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\ConsoleObject.h">
+      <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\SystemObject.h">
+      <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\DateTimeObject.h">
+      <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\ClockObject.h">
+      <Filter>include\script\statics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

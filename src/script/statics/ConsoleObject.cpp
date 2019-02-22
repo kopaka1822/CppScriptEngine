@@ -1,10 +1,10 @@
-#include "../../../include/script/statics/ConsoleStaticObject.h"
+#include "../../../include/script/statics/ConsoleObject.h"
 #include "../../../include/script/objects/ArrayObject.h"
 #include "../../../include/script/objects/StringObject.h"
 #include <iostream>
 #include "script/Util.h"
 
-script::ConsoleStaticObject::ConsoleStaticObject()
+script::ConsoleObject::ConsoleObject()
 {
 	auto writeFunc = [this](const ArrayObjectPtr& args)
 	{
@@ -25,21 +25,21 @@ script::ConsoleStaticObject::ConsoleStaticObject()
 		this->newline();
 		return res;
 	});
-	addFunction("newline", Util::makeFunction(this, &ConsoleStaticObject::newline, "ConsoleStaticObject::newline()"));
-	addFunction("read", Util::makeFunction(this, &ConsoleStaticObject::read, "string ConsoleStaticObject::read()"));
+	addFunction("newline", Util::makeFunction(this, &ConsoleObject::newline, "ConsoleObject::newline()"));
+	addFunction("read", Util::makeFunction(this, &ConsoleObject::read, "string ConsoleObject::read()"));
 }
 
-void script::ConsoleStaticObject::write(const std::string& value)
+void script::ConsoleObject::write(const std::string& value)
 {
 	std::cout << value;
 }
 
-void script::ConsoleStaticObject::newline()
+void script::ConsoleObject::newline()
 {
 	std::cout << std::endl;
 }
 
-std::string script::ConsoleStaticObject::read()
+std::string script::ConsoleObject::read()
 {
 	std::string res;
 	std::getline(std::cin, res);

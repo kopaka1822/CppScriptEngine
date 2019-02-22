@@ -2,7 +2,8 @@
 #include "../include/script/Tokenizer.h"
 #include <filesystem>
 #include "../../include/script/objects/FloatObject.h"
-#include "../../include/script/statics/ConsoleStaticObject.h"
+#include "../../include/script/statics/ConsoleObject.h"
+#include "../../include/script/statics/SystemObject.h"
 
 script::ScriptEngine::ScriptEngine(InitFlags flags)
 {
@@ -16,7 +17,12 @@ script::ScriptEngine::ScriptEngine(InitFlags flags)
 
 	if(flags & ConsoleClass)
 	{
-		setStaticObject("Console", std::make_shared<ConsoleStaticObject>());
+		setStaticObject("Console", std::make_shared<ConsoleObject>());
+	}
+
+	if(flags & SystemClass)
+	{
+		setStaticObject("System", std::make_shared<SystemObject>());
 	}
 }
 
