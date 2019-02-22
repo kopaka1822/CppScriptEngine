@@ -1,56 +1,45 @@
-#include "../../../include/script/statics/DateTimeObject.h"
-#include <ctime>
+#include "../../../include/script/statics/TimestampObject.h"
+#include "../../../include/script/Util.h"
 
-script::DateTimeObject::DateTimeObject()
+script::TimestampObject::TimestampObject(time::Timestamp time)
+	:
+ValueComparableObject(time)
 {
-	time_t rawtime;
-	if (time(&rawtime) == -1)
-		throw std::runtime_error("could not retrieve time");
-
-	struct tm* timeinfo = localtime(&rawtime);
-	memcpy(&m_value, timeinfo, sizeof(tm));
+	addFunction("add", Util::makeFunction(this, &TimestampObject::add, "TimestampObject::add(Duration)"));
+	addFunction("subtract", Util::combineFunctions({
+		Util::makeFunction(this, static_cast<void(TimestampObject::*)(const time::Duration&)>(&TimestampObject::subtract), "TimestampObject::subtract(Duration)"),
+		Util::makeFunction(this, static_cast<time::Duration(TimestampObject::*)(const time::Timestamp&) const>(&TimestampObject::subtract), "Duration TimestampObject::subtract(Timestamp)"),
+	}));
 }
 
-std::string script::DateTimeObject::toString() const
+std::string script::TimestampObject::toString() const
 {
-	return "";
+	auto dur = m_value.time_since_epoch();
+	return "Timestamp(" + std::to_string(dur.count()) + ")";
 }
 
-bool script::DateTimeObject::equals(const ScriptObjectPtr& other) const
+script::ScriptObjectPtr script::TimestampObject::clone() const
 {
-	auto stamp = std::reinterpret_pointer_cast<DateTimeObject>(other);
-	if (!stamp)
-		return false;
-
-	return memcmp(&m_value, &(stamp->m_value), sizeof(m_value)) != 0;
+	return std::make_shared<TimestampObject>(m_value);
 }
 
-int script::DateTimeObject::getSeconds() const
+void script::TimestampObject::add(const time::Duration& other)
 {
-	return m_value.tm_sec;
+	m_value += other;
 }
 
-int script::DateTimeObject::getMinutes() const
+void script::TimestampObject::subtract(const time::Duration& other)
 {
-	return m_value.tm_min;
+	m_value -= other;
 }
 
-int script::DateTimeObject::getHours() const
+script::time::Duration script::TimestampObject::subtract(const time::Timestamp& other) const
 {
-	return m_value.tm_hour;
+	return m_value - other;
 }
 
-int script::DateTimeObject::getDay() const
+template <>
+script::ScriptObjectPtr script::Util::makeObject<script::time::Timestamp>(const time::Timestamp& value)
 {
-	return m_value.tm_mday;
-}
-
-int script::DateTimeObject::getMonth() const
-{
-	return m_value.tm_mon;
-}
-
-int script::DateTimeObject::getYear() const
-{
-	return m_value.tm_year + 1900;
+	return std::make_shared<TimestampObject>(value);
 }

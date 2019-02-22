@@ -149,8 +149,10 @@
     <ClCompile Include="..\src\script\ScriptEngine.cpp" />
     <ClCompile Include="..\src\script\statics\ClockObject.cpp" />
     <ClCompile Include="..\src\script\statics\ConsoleObject.cpp" />
+    <ClCompile Include="..\src\script\statics\DurationObject.cpp" />
     <ClCompile Include="..\src\script\statics\SystemObject.cpp" />
     <ClCompile Include="..\src\script\statics\DateTimeObject.cpp" />
+    <ClCompile Include="..\src\script\statics\TimestampObject.cpp" />
     <ClCompile Include="..\src\script\Tokenizer.cpp" />
     <ClCompile Include="..\src\script\tokens\L1StaticFunctionRule.cpp" />
     <ClCompile Include="..\src\script\tokens\L2ArgumentListToken.cpp" />
@@ -187,6 +189,9 @@
     <ClInclude Include="..\include\script\Script.h" />
     <ClInclude Include="..\include\script\ScriptEngine.h" />
     <ClInclude Include="..\include\script\statics\ConsoleObject.h" />
+    <ClInclude Include="..\include\script\statics\DurationObject.h" />
+    <ClInclude Include="..\include\script\statics\Time.h" />
+    <ClInclude Include="..\include\script\statics\TimestampObject.h" />
     <ClInclude Include="..\include\script\statics\SystemObject.h" />
     <ClInclude Include="..\include\script\statics\DateTimeObject.h" />
     <ClInclude Include="..\include\script\statics\ClockObject.h" />

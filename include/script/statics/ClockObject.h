@@ -1,6 +1,7 @@
 #pragma once
 #include "../objects/ScriptObject.h"
 #include "DateTimeObject.h"
+#include "Time.h"
 
 namespace script
 {
@@ -10,6 +11,8 @@ namespace script
 		ClockObject();
 
 		/// \brief returns current point in time
-		ScriptPtr<DateTimeObject> now() const;
+		ScriptPtr<DateTimeObject> getDate() const;
+
+		time::Timestamp getTimestamp() const;
 	};
 }
