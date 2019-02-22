@@ -65,7 +65,7 @@ i.subtract(20)
 >> 8
 i
 >> 8
-i.getFunctionNames()
+i.getFunctions()
 >> ["clone", "toString", "multiply", "getFunctionNames", "invoke", "add", "equals", "subtract", "divide", "negate", "set"]
 ```
 
@@ -310,7 +310,7 @@ Functions with a get/set prefix can be called by skipping the get/set and the br
 * **setter functions** should required exactly one argument
 Example:
 ```
-i.FunctionNames
+i.Functions
 >> ["clone", "toString", "multiply", "getFunctionNames", "invoke", "add", "equals", "subtract", "divide", "negate", "set"]
 obj.SomeSetter = value
 >> ...
