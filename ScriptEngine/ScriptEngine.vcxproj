@@ -150,6 +150,7 @@
     <ClCompile Include="..\src\script\statics\ClockObject.cpp" />
     <ClCompile Include="..\src\script\statics\ConsoleObject.cpp" />
     <ClCompile Include="..\src\script\statics\DurationObject.cpp" />
+    <ClCompile Include="..\src\script\statics\EngineObject.cpp" />
     <ClCompile Include="..\src\script\statics\SystemObject.cpp" />
     <ClCompile Include="..\src\script\statics\DateTimeObject.cpp" />
     <ClCompile Include="..\src\script\statics\TimestampObject.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\include\script\ScriptEngine.h" />
     <ClInclude Include="..\include\script\statics\ConsoleObject.h" />
     <ClInclude Include="..\include\script\statics\DurationObject.h" />
+    <ClInclude Include="..\include\script\statics\EngineObject.h" />
     <ClInclude Include="..\include\script\statics\Time.h" />
     <ClInclude Include="..\include\script\statics\TimestampObject.h" />
     <ClInclude Include="..\include\script\statics\SystemObject.h" />

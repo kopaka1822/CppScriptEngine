@@ -16,7 +16,7 @@ int main()
 		std::getline(std::cin, command);
 		try
 		{
-			std::cout << ">> " << engine.execute(command) << std::endl;
+			std::cout << ">> " << engine.execute(command)->toString() << std::endl;
 		}
 		catch (const std::exception& e)
 		{

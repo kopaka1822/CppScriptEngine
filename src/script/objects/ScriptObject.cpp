@@ -11,7 +11,7 @@ script::ScriptObject::ScriptObject()
 	addFunction("toString", Util::makeFunction(this, &ScriptObject::toString, "string ScriptObject::toString()"));
 	addFunction("equals", Util::makeFunction(this, &ScriptObject::equals, "bool ScriptObject::equals(object)"));
 	addFunction("invoke", Util::makeFunction(this, &ScriptObject::invoke, "object ScriptObject::invoke(string name, array arguments)"));
-	addFunction("getFunctionNames", Util::makeFunction(this, &ScriptObject::getFunctionNames, "array ScriptObject::getFunctionNames()"));
+	addFunction("getFunctions", Util::makeFunction(this, &ScriptObject::getFunctions, "array ScriptObject::getFunctions()"));
 }
 
 std::string script::ScriptObject::toString() const
@@ -49,7 +49,7 @@ script::ScriptObjectPtr script::ScriptObject::invoke(const std::string& funcName
 	return it->second(args);
 }
 
-std::vector<std::string> script::ScriptObject::getFunctionNames() const
+std::vector<std::string> script::ScriptObject::getFunctions() const
 {
 	std::vector<std::string> res;
 	res.reserve(m_functions.size());

@@ -29,14 +29,9 @@ namespace script
 
 		explicit ScriptEngine(InitFlags flags = All);
 
-		/// \brief executes the given command and stores the result into a string
-		/// \param command command to execute
-		/// \param result pointer to empty string or nullptr if result should not be stored
-		void execute(const std::string& command, std::string* result);
-
 		/// \brief executes the given command and returns the result
 		/// \param command command to execute
-		std::string execute(const std::string& command);
+		ScriptObjectPtr execute(const std::string& command);
 
 		/// \brief retrieves the object with the given name
 		/// \param object name
@@ -66,6 +61,21 @@ namespace script
 		/// \param name function name
 		/// \param function valid function
 		void setStaticFunction(const std::string& name, const ScriptObject::FunctionT& function);
+
+		const auto& getObjects() const
+		{
+			return m_objects;
+		}
+
+		const auto& getStaticObjects() const
+		{
+			return m_staticObjects;
+		}
+
+		const auto& getStaticFunctions() const
+		{
+			return m_staticFunctions;
+		}
 	private:
 		std::unordered_map<std::string, ScriptObjectPtr> m_objects;
 		std::unordered_map<std::string, ScriptObjectPtr> m_staticObjects;

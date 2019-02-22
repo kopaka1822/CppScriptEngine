@@ -132,6 +132,9 @@
     <ClCompile Include="..\src\script\statics\DurationObject.cpp">
       <Filter>src\script\statics</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\script\statics\EngineObject.cpp">
+      <Filter>src\script\statics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\script\Script.h">
@@ -264,6 +267,9 @@
       <Filter>include\script\statics</Filter>
     </ClInclude>
     <ClInclude Include="..\include\script\statics\Time.h">
+      <Filter>include\script\statics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\script\statics\EngineObject.h">
       <Filter>include\script\statics</Filter>
     </ClInclude>
   </ItemGroup>

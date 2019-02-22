@@ -27,7 +27,7 @@ namespace script
 		size_t hashCode() const;
 
 		ScriptObjectPtr invoke(const std::string& funcName, const ScriptPtr<ArrayObject>& args);
-		std::vector<std::string> getFunctionNames() const;
+		std::vector<std::string> getFunctions() const;
 	protected:
 		ScriptObject();
 		void addFunction(const std::string& name, const FunctionT& func);

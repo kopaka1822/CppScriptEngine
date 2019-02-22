@@ -22,20 +22,19 @@ script::ScriptEngine::ScriptEngine(InitFlags flags)
 
 	if(flags & SystemClass)
 	{
-		setStaticObject("System", std::make_shared<SystemObject>());
+		setStaticObject("System", std::make_shared<SystemObject>(*this));
 	}
 }
 
-void script::ScriptEngine::execute(const std::string& command, std::string* result)
+script::ScriptObjectPtr script::ScriptEngine::execute(const std::string& command)
 {
-	if(command.empty()) return;
+	if(command.empty()) return NullObject::get();
 
 	try
 	{
 		const auto token = Tokenizer::getExecutable(command);
 		const auto res = token->execute(*this);
-		if (result)
-			*result = res->toString();
+		return res;
 	}
 	catch (const ParseError& error)
 	{
@@ -53,13 +52,6 @@ void script::ScriptEngine::execute(const std::string& command, std::string* resu
 		}
 		throw std::runtime_error(error.what() + std::string(" at ") + errorPosition);
 	}
-}
-
-std::string script::ScriptEngine::execute(const std::string& command)
-{
-	std::string res;
-	execute(command, &res);
-	return res;
 }
 
 script::ScriptObjectPtr script::ScriptEngine::getObject(const std::string& object) const

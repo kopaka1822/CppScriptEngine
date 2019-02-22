@@ -58,7 +58,7 @@ TEST(TestSuite, AddFunction)
 	
 	dummy->init();
 
-	auto funcs = dummy->getFunctionNames();
+	auto funcs = dummy->getFunctions();
 	ASSERT_GE(int(funcs.size()), 1);
 	ASSERT_TRUE(std::any_of(funcs.begin(), funcs.end(), [](auto name) {return name == "test"; }));
 }
