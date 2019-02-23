@@ -278,5 +278,8 @@
     <ClInclude Include="..\include\script\statics\IOObject.h">
       <Filter>include\script\statics</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\script\IntMutex.h">
+      <Filter>include\script</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,0 +1,13 @@
+
+
+Console.writeLine("this is a text!");
+
+System.IO.executeFile("test.txt");
+
+Console.write("please input name: ");
+a = Int(Console.read());
+// this is a comment
+Console.writeLine("you said ", a);
+
+
+null;
