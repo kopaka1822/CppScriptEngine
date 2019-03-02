@@ -33,7 +33,7 @@ The following function templates are designed to convert member functions of `Sc
 
 1) This functions takes the class pointer followed by a member function that returns void. The return value of this function will be the `ScriptObjectPtr` of the class (which must be a `ScripObject`).
 2) Same as 1 but with a `const` function.
-3) This function takes the class pointer followed by a member function return non-void. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload. {#4so}
+3) This function takes the class pointer followed by a member function return non-void. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload.
 4) Same as 3 but with a `const` function.
 
 ### Class Member Functions (for non ScriptObjects)
@@ -52,10 +52,10 @@ The following function templates are designed to convert member functions of `Sc
    FunctionT makeFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, string functionSignature);
 ```
 
-1) This functions takes the class pointer followed by a member function that returns void. The return value of this function will be the `ScriptObjectPtr` of the class (which must be a `ScripObject`).
+1) This functions returns the `ScriptObject` provided by the first argument but executes the member function given by the second argument (and ignoring it's return value).
 2) Same as 1 but with a `const` function.
-3) This function takes the class pointer followed by a member function return non-void. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload.
-4) Same as 4 for [ScriptObjects](#class-member-functions-for-scriptobjects)
+3) Same as 3 from [Class Member Functions (for ScriptObjects)](#class-member-functions-for-scriptobjects)
+4) Same as 4 from [Class Member Functions (for ScriptObjects)](#class-member-functions-for-scriptobjects)
 
 ### Static Functions
 
@@ -66,6 +66,9 @@ The following function templates are designed to convert member functions of `Sc
 2) template<class TLambda>
    FunctionT fromLambda(const TLambda& lambda, string functionSignature);
 ```
+
+1) Converts a static function. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload.
+2) Converts a lambda function. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload. This template only works if the lambda function is provided as the first argument without wrapping it into a `std::function` first.
 
 ## CombineFunctions
 
