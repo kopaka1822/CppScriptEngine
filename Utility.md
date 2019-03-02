@@ -8,7 +8,7 @@ The static `script::Util` class provides a lot of useful functions to convert C+
 * [`Util::combineFunctions(...)`](#combinefunctions)
 * [`Util::makeObject(...)`](#makeobject)
 * [`Util::makeArray(...)`](#makearray)
-* [`Util::getBareString(...)`](getbarestring)
+* [`Util::getBareString(...)`](#getbarestring)
 
 ## MakeFunction
 
