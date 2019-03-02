@@ -236,7 +236,7 @@ public:
    static FunctionT getCtor();
 };
 ```
-Of course we can use some functions from the `Util` class as well to register out functions for invoke. The full documentation for all `Util` functions can be found HERE TODO.
+Of course we can use some functions from the `Util` class as well to register out functions for invoke. The full documentation for all `Util` functions can be found [here](https://github.com/kopaka1822/CppScriptEngine/blob/master/Utility.md).
 ```c++
 FileObject::FileObject(const std::string& filename) :
    ValueObject<std::fstream>(filename.c_str(), std::fstream::out) {
