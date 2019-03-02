@@ -105,6 +105,24 @@ The following function templates are designed to convert member functions of `Sc
 
 ## CombineFunctions
 
+This function allows the combination of multiple `FunctionT` functions into a single `FunctionT` function. Example for creating two different constructors for the `Vec2` class:
+
+```c++
+Util::combineFunctions({
+   Util::fromLambda([](const Vec2& other){
+      return std::make_shared<Vec2>(other.getX(), other.getY());
+   }, "Vec2(Vec2)"),
+   script::Util::fromLambda([](float x, float y){
+      return std::make_shared<Vec2>(x, y);
+   }, "Vec2(float x, float y)")
+   });
+```
+
+#### Behaviour
+This function starts with calling the first provided function. If either an `InvalidArgumentType` or `InvalidArgumentCount` is thrown the function will be considered a *unmatching* and the next function in the list will be called. If the function returns normally or throws another type of error, the function will be considered a *match* and no other function will be called. If no *matching* functions were called one of the following exceptions will be thrown:
+* `InvalidArgumentCount` if *all* functions failed because of an `InvalidArgumentCount` exception.
+* `InvalidArgumentType` otherwise. This exception will contain the error information of all functions that threw an `InvalidArgumentType` exception.
+
 ## MakeObject
 
 ## MakeArray
