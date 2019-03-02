@@ -28,6 +28,7 @@ This script language should allow the programmer to control a programm by creati
 * [Naming Conventions](#naming-conventions)
 * [Operators](#operators)
 * [Properties](#properties)
+* [Further Reading](#further-reading)
 
 ## ScriptObject
 
@@ -327,3 +328,8 @@ i.Functions
 obj.SomeSetter = value
 >> ...
 ```
+
+# Further Reading
+
+* [Documentation of the `Util` class](https://github.com/kopaka1822/CppScriptEngine/blob/master/Utility.md)
+
