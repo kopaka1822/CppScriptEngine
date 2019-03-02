@@ -17,6 +17,18 @@ This script language should allow the programmer to control a programm by creati
 * well informing exceptions
 
 # Introduction
+## Contents
+* [ScriptObject](#scriptobject)
+* [Predefined objects](#predefined-objects)
+* [Functions](#functions)
+* [Example Program](#example-program)
+* [Adding Custom Objects](#adding-custom-objects)
+   * [Derive from ScriptObject](#derive-from-scriptobject)
+   * [Embed object with ValueObject](#embed-object-with-valueobject)
+* [Naming Conventions](#naming-conventions)
+* [Operators](#operators)
+* [Properties](#properties)
+
 ## ScriptObject
 
 Every object derives from the `ScriptObject` class. The important part of the interface looks like this:
@@ -94,7 +106,7 @@ int main() {
 ```
 
 # Adding Custom Objects
-## Derive from GetValueObject
+## Derive from ScriptObject
 The easiest way to add custom objects is to derive directly from `ScriptObject`.
 
 ### Example
@@ -183,7 +195,7 @@ The `Util` version looks like this:
 ```c++
 addFunction("add", script::Util::makeFunction(this, &Vec2::add, "Vec2::add(Vec2)"));
 ```
-This small piece of code executed exactly the same piece of code as above.
+This small piece of code executed exactly the same piece of code as above. The full documentation of the `Util` class can be found [here](https://github.com/kopaka1822/CppScriptEngine/blob/master/Utility.md).
 
 The remaining functions will be registered similarly and our constructor looks like this:
 ```c++
