@@ -181,7 +181,7 @@ However, this snippet contains a lot of argument verification to ensure that the
 
 The `Util` version looks like this:
 ```c++
-addFunction("add", script::Util::makeFunction(this, &Vec2::add, "add(Vec2)"));
+addFunction("add", script::Util::makeFunction(this, &Vec2::add, "Vec2::add(Vec2)"));
 ```
 This small piece of code executed exactly the same piece of code as above.
 
