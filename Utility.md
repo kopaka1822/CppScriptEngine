@@ -125,6 +125,34 @@ This function starts with calling the first provided function. If either an `Inv
 
 ## MakeObject
 
+This function can be used to create `ScriptObjectPtr` from another object. The function signature is:
+
+```c++
+template<class T>
+static ScriptObjectPtr makeObject(const T& value);
+```
+
+The `ScriptEngine` provides implementations for:
+* `makeObject<int>`
+* `makeObject<float>`
+* `makeObject<bool>`
+* `makeObject<std::string>`
+* `makeObject<const char*>`
+* `makeObject<nullptr>`
+* `makeObject<std::vector<T>>` (`makeObject` will be called again for each argument)
+
+This function is used by the `Util::makeFunction` functions that return a type that is not trivially convertible to a `ScriptObjectPtr`
+
 ## MakeArray
 
+This functions converts all arguments into a `ScriptObjectPtr` and return a `ArrayObjectPtr` (`ScriptPtr<ArrayObject>`).
+```c++
+template<class... TClass>
+static ArrayObjectPtr makeArray(const TClass&... objects)
+```
+
 ## GetBareString
+
+This function calls `toString()` on the provided argument and returns its value. However, if the object is a `StringObject` (or a `GetValueObject<string>`) the `getValue()` function will be used instead if the `toString()` function.
+
+This function was introduced to avoid the additional quotation marks that will be added by the `StringObject` when retrieving a string representation.
