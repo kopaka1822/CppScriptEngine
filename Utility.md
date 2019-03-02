@@ -17,9 +17,9 @@ These functions are used to convert a single function into the `ScriptObject::Fu
 If the number of provided arguments does not match the expected argument count, an `InvalidArgumentCount` exception is thrown.
 
 If an argument is not convertible to the expected argument type, an `InvalidArgumentType` exception is thown. Arguments are considered convertible to the argument type if:
-* the provided argument is directly convertible to the expected argument.
-* the provided argument has the type `GetValueObject<T>` with `T` as expected argument (an `IntObject` derived from `GetValueObject<int>` and is therefore convertible to a c++ `int`).
-* One of the above cases, but the expected argument is a raw pointer. In this case, the argument `NullObject` is also valid and a value of `nullptr` will be used for the function call.
+* the provided argument is directly convertible to the expected argument. (expected `ScriptPtr<IntObject>` and got `ScriptPtr<IntObject>`)
+* the provided argument has the type `GetValueObject<T>` with `T` as expected argument (an `IntObject` derives from `GetValueObject<int>` and is therefore convertible to a c++ `int`).
+* One of the above cases, but the expected argument is a raw pointer. In this case, the argument `NullObject` is also valid and a value of `nullptr` will be used for the function call. (if the expected argument is a `int*` then arguments of type `IntObject` and `NullObject` are permitted)
  
 In both cases, the `functionSignature` parameter is used to identify where the error occured. The syntax for the function signature should be `returnType className::functionName(type1 name, type2...)` or `className::functionName(type1 name, type2...)` (for void return type functions).
 
