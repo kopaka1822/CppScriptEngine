@@ -55,7 +55,7 @@ The following function templates are designed to convert member functions of `Sc
 1) This functions takes the class pointer followed by a member function that returns void. The return value of this function will be the `ScriptObjectPtr` of the class (which must be a `ScripObject`).
 2) Same as 1 but with a `const` function.
 3) This function takes the class pointer followed by a member function return non-void. The return value must be directly convertible to a `ScriptObjectPtr` or has an appropriate [`Util::makeObject(...)`](#makeobject) overload.
-4) Same as 4 for [ScriptObjects](#class-member-functions-(for-non-scriptobjects))
+4) Same as 4 for [ScriptObjects](#class-member-functions-(for-scriptobjects))
 
 ### Static Functions
 
