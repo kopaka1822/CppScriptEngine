@@ -135,6 +135,8 @@ std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string
 	if (info.objectToken.getType() == L1Token::Type::OpenString)
 		return res; // no proposals for now
 
+	bool hasPreviousElement = true;
+
 	// get possible functions
 	if (info.callerObject)
 	{
@@ -149,6 +151,8 @@ std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string
 			const auto it = m_objects.find(info.callerToken.getValue());
 			if (it != m_objects.end())
 				addAllFunctions(candidates, *it->second);
+			else // add default functions
+				addAllFunctions(candidates, *NullObject::get());
 		}
 		else if(info.callerToken.startWithUppercase())
 		{
@@ -156,11 +160,14 @@ std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string
 			const auto it = m_staticObjects.find(info.callerToken.getValue());
 			if (it != m_staticObjects.end())
 				addAllFunctions(candidates, *it->second);
+			else // add default functions
+				addAllFunctions(candidates, *NullObject::get());
 		}
 	} 
 	else
 	{
 		// no prior element => could be any object or static function
+		hasPreviousElement = false;
 		for (const auto& v : m_objects)
 			candidates.insert(v.first);
 		for (const auto& v : m_staticObjects)
@@ -176,6 +183,21 @@ std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string
 		res.reserve(candidates.size());
 		for (auto& v : candidates)
 			res.push_back(v);
+
+		// prefer getter setter over normal functions, prefer variables over static objects
+		const auto mid = std::partition(res.begin(), res.end(), [hasPreviousElement](const std::string& value)
+		{
+			// starts with uppercase?
+			const bool upper = isupper(value.front()) != 0;
+			// is function type?
+			if (hasPreviousElement)
+				return upper; // yes => prefer getter, setter
+			return !upper; // no => prefer variables
+		});
+
+		// sort partitions
+		std::sort(res.begin(), mid);
+		std::sort(mid, res.end());
 	}
 	else
 	{
@@ -186,7 +208,11 @@ std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string
 			// start with prefix and are longer than prefix
 			if (c.rfind(prefix, 0) == 0 && c.size() > prefix.size())
 				res.push_back(c.substr(prefix.size()));
+
+		// sort functions
+		std::sort(res.begin(), res.end());
 	}
+
 	return res;
 }
 
