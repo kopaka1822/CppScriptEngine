@@ -8,6 +8,7 @@
 #include "objects/NullObject.h"
 #include "objects/BoolObject.h"
 #include "Util.h"
+#include <unordered_set>
 
 namespace script
 {
@@ -76,7 +77,12 @@ namespace script
 		{
 			return m_staticFunctions;
 		}
+
+		/// \brief retrieves a list of all possible auto-completions regarding to the text
+		std::vector<std::string> getAutocomplete(const std::string& text);
 	private:
+		static void addAllFunctions(std::unordered_set<std::string>& set, const ScriptObject& obj);
+
 		std::unordered_map<std::string, ScriptObjectPtr> m_objects;
 		std::unordered_map<std::string, ScriptObjectPtr> m_staticObjects;
 		std::unordered_map<std::string, ScriptObject::FunctionT> m_staticFunctions;

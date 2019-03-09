@@ -12,6 +12,8 @@ script::ScriptObject::ScriptObject()
 	addFunction("equals", Util::makeFunction(this, &ScriptObject::equals, "bool ScriptObject::equals(object)"));
 	addFunction("invoke", Util::makeFunction(this, &ScriptObject::invoke, "object ScriptObject::invoke(string name, array arguments)"));
 	addFunction("getFunctions", Util::makeFunction(this, &ScriptObject::getFunctions, "array ScriptObject::getFunctions()"));
+	addFunction("getGetter", Util::makeFunction(this, &ScriptObject::getGetter, "array ScriptObject::getGetter()"));
+	addFunction("getSetter", Util::makeFunction(this, &ScriptObject::getSetter, "array ScriptObject::getSetter()"));
 }
 
 std::string script::ScriptObject::toString() const
@@ -55,6 +57,32 @@ std::vector<std::string> script::ScriptObject::getFunctions() const
 	res.reserve(m_functions.size());
 	for (const auto& func : m_functions)
 		res.push_back(func.first);
+
+	return res;
+}
+
+std::vector<std::string> script::ScriptObject::getGetter() const
+{
+	std::vector<std::string> res;
+	res.reserve(m_functions.size());
+	for (const auto& func : m_functions)
+		// starts with get?
+		if(func.first.rfind("get", 0) == 0 
+			&& func.first.size() > 3 && isupper(func.first[3]))
+			res.push_back(func.first.substr(3));
+
+	return res;
+}
+
+std::vector<std::string> script::ScriptObject::getSetter() const
+{
+	std::vector<std::string> res;
+	res.reserve(m_functions.size());
+	for (const auto& func : m_functions)
+		// starts with set?
+		if (func.first.rfind("set", 0) == 0 
+			&& func.first.size() > 3 && isupper(func.first[3]))
+			res.push_back(func.first.substr(3));
 
 	return res;
 }

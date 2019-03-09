@@ -32,6 +32,7 @@ namespace script
 			Integer,
 			IdentifierAssign,
 			StaticFunction,
+			OpenString // a string that was not closed (only occurs for autocomplete)
 		};
 
 		explicit L1Token(Type type, size_t position, std::string value);

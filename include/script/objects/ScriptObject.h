@@ -27,7 +27,12 @@ namespace script
 		size_t hashCode() const;
 
 		ScriptObjectPtr invoke(const std::string& funcName, const ScriptPtr<ArrayObject>& args);
+		/// \brief returns all registered functions (including getter and setter)
 		std::vector<std::string> getFunctions() const;
+		/// \brief returns all getter without the get prefix
+		std::vector<std::string> getGetter() const;
+		/// \brief returns all setter without the set prefix
+		std::vector<std::string> getSetter() const;
 	protected:
 		ScriptObject();
 		void addFunction(const std::string& name, const FunctionT& func);

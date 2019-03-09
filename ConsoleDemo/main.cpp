@@ -10,6 +10,16 @@ int main()
 	engine.setStaticFunction("Vec2", Vec2::getCtor());
 	engine.setStaticFunction("File", FileObject::getCtor());
 
+	// auto completion test function
+	engine.setStaticFunction("Autocomp", script::Util::fromLambda([&engine](const std::string& text)
+	{
+		auto res = engine.getAutocomplete(text);
+		for (const auto& v : res)
+			std::cout << text << v << '\n';
+
+		return static_cast<int>(res.size());
+	}, "Autocomp(string)"));
+
 	std::string command;
 	while (true)
 	{

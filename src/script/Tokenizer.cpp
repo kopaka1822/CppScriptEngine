@@ -16,6 +16,7 @@
 #include "../../include/script/tokens/L2PropertySetterToken.h"
 #include "../../include/script/tokens/L2StaticIdentifierToken.h"
 #include "../../include/script/tokens/L2PrimitiveValueToken.h"
+#include "../../include/script/objects/FloatObject.h"
 #include <array>
 #include <stack>
 
@@ -33,7 +34,85 @@ std::unique_ptr<script::L2Token> script::Tokenizer::getExecutable(const std::str
 	return res;
 }
 
-std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& command)
+script::Tokenizer::AutocompleteInfo script::Tokenizer::getAutocomplete(const std::string& command)
+{
+	std::vector<L1Token> tokens;
+	try
+	{
+		tokens = getL1Tokens(command);
+		applyL1Rules(tokens);
+	}
+	catch (const std::exception&){}
+
+	AutocompleteInfo i;
+	// take a look at the last token
+	if(tokens.empty())
+	{
+		// everything is possible
+		return i;
+	}
+
+	if (isspace(command.back()))
+	{
+		// , ) something else? but no variable
+		i.noProposal = true;
+		return i;
+	}
+
+	switch (tokens.back().getType()) 
+	{ 
+	case L1Token::Type::Assign:
+	case L1Token::Type::Separator:
+	case L1Token::Type::BracketOpen:
+	case L1Token::Type::ArrayOpen:
+	case L1Token::Type::Plus:
+	case L1Token::Type::PlusAssign: 
+	case L1Token::Type::Minus:
+	case L1Token::Type::MinusAssign:
+	case L1Token::Type::Multiply:
+	case L1Token::Type::MultiplyAssign:
+	case L1Token::Type::Divide:
+	case L1Token::Type::DivideAssign:
+	case L1Token::Type::IdentifierAssign:
+	case L1Token::Type::StaticFunction:
+	case L1Token::Type::Function:
+		// everything is possible
+		return i;
+
+	case L1Token::Type::OpenString:
+		i.objectToken = tokens.back();
+		return i;
+	
+	case L1Token::Type::Undefined:
+	case L1Token::Type::BracketClosed:
+	case L1Token::Type::ArrayClosed:
+	case L1Token::Type::Null:
+	case L1Token::Type::Float:
+	case L1Token::Type::Bool:
+	case L1Token::Type::Integer:
+	case L1Token::Type::String:
+		// no variables => , ) . are possible
+		i.noProposal = true;
+		return i;
+
+	case L1Token::Type::Identifier:
+		// complete identifier
+		i.objectToken = tokens.back();
+		fillAutocompleteCaller(tokens, i);
+		return i;
+
+	case L1Token::Type::Dot: 
+		// what was the previous token?
+		fillAutocompleteCaller(tokens, i);
+		return i;
+	default: 
+		// what happened?
+		i.noProposal = true;
+		return i;
+	}
+}
+
+std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& command, bool throwExceptions)
 {
 	std::vector<L1Token> tokens;
 	tokens.reserve(100);
@@ -119,7 +198,7 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		default:
 			if (!isspace(static_cast<unsigned char>(c)))
 			{
-				if (!isalnum(static_cast<unsigned char>(c)))
+				if (throwExceptions && !isalnum(static_cast<unsigned char>(c)))
 					throw SyntaxError(position, std::string(&c, 1), "variables and functions must be alphanumeric");
 				current += c;
 				continue;
@@ -142,9 +221,13 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 	}
 
 	if (isString)
-		throw SyntaxError(-1, "end of command", "string not closed");
+	{
+		if(throwExceptions)
+			throw SyntaxError(-1, "end of command", "string not closed");
 
-	if (current.length())
+		tokens.emplace_back(L1Token::Type::OpenString, position, current);
+	}
+	else if (current.length())
 		tokens.emplace_back(L1Token::Type::Identifier, position - current.length(), current);
 
 	return tokens;
@@ -543,4 +626,82 @@ char script::Tokenizer::getEscapedChar(size_t position, char value)
 	std::string token = "\\?";
 	token[1] = value;
 	throw SyntaxError(position, token, "escape sequence not supported");
+}
+
+void script::Tokenizer::fillAutocompleteCaller(const std::vector<L1Token>& tokens, AutocompleteInfo& info)
+{
+	auto it = tokens.rbegin();
+
+	// search the part before the dot
+	if(it->getType() != L1Token::Type::Dot)
+	{
+		++it;
+		if (it == tokens.rend()) return; // no function call
+
+
+		if (it->getType() != L1Token::Type::Dot)
+			return; // no function call
+	}
+
+	// determine on which object the function is called
+	++it;
+	if (it == tokens.rend()) return; // invalid syntax?
+
+	switch (it->getType())
+	{
+#pragma region PrimitveTypes
+		// use some dummy object to determine the available functions
+	case L1Token::Type::String: 
+		info.callerObject = std::make_shared<StringObject>("");
+		return;
+	case L1Token::Type::Bool: 
+		info.callerObject = std::make_shared<BoolObject>(true);
+		return;
+	case L1Token::Type::Integer: 
+		info.callerObject = std::make_shared<IntObject>(1);
+		return;
+	case L1Token::Type::Null: 
+		info.callerObject = NullObject::get();
+		return;
+	case L1Token::Type::Float: 
+		info.callerObject = std::make_shared<FloatObject>(1.0f);
+		return;
+	case L1Token::Type::ArrayClosed: 
+		info.callerObject = std::make_shared<ArrayObject>();
+		break;
+#pragma endregion 
+
+	case L1Token::Type::BracketClosed:
+		// this is too complex for now... take default ScriptObject functions
+		info.callerObject = NullObject::get();
+		return;
+
+	case L1Token::Type::Identifier:
+		// the script engine has to identify the caller object
+		info.callerToken = *it;
+		return;
+
+	// this makes no sense:
+	case L1Token::Type::Undefined:
+	case L1Token::Type::Assign: 
+	case L1Token::Type::Separator: 
+	case L1Token::Type::BracketOpen:
+	case L1Token::Type::ArrayOpen:
+	case L1Token::Type::Dot:
+	case L1Token::Type::Plus:
+	case L1Token::Type::PlusAssign:
+	case L1Token::Type::Minus:
+	case L1Token::Type::MinusAssign: 
+	case L1Token::Type::Multiply: 
+	case L1Token::Type::MultiplyAssign: 
+	case L1Token::Type::Divide: 
+	case L1Token::Type::DivideAssign: 
+	case L1Token::Type::Function: 
+	case L1Token::Type::IdentifierAssign: 
+	case L1Token::Type::StaticFunction:
+	case L1Token::Type::OpenString:
+		return;
+
+	default:;
+	}
 }

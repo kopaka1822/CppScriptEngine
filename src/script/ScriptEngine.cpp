@@ -1,9 +1,10 @@
 #include "../include/script/ScriptEngine.h"
 #include "../include/script/Tokenizer.h"
-#include <filesystem>
 #include "../../include/script/objects/FloatObject.h"
 #include "../../include/script/statics/ConsoleObject.h"
 #include "../../include/script/statics/SystemObject.h"
+#include <unordered_set>
+#include <cassert>
 
 script::ScriptEngine::ScriptEngine(InitFlags flags)
 {
@@ -119,6 +120,86 @@ void script::ScriptEngine::setStaticFunction(const std::string& name, const Scri
 		throw std::runtime_error("ScriptEngine::setStaticFunction function \"" + name + "\" already exists");
 
 	m_staticFunctions[name] = function;
+}
+
+std::vector<std::string> script::ScriptEngine::getAutocomplete(const std::string& text)
+{
+	std::vector<std::string> res;
+	std::unordered_set<std::string> candidates;
+
+	const auto info = Tokenizer::getAutocomplete(text);
+	
+	if (info.noProposal)
+		return res; // no proposals available
+
+	if (info.objectToken.getType() == L1Token::Type::OpenString)
+		return res; // no proposals for now
+
+	// get possible functions
+	if (info.callerObject)
+	{
+		addAllFunctions(candidates, *info.callerObject);
+	}
+	else if(info.callerToken.getType() == L1Token::Type::Identifier)
+	{
+		// find the identifier
+		if(info.callerToken.startsWithLowercase())
+		{
+			// variable
+			const auto it = m_objects.find(info.callerToken.getValue());
+			if (it != m_objects.end())
+				addAllFunctions(candidates, *it->second);
+		}
+		else if(info.callerToken.startWithUppercase())
+		{
+			// static object
+			const auto it = m_staticObjects.find(info.callerToken.getValue());
+			if (it != m_staticObjects.end())
+				addAllFunctions(candidates, *it->second);
+		}
+	} 
+	else
+	{
+		// no prior element => could be any object or static function
+		for (const auto& v : m_objects)
+			candidates.insert(v.first);
+		for (const auto& v : m_staticObjects)
+			candidates.insert(v.first);
+		for (const auto& v : m_staticFunctions)
+			candidates.insert(v.first + "(");
+	}
+
+	// match value with candidates
+	if(info.objectToken.getType() == L1Token::Type::Undefined)
+	{
+		// everything is possible
+		res.reserve(candidates.size());
+		for (auto& v : candidates)
+			res.push_back(v);
+	}
+	else
+	{
+		assert(info.objectToken.getType() == L1Token::Type::Identifier);
+		// only use candidates that start with the value
+		const auto prefix = info.objectToken.getValue();
+		for (auto& c : candidates)
+			// start with prefix and are longer than prefix
+			if (c.rfind(prefix, 0) == 0 && c.size() > prefix.size())
+				res.push_back(c.substr(prefix.size()));
+	}
+	return res;
+}
+
+void script::ScriptEngine::addAllFunctions(std::unordered_set<std::string>& set, const ScriptObject& obj)
+{
+	for (const auto& v : obj.getFunctions())
+		set.insert(v + "(");
+
+	for (const auto& v : obj.getGetter())
+		set.insert(v);
+
+	for (const auto& v : obj.getSetter())
+		set.insert(v);
 }
 
 script::ScriptObject::FunctionT script::ScriptEngine::getStaticFunction(const std::string& name)
