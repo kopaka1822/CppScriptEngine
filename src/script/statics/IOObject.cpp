@@ -8,8 +8,8 @@ script::IOObject::IOObject(ScriptEngine& engine)
 m_engine(engine)
 {
 	addFunction("readFile", Util::makeFunction(this, &IOObject::readFile, "string IOObject::readFile(string filename)"));
-	addFunction("writeFile", Util::makeFunction(this, &IOObject::writeFile, "IOObject::writeFile(string filename)"));
-	addFunction("appendFile", Util::makeFunction(this, &IOObject::appendFile, "IOObject::appendFile(string filename)"));
+	addFunction("writeFile", Util::makeFunction(this, &IOObject::writeFile, "IOObject::writeFile(string filename, string text)"));
+	addFunction("appendFile", Util::makeFunction(this, &IOObject::appendFile, "IOObject::appendFile(string filename, string text)"));
 	addFunction("executeFile", Util::makeFunction(this, &IOObject::executeFile, "IOObject::executeFile(string filename)"));
 	addFunction("getExecuteDebugOutput", Util::makeFunction(this, &IOObject::getExecuteDebugOutput, "bool IOObject::getExecuteDebugOutput()"));
 	addFunction("setExecuteDebugOutput", Util::makeFunction(this, &IOObject::setExecuteDebugOutput, "IOObject::setExecuteDebugOutput(bool enable)"));

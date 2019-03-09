@@ -20,10 +20,16 @@ namespace script
 			Nothing = 0,
 			// static function to construct primitive types
 			PrimitiveConstructor = 1,
-			// static console object
+			// static console object to read from and write to the console
 			ConsoleClass = 1 << 1,
-			// static system object
+			// static system object 
 			SystemClass = 1 << 2,
+			// static clock with date/time and timestamp classes
+			ClockClass = 1 << 3,
+			// static IO object to read/write to files
+			IOClass = 1 << 4,
+			// static Engine object to interact with this ScriptEngine instance
+			EngineClass = 1 << 5,
 
 			All = 0xFFFFFFFF
 		};

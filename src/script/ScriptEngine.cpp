@@ -20,10 +20,21 @@ script::ScriptEngine::ScriptEngine(InitFlags flags)
 	{
 		setStaticObject("Console", std::make_shared<ConsoleObject>());
 	}
-
 	if(flags & SystemClass)
 	{
-		setStaticObject("System", std::make_shared<SystemObject>(*this));
+		setStaticObject("System", std::make_shared<SystemObject>());
+	}
+	if(flags & ClockClass)
+	{
+		setStaticObject("Clock", std::make_shared<ClockObject>());
+	}
+	if(flags & IOClass)
+	{
+		setStaticObject("IO", std::make_shared<IOObject>(*this));
+	}
+	if(flags & EngineClass)
+	{
+		setStaticObject("Engine", std::make_shared<EngineObject>(*this));
 	}
 }
 
