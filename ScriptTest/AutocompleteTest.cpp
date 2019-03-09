@@ -135,14 +135,14 @@ TEST(TestSuite, StaticObjectFunctions)
 
 	auto res = engine.getAutocomplete("System.");
 	EXPECT_TRUE(contains(res, "Functions"));
-	EXPECT_TRUE(contains(res, "getIO("));
+	EXPECT_TRUE(contains(res, "silent("));
 }
 
-TEST(TestSuit, ComplexInput)
+TEST(TestSuite, ComplexInput)
 {
 	ScriptEngine engine(ScriptEngine::All);
 
 	auto res = engine.getAutocomplete("(a + 3).add(45, System.");
 	EXPECT_TRUE(contains(res, "Functions"));
-	EXPECT_TRUE(contains(res, "getIO("));
+	EXPECT_TRUE(contains(res, "silent("));
 }
