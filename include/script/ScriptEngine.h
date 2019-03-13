@@ -7,6 +7,7 @@
 #include "objects/StringObject.h"
 #include "objects/NullObject.h"
 #include "objects/BoolObject.h"
+#include "objects/EnumObject.h"
 #include "Util.h"
 #include <unordered_set>
 

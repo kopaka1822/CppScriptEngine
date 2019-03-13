@@ -179,6 +179,7 @@
     <ClInclude Include="..\include\script\Exception.h" />
     <ClInclude Include="..\include\script\IntMutex.h" />
     <ClInclude Include="..\include\script\objects\BoolObject.h" />
+    <ClInclude Include="..\include\script\objects\EnumObject.h" />
     <ClInclude Include="..\include\script\objects\FloatObject.h" />
     <ClInclude Include="..\include\script\objects\IntObject.h" />
     <ClInclude Include="..\include\script\objects\NullObject.h" />

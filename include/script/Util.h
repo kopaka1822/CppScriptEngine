@@ -152,7 +152,8 @@ namespace script
 		template<class TLambda>
 		static ScriptObject::FunctionT fromLambda(const TLambda& lambda, const std::string& functionSignature)
 		{
-			return makeFunction(&lambda, &TLambda::operator(), functionSignature);
+			//return makeFunction(&lambda, &TLambda::operator(), functionSignature);
+			return fromLambdaOperator(lambda, &TLambda::operator(), functionSignature);
 		}
 
 		/// \brief merges multiple functions into one.
@@ -249,6 +250,10 @@ namespace script
 			if (name.rfind("struct ", 0) == 0)
 				name = name.substr(7);
 
+			// starts with enum
+			if (name.rfind("enum ", 0) == 0)
+				name = name.substr(5);
+
 			return name;
 		}
 
@@ -263,6 +268,26 @@ namespace script
 			return object->toString();
 		}
 	private:
+		// lambda function unpacker
+		template<class TLambda, class TReturn, class... TArgs>
+		static ScriptObject::FunctionT fromLambdaOperator(const TLambda& lambda, TReturn(TLambda::*)(TArgs...) const, const std::string& functionSignature)
+		{
+			std::function<TReturn(TArgs...)> func = lambda;
+			return [func, functionSignature](const ArrayObjectPtr& args) -> ScriptObjectPtr
+			{
+				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
+				if (int(argCount) != args->getCount())
+					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
+
+				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
+					// return type is already a script object
+					return Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
+				else
+					// return type must be transformed to a script object
+					return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+			};
+		}
+
 		// helper functions to remove the shared_ptr wrapper
 		template<class T> struct remove_shared { typedef T type; };
 		template<class T> struct remove_shared<std::shared_ptr<T>> { typedef T type; };

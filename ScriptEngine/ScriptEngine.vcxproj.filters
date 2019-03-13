@@ -281,5 +281,8 @@
     <ClInclude Include="..\include\script\IntMutex.h">
       <Filter>include\script</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\script\objects\EnumObject.h">
+      <Filter>include\script\objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

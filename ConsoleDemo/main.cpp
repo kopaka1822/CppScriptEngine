@@ -3,12 +3,14 @@
 #include "Vec2.h"
 #include "FileObject.h"
 #include <chrono>
+#include "MyEnum.h"
 
 int main()
 {
 	script::ScriptEngine engine;
 	engine.setStaticFunction("Vec2", Vec2::getCtor());
 	engine.setStaticFunction("File", FileObject::getCtor());
+	engine.setStaticObject("MyEnum", std::make_shared<MyEnumStaticObject>());
 
 	// auto completion test function
 	engine.setStaticFunction("Autocomp", script::Util::fromLambda([&engine](const std::string& text)
