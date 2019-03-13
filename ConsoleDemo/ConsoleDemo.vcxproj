@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="FileObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyEnum.cpp" />
     <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
