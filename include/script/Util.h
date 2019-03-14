@@ -150,10 +150,15 @@ namespace script
 		}
 
 		template<class TLambda>
-		static ScriptObject::FunctionT fromLambda(const TLambda& lambda, const std::string& functionSignature)
+		static ScriptObject::FunctionT fromLambda(TLambda lambda, const std::string& functionSignature)
 		{
-			//return makeFunction(&lambda, &TLambda::operator(), functionSignature);
-			return fromLambdaOperator(lambda, &TLambda::operator(), functionSignature);
+			return Util::fromLambdaOperator(lambda, &TLambda::operator(), functionSignature);
+		}
+
+		template<class TLambda>
+		static ScriptObject::FunctionT fromLambda(TLambda& lambda, const std::string& functionSignature)
+		{
+			return Util::fromLambdaOperator(lambda, &TLambda::operator(), functionSignature);
 		}
 
 		/// \brief merges multiple functions into one.
@@ -268,12 +273,18 @@ namespace script
 			return object->toString();
 		}
 	private:
+		template<class TLambda, class TReturn, class... TArgs>
+		static ScriptObject::FunctionT fromLambdaOperator(const TLambda& lambda, TReturn(TLambda::* func)(TArgs...) const, const std::string& functionSignature)
+		{
+			return fromLambdaOperator(*const_cast<TLambda*>(&lambda), reinterpret_cast<TReturn(TLambda::*)(TArgs...)>(func), functionSignature);
+		}
+
 		// lambda function unpacker
 		template<class TLambda, class TReturn, class... TArgs>
-		static ScriptObject::FunctionT fromLambdaOperator(const TLambda& lambda, TReturn(TLambda::*)(TArgs...) const, const std::string& functionSignature)
+		static ScriptObject::FunctionT fromLambdaOperator(TLambda& lambda, TReturn(TLambda::*)(TArgs...), const std::string& functionSignature)
 		{
 			std::function<TReturn(TArgs...)> func = lambda;
-			return [func, functionSignature](const ArrayObjectPtr& args) -> ScriptObjectPtr
+			return [func, functionSignature](const ArrayObjectPtr& args) mutable -> ScriptObjectPtr
 			{
 				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
 				if (int(argCount) != args->getCount())
@@ -315,7 +326,7 @@ namespace script
 
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
 		template<class TReturn, class... TArgs, size_t... Is>
-		static TReturn invokeArgs(std::function<TReturn(TArgs...)> func, const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
+		static TReturn invokeArgs(std::function<TReturn(TArgs...)>& func, const ArrayObject& args, std::index_sequence<Is...>, const std::string& functionSignature)
 		{
 			return func(Util::unpackArg<TArgs>(args, Is, functionSignature)...);
 		}

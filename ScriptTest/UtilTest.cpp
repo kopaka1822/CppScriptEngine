@@ -360,3 +360,32 @@ TEST(TestSuite, FunctionCombineTest)
 	ASSERT_THROW(func(Util::makeArray(10, 1)), InvalidArgumentType);
 	ASSERT_THROW(func(Util::makeArray(nullptr)), InvalidArgumentType);
 }
+
+int StaticTestFunc(int a, float* b)
+{
+	return a + ((b == nullptr) ? 0 : int(*b));
+}
+
+TEST(TestSuite, StaticFunctions)
+{
+	// static function
+	auto func = Util::makeFunction(StaticTestFunc, "");
+	EXPECT_TRUE(func);
+	EXPECT_NO_THROW(func(Util::makeArray(1, 2.0f)));
+	EXPECT_NO_THROW(func(Util::makeArray(1, nullptr)));
+	EXPECT_THROW(func(Util::makeArray(1, 2)), std::exception);
+
+	// lambda function
+	func = Util::fromLambda([a = 10](int b) mutable
+	{
+		a += 10;
+		return a + b;
+	}, "");
+
+	EXPECT_TRUE(func);
+	ScriptObjectPtr res;
+	EXPECT_NO_THROW(res = func(Util::makeArray(2)));
+	EXPECT_TRUE(res->equals(Util::makeObject(22)));
+	EXPECT_NO_THROW(res = func(Util::makeArray(8)));
+	EXPECT_TRUE(res->equals(Util::makeObject(38)));
+}
