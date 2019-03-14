@@ -418,3 +418,41 @@ TEST(TestSuite, SharedNullptrReturn)
 	EXPECT_TRUE(res);
 	EXPECT_TRUE(res->equals(NullObject::get()));
 }
+
+TEST(TestSuite, FromObject)
+{
+	// GetValueObject test
+	auto v1 = Util::fromObject<int>(Util::makeObject(45));
+	EXPECT_EQ(v1, 45);
+
+	// GetValueObject pointer test
+	auto iobj = Util::makeObject(12);
+	auto v2 = Util::fromObject<int*>(iobj);
+	EXPECT_TRUE(v2);
+	EXPECT_EQ(*v2, 12);
+	v2 = Util::fromObject<int*>(Util::makeObject(nullptr));
+	EXPECT_FALSE(v2);
+
+	// Convertible test
+	auto derivedTest = std::make_shared<UtilTestDerived>();
+	auto v3 = Util::fromObject<std::shared_ptr<UtilTestDerived>>(derivedTest);
+	EXPECT_TRUE(v3);
+	EXPECT_EQ(v3.get(), derivedTest.get());
+
+	// Convertible with reference test
+	auto v4 = Util::fromObject<std::shared_ptr<UtilTestDerived>&>(derivedTest);
+	EXPECT_TRUE(v4);
+	EXPECT_EQ(v4.get(), derivedTest.get());
+
+	// Derived test
+	auto& v5 = Util::fromObject<UtilTestDerived&>(derivedTest);
+	EXPECT_EQ(&v5, derivedTest.get());
+
+	// Derived pointer test
+	auto v6 = Util::fromObject<UtilTestDerived*>(derivedTest);
+	EXPECT_TRUE(v6);
+	EXPECT_EQ(v6, derivedTest.get());
+
+	v6 = Util::fromObject<UtilTestDerived*>(NullObject::get());
+	EXPECT_FALSE(v6);
+}
