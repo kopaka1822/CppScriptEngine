@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutocompleteTest.cpp" />
+    <ClCompile Include="EnumObjectTest.cpp" />
     <ClCompile Include="IntObjectTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

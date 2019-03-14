@@ -10,6 +10,7 @@
     <ClCompile Include="TokenizerTest.cpp" />
     <ClCompile Include="ScriptEngineTest.cpp" />
     <ClCompile Include="AutocompleteTest.cpp" />
+    <ClCompile Include="EnumObjectTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

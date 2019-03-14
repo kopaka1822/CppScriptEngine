@@ -42,7 +42,7 @@ namespace script
 	{
 	public:
 		/// \brief tries to convert the text to the enum. Throws if conversion fails
-		std::shared_ptr<EnumObject<T>> parse(const std::string& text) const
+		ScriptPtr<EnumObject<T>> parse(const std::string& text) const
 		{
 			const auto it = m_svmap.find(text);
 			if (it == m_svmap.end())
@@ -52,7 +52,7 @@ namespace script
 		}
 
 		/// \brief tries to convert the value to the enum. Throws if conversion fails
-		std::shared_ptr<EnumObject<T>> parse(int value) const
+		ScriptPtr<EnumObject<T>> parse(int value) const
 		{
 			const auto it = m_vsmap.find(T(value));
 			if (it == m_vsmap.end())
