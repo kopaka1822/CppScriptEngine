@@ -11,6 +11,19 @@ TEST(TestSuite, ToScriptObject)
 	EXPECT_TRUE(Util::makeObject(std::string("test"))); // string
 	EXPECT_TRUE(Util::makeObject("test")); // const char*
 	EXPECT_TRUE(Util::makeObject(3.14f)); // float
+
+	ScriptPtr<IntObject> ptr = std::make_shared<IntObject>(4);;
+	// already a script object
+	EXPECT_TRUE(Util::makeObject(ptr)->equals(Util::makeObject(4)));
+	
+	// unititialized script object
+	ptr.reset();
+	EXPECT_TRUE(Util::makeObject(ptr)->equals(NullObject::get()));
+
+	// script object reference
+	ptr = std::make_shared<IntObject>(10);
+	IntObject& ref = *ptr.get();
+	EXPECT_TRUE(Util::makeObject(ref)->equals(ptr));
 }
 
 TEST(TestSuite, MakeArray)
@@ -388,4 +401,20 @@ TEST(TestSuite, StaticFunctions)
 	EXPECT_TRUE(res->equals(Util::makeObject(22)));
 	EXPECT_NO_THROW(res = func(Util::makeArray(8)));
 	EXPECT_TRUE(res->equals(Util::makeObject(38)));
+}
+
+static ScriptPtr<IntObject> StaticReturnNull()
+{
+	// return nullptr
+	return ScriptPtr<IntObject>();
+}
+
+TEST(TestSuite, SharedNullptrReturn)
+{
+	auto func = Util::makeFunction(StaticReturnNull, "");
+	EXPECT_TRUE(func);
+	ScriptObjectPtr res;
+	EXPECT_NO_THROW(res = func(Util::makeArray()));
+	EXPECT_TRUE(res);
+	EXPECT_TRUE(res->equals(NullObject::get()));
 }

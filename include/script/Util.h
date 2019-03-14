@@ -15,6 +15,8 @@ namespace script
 	public:
 		Util() = delete;
 
+#pragma region makeFunction
+
 		/// \brief converts a class member function into a ScriptObject compatible function (which returns the parent ScriptObject)
 		/// \tparam TClass 
 		/// \tparam TArgs 
@@ -102,12 +104,7 @@ namespace script
 				if (int(argCount) != args->getCount())
 					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
 
-				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
-					// return type is already a script object
-					return Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
-				else
-					// return type must be transformed to a script object
-					return Util::makeObject(Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+				return Util::makeObject(Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
 
@@ -122,7 +119,7 @@ namespace script
 		static ScriptObject::FunctionT makeFunction(const TClass* thisPtr, TReturn(TClass::* func)(TArgs...) const, const std::string& functionSignature)
 		{
 			// its okay because this and function were const => no change will happen
-			return makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
+			return Util::makeFunction(const_cast<TClass*>(thisPtr), reinterpret_cast<TReturn(TClass::*)(TArgs...)>(func), functionSignature);
 		}
 
 		/// \brief converts a static function into a ScriptObject compatible function
@@ -140,14 +137,13 @@ namespace script
 				if (int(argCount) != args->getCount())
 					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
 
-				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
-					// return type is already a script object
-					return Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
-				else
-					// return type must be transformed to a script object
-					return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+				return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
+
+#pragma endregion
+
+#pragma region fromLambda
 
 		template<class TLambda>
 		static ScriptObject::FunctionT fromLambda(TLambda lambda, const std::string& functionSignature)
@@ -160,6 +156,8 @@ namespace script
 		{
 			return Util::fromLambdaOperator(lambda, &TLambda::operator(), functionSignature);
 		}
+
+#pragma endregion
 
 		/// \brief merges multiple functions into one.
 		/// The functions will be called in order up to the first function that does not throw an
@@ -216,6 +214,8 @@ namespace script
 			return arr;
 		}
 
+#pragma region makeObject
+
 		/// \brief converts the T value into a GetValueObject<T>
 		/// this is used to convert basic return types of functions to ScriptObjects
 		template<class T>
@@ -233,13 +233,29 @@ namespace script
 			res.reserve(vec.size());
 			for(const auto& e : vec)
 			{
-				if constexpr (std::is_convertible_v<T, ScriptObjectPtr>)
-					res.push_back(e);
-				else
-					res.push_back(Util::makeObject(e));
+				res.push_back(Util::makeObject(e));
 			}
 			return std::make_shared<ArrayObject>(res);
 		}
+
+		/// \brief returns the script object if the pointer is valid. NullObject will be returned otherwise
+		template<class T>
+		static std::enable_if_t<std::is_base_of_v<ScriptObject, T>, 
+		ScriptObjectPtr> makeObject(const std::shared_ptr<T>& obj)
+		{
+			if(obj) return obj;
+			return NullObject::get();
+		}
+
+		/// \brief returns obj.shared_from_this()
+		template<class T>
+		static std::enable_if_t<std::is_base_of_v<ScriptObject, T>, 
+		ScriptObjectPtr> makeObject(T& obj)
+		{
+			return obj.shared_from_this();
+		}
+
+#pragma endregion 
 
 		/// \brief converts the description from typeid(T).name() in a prettier description
 		static std::string prettyTypeName(std::string name)
@@ -273,10 +289,12 @@ namespace script
 			return object->toString();
 		}
 	private:
+#pragma region fromLambda
+
 		template<class TLambda, class TReturn, class... TArgs>
 		static ScriptObject::FunctionT fromLambdaOperator(const TLambda& lambda, TReturn(TLambda::* func)(TArgs...) const, const std::string& functionSignature)
 		{
-			return fromLambdaOperator(*const_cast<TLambda*>(&lambda), reinterpret_cast<TReturn(TLambda::*)(TArgs...)>(func), functionSignature);
+			return Util::fromLambdaOperator(*const_cast<TLambda*>(&lambda), reinterpret_cast<TReturn(TLambda::*)(TArgs...)>(func), functionSignature);
 		}
 
 		// lambda function unpacker
@@ -290,14 +308,11 @@ namespace script
 				if (int(argCount) != args->getCount())
 					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
 
-				if constexpr (std::is_convertible<TReturn, ScriptObjectPtr>::value)
-					// return type is already a script object
-					return Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
-				else
-					// return type must be transformed to a script object
-					return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
+				return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
+
+#pragma endregion 
 
 		// helper functions to remove the shared_ptr wrapper
 		template<class T> struct remove_shared { typedef T type; };
@@ -309,6 +324,8 @@ namespace script
 
 		// helper function to transform const T& into T
 		template<class T> using remove_const_ref_t = std::remove_const_t<std::remove_reference_t<T>>;
+
+#pragma region invokeArgs
 
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence
 		template<class TClass, class TReturn, class... TArgs, size_t... Is>
@@ -330,6 +347,10 @@ namespace script
 		{
 			return func(Util::unpackArg<TArgs>(args, Is, functionSignature)...);
 		}
+
+#pragma endregion 
+
+#pragma region unpackArgs
 
 		/// \brief converts the argument to T where T is a shared_ptr<ScriptObject>
 		template<class T>
@@ -405,19 +426,13 @@ namespace script
 			}
 		}
 
-		/// \brief helper function to create a ArrayObject (used if first is a ScriptObject)
-		template<class TFirst, class... TRest>
-		static std::enable_if_t<std::is_convertible_v<TFirst, ScriptObjectPtr> && !std::is_same_v<std::nullptr_t, TFirst>> 
-		makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
-		{
-			array.add(first);
-			Util::makeArray(array, objects...);
-		}
+#pragma endregion
 
-		/// \brief helper function to create a ArrayObject (used if first is not a ScriptObject)
+#pragma region makeArray
+
+		/// \brief helper function to create a ArrayObject
 		template<class TFirst, class... TRest>
-		static std::enable_if_t<!std::is_convertible_v<TFirst, ScriptObjectPtr> || std::is_same_v<std::nullptr_t, TFirst>>
-			makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
+		static void makeArray(ArrayObject& array, const TFirst& first, const TRest&... objects)
 		{
 			array.add(Util::makeObject(first));
 			Util::makeArray(array, objects...);
@@ -425,5 +440,7 @@ namespace script
 
 		/// \brief recursion end of the helper function
 		static void makeArray(ArrayObject&) {}
+
+#pragma endregion
 	};
 }
