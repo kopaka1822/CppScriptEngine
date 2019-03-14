@@ -44,6 +44,13 @@ namespace script
 		explicit InvalidArgumentType(const std::string& message);
 	};
 
+	class InvalidArgumentConversion final : public Exception
+	{
+	public:
+		explicit  InvalidArgumentConversion(std::string desiredType);
+		const std::string desiredType;
+	};
+
 	class InvalidFunctionName final : public Exception
 	{
 	public:

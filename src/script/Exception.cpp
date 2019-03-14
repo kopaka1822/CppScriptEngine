@@ -72,6 +72,13 @@ script::InvalidArgumentType::InvalidArgumentType(const std::string& message)
 	stream << message;
 }
 
+script::InvalidArgumentConversion::InvalidArgumentConversion(std::string desiredType)
+	:
+desiredType(move(desiredType))
+{
+	stream << "could not convert to " << desiredType;
+}
+
 script::InvalidFunctionName::InvalidFunctionName(const std::string& functionSignature,
 	const std::string& missingFunction)
 {

@@ -32,10 +32,7 @@ namespace script
 			return [thisPtr, func, functionSignature, parent]
 			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
-				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
-
+				Util::validateArgCount<TArgs...>(args, functionSignature);
 				Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature);
 				return parent->shared_from_this();
 			};
@@ -100,10 +97,7 @@ namespace script
 			return [thisPtr, func, functionSignature]
 			(const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
-				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
-
+				Util::validateArgCount<TArgs...>(args, functionSignature);
 				return Util::makeObject(Util::invokeArgs(thisPtr, func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
@@ -133,10 +127,7 @@ namespace script
 		{
 			return [func, functionSignature](const ArrayObjectPtr& args) -> ScriptObjectPtr
 			{
-				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
-
+				Util::validateArgCount<TArgs...>(args, functionSignature);
 				return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
@@ -257,6 +248,66 @@ namespace script
 
 #pragma endregion 
 
+		
+		/// \brief tries to convert a script object into the desired type. Throws an InvalidArgumentConversion on failure.
+		/// \tparam T desired type
+		/// \tparam allow_pointer reserved for internal use (pass true)
+		/// \param obj script object that will be converted
+		/// \return desired type
+		template<class T, bool allow_pointer = true>
+		// remove the reference from T if T is convertible to ScriptObjectPtr or a raw pointer (it would return a reference to a local variable)
+		static std::conditional_t<std::is_convertible_v<T, ScriptObjectPtr> || std::is_pointer_v<T>, std::remove_reference_t<T>, T>
+			fromObject(const ScriptObjectPtr& obj)
+		{
+			if constexpr (std::is_convertible_v<T, ScriptObjectPtr> && allow_pointer)
+			{
+				// T is a base of ScriptObject
+				// try to convert objectPtr to T
+				using bare_type = remove_shared_t<T>;
+				std::shared_ptr<bare_type> res = std::dynamic_pointer_cast<bare_type>(obj);
+				if (!res)
+					throw InvalidArgumentConversion(prettyTypeName(typeid(bare_type).name()));
+
+				return res;
+			}
+			else if constexpr (std::is_pointer_v<T> && allow_pointer)
+			{
+				// is nullptr?
+				if (obj->equals(NullObject::get())) return nullptr;
+
+				// remove pointer
+				using value_type = std::remove_pointer_t<T>;
+
+				return &(Util::fromObject<value_type&, false>(obj));
+			}
+			else
+			{
+				using bare_type = remove_const_ref_t<T>;
+
+				// object derives from script object
+				if constexpr (std::is_base_of_v<ScriptObject, bare_type>)
+				{
+					// try dynamic up casting
+					auto* valuePtr = dynamic_cast<bare_type*>(obj.get());
+
+					if (valuePtr == nullptr)
+						throw InvalidArgumentConversion(prettyTypeName(typeid(bare_type).name()));
+
+					return *valuePtr;
+				}
+				else // embedded into value object?
+				{
+					// cast to value object
+					auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*>(obj.get()); // T& => T
+
+					if (valuePtr == nullptr)
+						throw InvalidArgumentConversion(prettyTypeName(typeid(bare_type).name()));
+
+					return valuePtr->getValue();
+				}
+			}
+		}
+
 		/// \brief converts the description from typeid(T).name() in a prettier description
 		static std::string prettyTypeName(std::string name)
 		{
@@ -304,10 +355,7 @@ namespace script
 			std::function<TReturn(TArgs...)> func = lambda;
 			return [func, functionSignature](const ArrayObjectPtr& args) mutable -> ScriptObjectPtr
 			{
-				const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
-				if (int(argCount) != args->getCount())
-					throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
-
+				Util::validateArgCount<TArgs...>(args, functionSignature);
 				return Util::makeObject(Util::invokeArgs(func, *args, std::index_sequence_for<TArgs...>{}, functionSignature));
 			};
 		}
@@ -350,83 +398,30 @@ namespace script
 
 #pragma endregion 
 
-#pragma region unpackArgs
+		template<class... TArgs>
+		static void validateArgCount(const ArrayObjectPtr& args, const std::string& functionSignature)
+		{
+			const size_t argCount = std::tuple_size<std::tuple<TArgs...>>::value;
+			if (int(argCount) != args->getCount())
+				throw InvalidArgumentCount(functionSignature, argCount, args->getCount());
+		}
 
-		/// \brief converts the argument to T where T is a shared_ptr<ScriptObject>
 		template<class T>
-		static std::remove_reference_t<T> unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature,
-			// convertible to ScriptObjectPtr
-			std::enable_if_t<std::is_convertible_v<T, ScriptObjectPtr>, int> = 0)
+		// remove the reference from T if T is convertible to ScriptObjectPtr (it would returns a reference to a local variable)
+		static std::conditional_t<std::is_convertible_v<T, ScriptObjectPtr>, std::remove_reference_t<T>, T>
+		unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature)
 		{
 			const auto& objectPtr = args.get(int(index));
 
-			// T is a base of ScriptObject
-			// try to convert objectPtr to T
-			using bare_type = remove_shared_t<T>;
-			std::shared_ptr<bare_type> res = std::dynamic_pointer_cast<bare_type>(objectPtr);
-			if (!res)
-				throw InvalidArgumentType(functionSignature, index, *objectPtr, prettyTypeName(typeid(bare_type).name()));
-
-			return res;
-		}
-
-		/// \brief converts the argument to T* if the argument derives from ScriptObject, has the type GetValueObject<T> or is a NullObject
-		template<class T>
-		static T unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature, 
-			// not convertible to ScriptObjectPtr but pointer
-			std::enable_if_t<std::is_pointer_v<T>, int> = 0)
-		{
-			const auto& objectPtr = args.get(int(index));
-
-			// is nullptr?
-			if (objectPtr->equals(NullObject::get())) return nullptr;
-
-			// remove pointer
-			using value_type = std::remove_pointer_t<T>;
-
-			return &(Util::getGetValueObjectValue<value_type>(objectPtr.get(), index, functionSignature));
-		}
-
-		/// \brief converts the argument to T if the argument derives from ScriptObject or has the type GetValueObject<T>
-		template<class T>
-		static T& unpackArg(const ArrayObject& args, size_t index, const std::string& functionSignature,
-			// not convertible to ScriptObjectPtr and not pointer
-			std::enable_if_t<!std::is_convertible_v<T, ScriptObjectPtr> && !std::is_pointer_v<T>, int> = 0)
-		{
-			const auto& objectPtr = args.get(int(index));
-
-			return Util::getGetValueObjectValue<T>(objectPtr.get(), index, functionSignature);
-		}
-
-		/// \brief retrieves the value T from the ScriptObject by doing a dynamic cast (if T derives from ScriptObject) or by casting it to a GetValueObject<T>
-		template<class T>
-		static T& getGetValueObjectValue(ScriptObject* object, size_t index, const std::string& functionSignature)
-		{
-			using bare_type = remove_const_ref_t<T>;
-
-			if constexpr(std::is_base_of_v<ScriptObject, bare_type>)
+			try
 			{
-				// try dynamic up casting
-				auto* valuePtr = dynamic_cast<bare_type*>(object);
-
-				if (valuePtr == nullptr)
-					throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
-
-				return *valuePtr;
+				return fromObject<T>(objectPtr);
 			}
-			else // embedded into value object?
+			catch (const InvalidArgumentConversion& e)
 			{
-				// cast to value object
-				auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*>(object); // T& => T
-
-				if (valuePtr == nullptr)
-					throw InvalidArgumentType(functionSignature, index, *object, prettyTypeName(typeid(bare_type).name()));
-
-				return valuePtr->getValue();
+				throw InvalidArgumentType(functionSignature, index, *objectPtr, e.desiredType);
 			}
 		}
-
-#pragma endregion
 
 #pragma region makeArray
 
