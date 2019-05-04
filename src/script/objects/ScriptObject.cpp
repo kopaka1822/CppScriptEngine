@@ -102,3 +102,12 @@ void script::ScriptObject::addFunction(const std::string& name, const FunctionT&
 
 	m_functions[name] = func;
 }
+
+void script::ScriptObject::removeFunction(const std::string& name) noexcept
+{
+	const auto it = m_functions.find(name);
+	if (it == m_functions.end())
+		return;
+
+	m_functions.erase(it);
+}

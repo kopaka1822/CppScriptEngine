@@ -16,6 +16,8 @@ namespace script
 		ScriptObjectPtr getObject(const std::string& name) const;
 		ScriptObjectPtr getStaticObject(const std::string& name) const;
 		void setObject(const std::string& name, ScriptObjectPtr object);
+		void removeObject(const std::string& name);
+		void clearObjects();
 
 		std::vector<std::string> getObjects() const;
 		std::vector<std::string> getStaticObjects() const;

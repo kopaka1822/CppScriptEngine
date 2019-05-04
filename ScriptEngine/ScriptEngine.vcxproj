@@ -222,6 +222,7 @@
     <ClInclude Include="..\include\script\tokens\L2StaticFunctionToken.h" />
     <ClInclude Include="..\include\script\tokens\L2StaticIdentifierToken.h" />
     <ClInclude Include="..\include\script\tokens\L2Token.h" />
+    <ClInclude Include="..\include\script\tokens\ttype.h" />
     <ClInclude Include="..\include\script\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

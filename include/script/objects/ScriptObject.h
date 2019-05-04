@@ -35,8 +35,10 @@ namespace script
 		std::vector<std::string> getSetter() const;
 	protected:
 		ScriptObject();
+		/// \brief adds a function to the internal list and throws an error if the name is ill formatted
 		void addFunction(const std::string& name, const FunctionT& func);
-
+		/// \brief removes the function if it exists
+		void removeFunction(const std::string& name) noexcept;
 	private:
 		std::unordered_map<std::string, FunctionT> m_functions;
 	};

@@ -17,6 +17,7 @@
 #include "../../include/script/tokens/L2StaticIdentifierToken.h"
 #include "../../include/script/tokens/L2PrimitiveValueToken.h"
 #include "../../include/script/objects/FloatObject.h"
+#include "../include/script/tokens/ttype.h"
 #include <array>
 #include <stack>
 
@@ -198,7 +199,7 @@ std::vector<script::L1Token> script::Tokenizer::getL1Tokens(const std::string& c
 		default:
 			if (!isspace(static_cast<unsigned char>(c)))
 			{
-				if (throwExceptions && !isalnum(static_cast<unsigned char>(c)))
+				if (throwExceptions && !isIdentifier(static_cast<unsigned char>(c)))
 					throw SyntaxError(position, std::string(&c, 1), "variables and functions must be alphanumeric");
 				current += c;
 				continue;

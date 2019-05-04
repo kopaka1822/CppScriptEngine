@@ -91,6 +91,11 @@ void script::ScriptEngine::setObject(const std::string& name, const ScriptObject
 	m_objects[name] = object;
 }
 
+void script::ScriptEngine::clearObjects()
+{
+	m_objects.clear();
+}
+
 script::ScriptObjectPtr script::ScriptEngine::getStaticObject(const std::string& object) const
 {
 	const auto it = m_staticObjects.find(object);

@@ -284,5 +284,8 @@
     <ClInclude Include="..\include\script\objects\EnumObject.h">
       <Filter>include\script\objects</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\script\tokens\ttype.h">
+      <Filter>include\script\tokens</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

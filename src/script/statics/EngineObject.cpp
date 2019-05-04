@@ -7,7 +7,9 @@ m_engine(engine)
 	addFunction("execute", Util::makeFunction(this, &EngineObject::execute, "object EngineObject::execute(string)"));
 	addFunction("getObject", Util::makeFunction(this, &EngineObject::getObject, "object EngineObject::getObject(string)"));
 	addFunction("getStaticObject", Util::makeFunction(this, &EngineObject::getStaticObject, "object EngineObject::getStaticObject(string)"));
-	addFunction("setObject", Util::makeFunction(this, &EngineObject::setObject, "object EngineObject::setObject(string, object)"));
+	addFunction("setObject", Util::makeFunction(this, &EngineObject::setObject, "EngineObject::setObject(string, object)"));
+	addFunction("removeObject", Util::makeFunction(this, &EngineObject::removeObject, "EngineObject::removeObject(string)"));
+	addFunction("clearObjects", Util::makeFunction(this, &EngineObject::clearObjects, "EngineObject::clearObjects()"));
 
 	addFunction("getObjects", Util::makeFunction(this, &EngineObject::getObjects, "array EngineObject::getObjects()"));
 	addFunction("getStaticObjects", Util::makeFunction(this, &EngineObject::getStaticObjects, "array EngineObject::getStaticObjects()"));
@@ -37,6 +39,16 @@ script::ScriptObjectPtr script::EngineObject::getStaticObject(const std::string&
 void script::EngineObject::setObject(const std::string& name, ScriptObjectPtr object)
 {
 	m_engine.setObject(name, object);
+}
+
+void script::EngineObject::removeObject(const std::string& name)
+{
+	m_engine.setObject(name, nullptr);
+}
+
+void script::EngineObject::clearObjects()
+{
+	m_engine.clearObjects();
 }
 
 std::vector<std::string> script::EngineObject::getObjects() const
