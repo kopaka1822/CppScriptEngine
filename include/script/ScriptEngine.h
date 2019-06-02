@@ -51,6 +51,9 @@ namespace script
 		/// \param object valid object to add or nullptr if object should be removed
 		void setObject(const std::string& name, const ScriptObjectPtr& object);
 
+		/// \brief removes all variables with the same address as the given object
+		void removeObjectVariables(const ScriptObjectPtr& object);
+
 		/// \brief removes all variable objects (not the static objects or functions)
 		void clearObjects();
 

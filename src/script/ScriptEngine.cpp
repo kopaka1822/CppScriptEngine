@@ -91,6 +91,18 @@ void script::ScriptEngine::setObject(const std::string& name, const ScriptObject
 	m_objects[name] = object;
 }
 
+void script::ScriptEngine::removeObjectVariables(const ScriptObjectPtr& object)
+{
+	auto it = m_objects.begin();
+	while (it != m_objects.end())
+	{
+		if(it->second.get() == object.get())
+			it = m_objects.erase(it);
+		else
+			++it;
+	}
+}
+
 void script::ScriptEngine::clearObjects()
 {
 	m_objects.clear();

@@ -167,3 +167,23 @@ TEST(TestSuite, PropertiesTest)
 	ASSERT_NO_THROW(output = exec->execute(engine)->toString());
 	ASSERT_EQ(output, "10");
 }
+
+TEST(TestSuite, RemoveObjectsTest)
+{
+	ScriptEngine engine;
+	auto obj1 = script::Util::makeObject(20);
+	auto obj2 = script::Util::makeObject(20);
+	auto obj3 = script::Util::makeObject(30);
+	engine.setObject("obj1", obj1);
+	engine.setObject("obj2", obj2);
+	engine.setObject("obj3", obj3);
+	engine.setObject("obj4", obj3);
+
+	EXPECT_EQ(engine.getObjects().size(), 4);
+
+	engine.setObject("obj1", nullptr);
+	EXPECT_EQ(engine.getObjects().size(), 3);
+
+	engine.removeObjectVariables(obj3);
+	EXPECT_EQ(engine.getObjects().size(), 1);
+}
