@@ -62,3 +62,61 @@ TEST(TestSuite, AddFunction)
 	ASSERT_GE(int(funcs.size()), 1);
 	ASSERT_TRUE(std::any_of(funcs.begin(), funcs.end(), [](auto name) {return name == "test"; }));
 }
+
+class Dummy : public ScriptObject
+{
+public:
+	Dummy()
+	{
+		addGetterSetter("Var", m_variable);
+	}
+
+private:
+	int m_variable = 20;
+};
+
+TEST(TestSuite, GetterSetter)
+{
+	
+
+	auto dummy = std::make_shared<Dummy>();
+	ASSERT_TRUE(dummy);
+
+	// test availability
+	auto funcs = dummy->getFunctions();
+	ASSERT_TRUE(std::find(funcs.begin(), funcs.end(), "getVar") != funcs.end());
+	ASSERT_TRUE(std::find(funcs.begin(), funcs.end(), "setVar") != funcs.end());
+
+	// test set get
+	dummy->invoke("setVar", Util::makeArray(10));
+	auto res = dummy->invoke("getVar", Util::makeArray());
+	EXPECT_TRUE(res);
+	auto iobj = dynamic_cast<IntObject*>(res.get());
+	EXPECT_TRUE(iobj);
+	EXPECT_EQ(iobj->getValue(), 10);
+
+	// test function signature
+	try
+	{
+		dummy->invoke("setVar", Util::makeArray());
+		EXPECT_TRUE(false);
+	}
+	catch (const std::exception& e)
+	{
+		std::string msg = e.what();
+		std::string funcSig = "Dummy::setVar(int)";
+		EXPECT_TRUE(msg.find(funcSig) != std::string::npos);
+	}
+
+	try
+	{
+		dummy->invoke("getVar", Util::makeArray(1));
+		EXPECT_TRUE(false);
+	}
+	catch(const std::exception& e)
+	{
+		std::string msg = e.what();
+		std::string funcSig = "int Dummy::getVar()";
+		EXPECT_TRUE(msg.find(funcSig) != std::string::npos);
+	}
+}

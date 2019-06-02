@@ -37,9 +37,26 @@ namespace script
 		ScriptObject();
 		/// \brief adds a function to the internal list and throws an error if the name is ill formatted
 		void addFunction(const std::string& name, const FunctionT& func);
+
+		/// \brief adds a function that starts with a get prefix and returns the variable
+		template<class T>
+		void addGetter(const std::string& name, const T& variable);
+		/// \brief adds a function that starts with a set prefix and sets the variable
+		template<class T>
+		void addSetter(const std::string& name, T& variable);
+		/// \brief performs addGetter and addSetter
+		template<class T>
+		void addGetterSetter(const std::string& name, T& variable);
 		/// \brief removes the function if it exists
 		void removeFunction(const std::string& name) noexcept;
 	private:
 		std::unordered_map<std::string, FunctionT> m_functions;
 	};
+
+	template <class T>
+	void ScriptObject::addGetterSetter(const std::string& name, T& variable)
+	{
+		addGetter(name, variable);
+		addSetter(name, variable);
+	}
 }

@@ -438,4 +438,32 @@ namespace script
 
 #pragma endregion
 	};
+
+	// implementation of template ScriptObject functions
+	template <class T>
+	void ScriptObject::addGetter(const std::string& name, const T& variable)
+	{
+		if(name.empty())
+			throw std::runtime_error("ScriptObject::addGetter name was empty");
+		if(!isupper(name[0]))
+			throw std::runtime_error("ScriptObject::addGetter name must start with a uppercase letter");
+		addFunction("get" + name, Util::fromLambda([&variable]()
+		{
+			return variable;
+		}, Util::prettyTypeName(typeid(T).name()) + " " + type() + "::get" + name + "()"));
+	}
+
+	template <class T>
+	void ScriptObject::addSetter(const std::string& name, T& variable)
+	{
+		if(name.empty())
+			throw std::runtime_error("ScriptObject::addSetter name was empty");
+		if(!isupper(name[0]))
+			throw std::runtime_error("ScriptObject::addSetter name must start with a uppercase letter");
+		addFunction("set" + name, Util::fromLambda([&variable, this](T value)
+		{
+			variable = value;
+			return this->shared_from_this();
+		}, type() + "::set" + name + "(" + Util::prettyTypeName(typeid(T).name()) + ")"));
+	}
 }
