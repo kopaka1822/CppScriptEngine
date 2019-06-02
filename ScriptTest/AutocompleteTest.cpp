@@ -145,4 +145,8 @@ TEST(TestSuite, ComplexInput)
 	auto res = engine.getAutocomplete("(a + 3).add(45, System.");
 	EXPECT_TRUE(contains(res, "Functions"));
 	EXPECT_TRUE(contains(res, "silent("));
+
+	// string
+	res = engine.getAutocomplete("a = \"ob");
+	EXPECT_TRUE(res.empty());
 }

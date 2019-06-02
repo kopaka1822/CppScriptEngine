@@ -40,7 +40,7 @@ script::Tokenizer::AutocompleteInfo script::Tokenizer::getAutocomplete(const std
 	std::vector<L1Token> tokens;
 	try
 	{
-		tokens = getL1Tokens(command);
+		tokens = getL1Tokens(command, false);
 		applyL1Rules(tokens);
 	}
 	catch (const std::exception&){}
