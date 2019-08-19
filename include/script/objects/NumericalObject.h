@@ -1,6 +1,6 @@
 #pragma once
 #include "ValueComparableObject.h"
-#include "script/Util.h"
+#include "../Util.h"
 
 namespace script
 {

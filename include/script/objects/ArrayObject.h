@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "ScriptObject.h"
-#include "script/BoolMutex.h"
+#include "../BoolMutex.h"
 
 namespace script
 {
