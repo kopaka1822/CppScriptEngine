@@ -65,7 +65,8 @@ namespace script
 		/// \brief sets the object with the given name
 		/// \param name object name
 		/// \param object valid object
-		void setStaticObject(const std::string& name, const ScriptObjectPtr& object);
+		/// \param mayOverwrite if not set an error will be thrown if the object already exists
+		void setStaticObject(const std::string& name, const ScriptObjectPtr& object, bool mayOverwrite = false);
 
 		/// \brief retrieves the function with the given name
 		/// \return valid function or empty function if not found

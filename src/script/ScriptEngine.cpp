@@ -116,7 +116,7 @@ script::ScriptObjectPtr script::ScriptEngine::getStaticObject(const std::string&
 	return it->second;
 }
 
-void script::ScriptEngine::setStaticObject(const std::string& name, const ScriptObjectPtr& object)
+void script::ScriptEngine::setStaticObject(const std::string& name, const ScriptObjectPtr& object, bool mayOverwrite)
 {
 	if (name.empty())
 		throw std::runtime_error("ScriptEngine::setStaticObject object name was empty");
@@ -127,7 +127,7 @@ void script::ScriptEngine::setStaticObject(const std::string& name, const Script
 	if (!object)
 		throw std::runtime_error("ScriptEngine::setStaticObject object was null");
 
-	if (m_staticObjects.find(name) != m_staticObjects.end())
+	if (!mayOverwrite && m_staticObjects.find(name) != m_staticObjects.end())
 		throw std::runtime_error("ScriptEngine::setStaticObject object \"" + name + "\" already exists");
 
 	m_staticObjects[name] = object;
