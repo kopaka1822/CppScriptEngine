@@ -1,6 +1,6 @@
 #pragma once
 #include "../ScriptEngine.h"
-#include "script/IntMutex.h"
+#include "../IntMutex.h"
 
 namespace script
 {
