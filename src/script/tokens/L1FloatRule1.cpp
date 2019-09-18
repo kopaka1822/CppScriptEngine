@@ -17,7 +17,11 @@ bool script::L1FloatRule1::matches(std::vector<L1Token>::const_iterator begin) c
 	// second block ends with f
 
 	// numbers with f or only the f
-	return (begin + 2)->onlyNumbersWithF() || (begin->getValue() == "f");
+	return (begin + 2)->onlyNumbersWithF() || ((begin + 2)->getValue() == "f")
+#ifndef SCRIPT_STRONG_FLOAT_TYPING
+	|| (begin + 2)->onlyNumbers()
+#endif
+	;
 }
 
 script::L1Token script::L1FloatRule1::apply(std::vector<L1Token>::const_iterator begin) const
