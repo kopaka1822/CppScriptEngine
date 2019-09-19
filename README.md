@@ -25,6 +25,7 @@ This script language should allow the programmer to control a programm by creati
 * [Adding Custom Objects](#adding-custom-objects)
    * [Derive from ScriptObject](#derive-from-scriptobject)
    * [Embed object with ValueObject](#embed-object-with-valueobject)
+   * [Enum Objects](#enum-objects)
 * [Naming Conventions](#naming-conventions)
 * [Operators](#operators)
 * [Properties](#properties)
@@ -269,6 +270,53 @@ FileObject::FileObject(const std::string& filename) :
       return this->shared_from_this();
    });
 }
+```
+
+## Enum Objects
+Adding support for an existing `enum class` is quite simple. First create a singleton that derives from StaticEnumObject:
+```c++
+class MyEnumObject : public script::StaticEnumObject<MyEnum> {
+   MyEnumObject();
+public:
+   static std::shared_ptr<MyEnumObject> get() {
+      static std::shared_ptr<MyEnumObject> obj(new MyEnumObject);
+      return obj;
+};
+```
+
+Next, add enum-string conversions with the `addValue(value, text)` function inside of the constructor:
+```c++
+MyEnumObject::MyEnumObject() {
+   addValue(MyEnum::Apple, "Apple");
+   addValue(MyEnum::Peach, "Peach");
+}
+```
+You should a specialized template of the `script::Util::makeObject` function to supports conversions from the enum class into a script object (this is required if you add a function that returns the enum class).
+
+```
+template<>
+script::ScriptObjectPtr script::Util::makeObject<MyEnum>(const MyEnum& value) {
+   return MyEnumObject::get()->parse(int(value));
+}
+```
+
+Finally, register the static enum object as a static object:
+```c++
+script::ScriptEngine engine;
+engine.setStaticObject("MyEnum", MyEnumObject::get());
+```
+Now, you can use the enum inside of the script engine:
+```c++
+MyEnum.Apple
+>> MyEnum::Apple
+MyEnum.Apple.toInt()
+>> 0
+MyEnum.parse(0)
+>> MyEnum::Apple
+MyEnum.parse("Apple")
+>> MyEnum::Apple
+MyEnum.Values
+>> ["Apple", "Peach"]
 ```
 
 # Naming Conventions
