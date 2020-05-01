@@ -46,6 +46,13 @@ namespace script
 		/// \return pointer to the object or nullptr if not found
 		ScriptObjectPtr getObject(const std::string& object) const;
 
+		/// \brief retrieves the object with the given name
+		/// \param object name
+		/// \return pointer to the object or nullptr if not found
+		/// \throws exception if the type does not match
+		template<class T>
+		ScriptPtr<T> getObject(const std::string& object) const;
+		
 		/// \brief sets or removes the object with the given name
 		/// \param name object name
 		/// \param object valid object to add or nullptr if object should be removed
@@ -101,4 +108,23 @@ namespace script
 		std::unordered_map<std::string, ScriptObjectPtr> m_staticObjects;
 		std::unordered_map<std::string, ScriptObject::FunctionT> m_staticFunctions;
 	};
+
+	template <class T>
+	ScriptPtr<T> ScriptEngine::getObject(const std::string& object) const
+	{
+		auto obj = getObject(object);
+		if (!obj) return nullptr;
+
+		// found => try cast to desired type
+		auto res = std::dynamic_pointer_cast<T, ScriptObject>(obj);
+		if(!res)
+		{
+			std::ostringstream err;
+			err << "could not cast object \"" << object << "\" from "
+				<< obj->type() << " to " << Util::prettyTypeName(typeid(T).name());
+			throw Exception(err.str());
+		}
+
+		return res;
+	}
 }

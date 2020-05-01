@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "script/objects/FloatObject.h"
 #include "script/Tokenizer.h"
 
 #define TestSuite ScriptEngineTest
@@ -186,4 +188,32 @@ TEST(TestSuite, RemoveObjectsTest)
 
 	engine.removeObjectVariables(obj3);
 	EXPECT_EQ(engine.getObjects().size(), 1);
+}
+
+TEST(TestSuite, GetObjectsTest)
+{
+	ScriptEngine engine;
+	auto obj1 = script::Util::makeObject(20);
+	auto obj2 = script::Util::makeObject(30.0f);
+	engine.setObject("obj1", obj1);
+	engine.setObject("obj2", obj2);
+
+	EXPECT_EQ(engine.getObjects().size(), 2);
+
+	// equal test
+	EXPECT_EQ(engine.getObject("obj1"), obj1);
+	EXPECT_EQ(engine.getObject("obj2"), obj2);
+
+	// null test
+	EXPECT_EQ(engine.getObject("obj3"), nullptr);
+
+	// same type
+	EXPECT_NO_THROW(engine.getObject<IntObject>("obj1"));
+	EXPECT_NO_THROW(engine.getObject<FloatObject>("obj2"));
+
+	// invalid type
+	EXPECT_THROW(engine.getObject<FloatObject>("obj1"), Exception);
+
+	// not found
+	EXPECT_EQ(engine.getObject<FloatObject>("obj3"), nullptr);
 }
