@@ -216,4 +216,8 @@ TEST(TestSuite, GetObjectsTest)
 
 	// not found
 	EXPECT_EQ(engine.getObject<FloatObject>("obj3"), nullptr);
+
+	// null object
+	engine.setObject("obj1", script::NullObject::get());
+	EXPECT_EQ(engine.getObject<FloatObject>("obj1"), nullptr);
 }

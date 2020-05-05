@@ -115,6 +115,8 @@ namespace script
 		auto obj = getObject(object);
 		if (!obj) return nullptr;
 
+		if (obj == NullObject::get()) return nullptr;
+		
 		// found => try cast to desired type
 		auto res = std::dynamic_pointer_cast<T, ScriptObject>(obj);
 		if(!res)
