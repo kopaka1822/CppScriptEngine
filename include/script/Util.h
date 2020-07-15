@@ -295,16 +295,45 @@ namespace script
 
 					return *valuePtr;
 				}
-				else // embedded into value object?
+				
+				// target object is std::vector and source object is ArrayObject
+				if constexpr(is_std_vector_v<bare_type>)
 				{
-					// cast to value object
-					auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*>(obj.get()); // T& => T
+					const auto array_object = std::dynamic_pointer_cast<ArrayObject>(obj);
+					if(array_object)
+					{
+						// create std::vector 
+						using item_type = typename bare_type::value_type;
+						bare_type res;
+						res.reserve(array_object->getCount());
 
-					if (valuePtr == nullptr)
-						throw InvalidArgumentConversion(prettyTypeName(typeid(bare_type).name()));
+						try
+						{
+							for (auto o : *array_object)
+							{
+								res.emplace_back(fromObject<item_type>(o));
+							}
+						}
+						catch (const InvalidArgumentConversion&)
+						{
+							std::stringstream ss;
+							ss << "std::vector<" << prettyTypeName(typeid(item_type).name()) << ">";
+							throw InvalidArgumentConversion(ss.str());
+						}
 
-					return valuePtr->getValue();
+						return res;
+					}
 				}
+
+				// embedded into value object?
+				// cast to value object
+				auto* valuePtr = dynamic_cast<GetValueObject<bare_type>*>(obj.get()); // T& => T
+
+				if (valuePtr == nullptr)
+					throw InvalidArgumentConversion(prettyTypeName(typeid(bare_type).name()));
+
+				return valuePtr->getValue();
+				
 			}
 		}
 
@@ -373,6 +402,9 @@ namespace script
 		// helper function to transform const T& into T
 		template<class T> using remove_const_ref_t = std::remove_const_t<std::remove_reference_t<T>>;
 
+		// std::vector helper
+		template<class T> static inline constexpr bool is_std_vector_v = false;
+		template<class T, class A> static inline constexpr bool is_std_vector_v<std::vector<T, A>> = true;
 #pragma region invokeArgs
 
 		/// \brief helper function to call unpack arg with the appropriate indices from the index sequence

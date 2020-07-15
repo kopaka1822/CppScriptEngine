@@ -456,3 +456,21 @@ TEST(TestSuite, FromObject)
 	v6 = Util::fromObject<UtilTestDerived*>(NullObject::get());
 	EXPECT_FALSE(v6);
 }
+
+TEST(TestSuite, FromArray)
+{
+	// simple int array
+	auto v1 = Util::fromObject<std::vector<int>>(Util::makeArray(45, 32));
+	EXPECT_EQ(v1.size(), 2);
+	EXPECT_EQ(v1[0], 45);
+	EXPECT_EQ(v1[1], 32);
+
+	// mixed array (error)
+	EXPECT_THROW(Util::fromObject<std::vector<int>>(Util::makeArray(45, 32.0f)), script::InvalidArgumentConversion);
+
+	// string array
+	auto v2 = Util::fromObject<std::vector<std::string>>(Util::makeArray("45", "32"));
+	EXPECT_EQ(v2.size(), 2);
+	EXPECT_EQ(v2[0], std::string("45"));
+	EXPECT_EQ(v2[1], std::string("32"));
+}
