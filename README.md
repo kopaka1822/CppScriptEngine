@@ -98,7 +98,7 @@ int main() {
       std::getline(std::cin, command);
       try {
          // execute console input and print out result
-         std::cout << ">> " << engine.execute(command) << std::endl;
+         std::cout << ">> " << engine.execute(command)->toString() << std::endl;
       } catch (const std::exception& e) {
          std::cerr << "ERR: " << e.what() << std::endl;
       }
